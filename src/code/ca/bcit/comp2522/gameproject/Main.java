@@ -2,6 +2,16 @@ package ca.bcit.comp2522.gameproject;
 
 import java.util.Scanner;
 
+/**
+ * Main class for the game project.
+ * <p>
+ * This class provides a simple text-based menu that allows the user to choose from different games.
+ * The menu runs in an infinite loop until the user chooses to quit by pressing 'Q' or 'q'.
+ * </p>
+ *
+ * @author Nathan O
+ * @version 1.0 2025
+ */
 public class Main {
     private static final Scanner scan;
 
@@ -10,6 +20,11 @@ public class Main {
         scan = new Scanner(System.in);
     }
 
+    /**
+     * Main entry point for the application.
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(final String[] args)
     {
         printWelcomeMessage();
@@ -17,6 +32,11 @@ public class Main {
         runGameLoop();
     }
 
+    /*
+     * Runs the main game selection loop.
+     * The user is prompted to select a game or quit.
+     * If an invalid option is entered, an error message is displayed.
+     */
     private static void runGameLoop()
     {
         String choice;
@@ -37,6 +57,9 @@ public class Main {
         } while (!choice.equals("q"));
     }
 
+    /*
+     * Prints the game menu to the console.
+     */
     private static void printGameMenu()
     {
         System.out.println("""
@@ -47,6 +70,9 @@ public class Main {
                 """);
     }
 
+    /*
+     * Prints a welcome message to the console.
+     */
     private static void printWelcomeMessage()
     {
         System.out.println("""
