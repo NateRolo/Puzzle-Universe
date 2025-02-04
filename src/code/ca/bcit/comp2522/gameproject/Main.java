@@ -13,6 +13,12 @@ public class Main {
     public static void main(final String[] args)
     {
         printWelcomeMessage();
+
+        runGameLoop();
+    }
+
+    private static void runGameLoop()
+    {
         String choice;
 
         do {
