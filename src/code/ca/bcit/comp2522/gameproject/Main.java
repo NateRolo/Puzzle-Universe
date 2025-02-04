@@ -22,6 +22,11 @@ public class Main {
 
     /**
      * Main entry point for the application.
+     * <p>
+     * Runs the main game selection loop.
+     * The user is prompted to select a game or quit.
+     * If an invalid option is entered, an error message is displayed.
+     * </p>
      *
      * @param args command-line arguments (not used)
      */
@@ -29,16 +34,6 @@ public class Main {
     {
         printWelcomeMessage();
 
-        runGameLoop();
-    }
-
-    /*
-     * Runs the main game selection loop.
-     * The user is prompted to select a game or quit.
-     * If an invalid option is entered, an error message is displayed.
-     */
-    private static void runGameLoop()
-    {
         String choice;
 
         do {
