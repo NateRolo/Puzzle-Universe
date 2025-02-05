@@ -1,6 +1,8 @@
 package ca.bcit.comp2522.gameproject;
 
+import java.util.Map;
 import java.util.HashMap;
+
 
 /**
  * Represents a world containing multiple countries.
@@ -14,7 +16,7 @@ import java.util.HashMap;
  */
 public class World
 {
-    private final HashMap<String, Country> countries;
+    private final Map<String, Country> countries;
 
     /**
      * Constructs a new World object with an empty collection of countries.
