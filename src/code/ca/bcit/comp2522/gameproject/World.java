@@ -35,7 +35,8 @@ public class World
     {
         if (country == null)
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid country:" +
+                                                country);
         }
         
         this.countries.put(country.getName(), country);
@@ -51,7 +52,8 @@ public class World
     {
         if (name == null || name.isBlank())
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid country name: " + 
+                                                name);
         }
         
         return countries.get(name);
@@ -65,9 +67,11 @@ public class World
      */
     public final boolean hasCountry(final String name)
     {
+
         if (name == null || name.isBlank())
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid country name: " + 
+                                                name);
         }
         
         return countries.containsKey(name);
