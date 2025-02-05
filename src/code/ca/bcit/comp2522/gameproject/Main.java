@@ -12,7 +12,8 @@ import java.util.Scanner;
  * @author Nathan O
  * @version 1.0 2025
  */
-public class Main {
+public class Main
+{
     private static final Scanner scan;
 
     static
@@ -36,12 +37,13 @@ public class Main {
 
         String choice;
 
-        do {
+        do
+        {
             printGameMenu();
             choice = scan.next()
                          .toLowerCase();
 
-            switch (choice)
+            switch(choice)
             {
                 case "w" -> WordGame.play();
                 case "n" -> NumberGame.play();
@@ -49,7 +51,7 @@ public class Main {
                 case "q" -> System.out.println("Exiting the game. Goodbye!");
                 default -> System.out.println("Not a valid option, please select a valid game.");
             }
-        } while (!choice.equals("q"));
+        } while(! choice.equals("q"));
     }
 
     /*
@@ -58,11 +60,11 @@ public class Main {
     private static void printGameMenu()
     {
         System.out.println("""
-                Press W to play the Word game.
-                Press N to play the Number game.
-                Press M to play the <your game's name> game.
-                Press Q to quit.
-                """);
+                           Press W to play the Word game.
+                           Press N to play the Number game.
+                           Press M to play the <your game's name> game.
+                           Press Q to quit.
+                           """);
     }
 
     /*
@@ -71,8 +73,8 @@ public class Main {
     private static void printWelcomeMessage()
     {
         System.out.println("""
-                Welcome to Nathan's Game Corner!
-                Choose one of the games below to start playing.
-                """);
+                           Welcome to Nathan's Game Corner!
+                           Choose one of the games below to start playing.
+                           """);
     }
 }
