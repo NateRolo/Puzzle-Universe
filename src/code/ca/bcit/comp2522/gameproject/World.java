@@ -19,30 +19,42 @@ import java.util.List;
 public class World
 {
     private final Map<String, Country> countries;
-    private static final String[]      RESOURCE_FILES = {"/a.txt",
-                                                         "/b.txt",
-                                                         "/c.txt",
-                                                         "/d.txt",
-                                                         "/e.txt",
-                                                         "/f.txt",
-                                                         "/g.txt",
-                                                         "/h.txt",
-                                                         "/i.txt",
-                                                         "/j.txt",
-                                                         "/k.txt",
-                                                         "/l.txt",
-                                                         "/m.txt",
-                                                         "/n.txt",
-                                                         "/o.txt",
-                                                         "/p.txt",
-                                                         "/q.txt",
-                                                         "/r.txt",
-                                                         "/s.txt",
-                                                         "/t.txt",
-                                                         "/u.txt",
-                                                         "/v.txt",
-                                                         "/y.txt",
-                                                         "/z.txt"};
+
+    private static final String COUNTRY_CAPITAL_SEPARATOR = ":";
+    private static final int    FACTS_PER_COUNTRY         = 3;
+    private static final int    LINES_TO_SKIP_AFTER_FACTS = 3;
+    private static final int    COUNTRY_NAME_INDEX        = 0;
+    private static final int    CAPITAL_NAME_INDEX        = 1;
+    private static final int    FIRST_FACT_OFFSET         = 1;
+
+    private static final int    FIRST_FACT_INDEX          = 0;
+    private static final int    SECOND_FACT_INDEX         = 1;
+    private static final int    THIRD_FACT_INDEX          = 2;
+
+    private static final String[] RESOURCE_FILES = {"/a.txt",
+                                                    "/b.txt",
+                                                    "/c.txt",
+                                                    "/d.txt",
+                                                    "/e.txt",
+                                                    "/f.txt",
+                                                    "/g.txt",
+                                                    "/h.txt",
+                                                    "/i.txt",
+                                                    "/j.txt",
+                                                    "/k.txt",
+                                                    "/l.txt",
+                                                    "/m.txt",
+                                                    "/n.txt",
+                                                    "/o.txt",
+                                                    "/p.txt",
+                                                    "/q.txt",
+                                                    "/r.txt",
+                                                    "/s.txt",
+                                                    "/t.txt",
+                                                    "/u.txt",
+                                                    "/v.txt",
+                                                    "/y.txt",
+                                                    "/z.txt"};
 
     /**
      * Constructs a new World object and loads countries from resource files.
@@ -86,31 +98,31 @@ public class World
         String   capitalName;
         String[] facts;
 
-        for(int i = 0; i < lines.size(); i++)
+        for(int lineIndex = 0; lineIndex < lines.size(); lineIndex++)
         {
             final String line;
 
-            line = lines.get(i);
+            line = lines.get(lineIndex);
             if(line.isEmpty())
             {
                 continue;
             }
 
-            if(line.contains(":"))
+            if(line.contains(COUNTRY_CAPITAL_SEPARATOR))
             {
                 final String[] parts;
 
-                parts       = line.split(":");
-                countryName = parts[0].trim();
-                capitalName = parts[1].trim();
-                facts       = new String[3];
+                parts       = line.split(COUNTRY_CAPITAL_SEPARATOR);
+                countryName = parts[COUNTRY_NAME_INDEX].trim();
+                capitalName = parts[CAPITAL_NAME_INDEX].trim();
+                facts       = new String[FACTS_PER_COUNTRY];
 
-                for(int j = 0; j < 3; j++)
+                for(int factIndex = 0; factIndex < FACTS_PER_COUNTRY; factIndex++)
                 {
-                    if(i + j + 1 < lines.size())
+                    if(lineIndex + factIndex + FIRST_FACT_OFFSET < lines.size())
                     {
-                        facts[j] = lines.get(i + j + 1)
-                                        .trim();
+                        facts[factIndex] = lines.get(lineIndex + factIndex + FIRST_FACT_OFFSET)
+                                                .trim();
                     }
                 }
 
@@ -118,11 +130,11 @@ public class World
 
                 country = new Country(countryName,
                                       capitalName,
-                                      facts[0],
-                                      facts[1],
-                                      facts[2]);
+                                      facts[FIRST_FACT_INDEX],
+                                      facts[SECOND_FACT_INDEX],
+                                      facts[THIRD_FACT_INDEX]);
                 addCountry(country);
-                i += 3;
+                lineIndex += LINES_TO_SKIP_AFTER_FACTS;
             }
         }
     }
