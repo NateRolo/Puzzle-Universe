@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class Score
 {
-    private final LocalDateTime currentTime;
+    final LocalDateTime currentTime;
     final DateTimeFormatter formatter;
     final String formattedDateTime;
     
