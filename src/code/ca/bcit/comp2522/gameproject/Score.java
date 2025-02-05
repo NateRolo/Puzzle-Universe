@@ -1,6 +1,8 @@
 package ca.bcit.comp2522.gameproject;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 /**
  * Represents a player's score in the game.
@@ -14,7 +16,10 @@ import java.time.LocalDateTime;
  */
 public class Score
 {
-    private final LocalDateTime dateTimePlayed;
+    private final LocalDateTime currentTime;
+    final DateTimeFormatter formatter;
+    final String formattedDateTime;
+    
     private int numGamesPlayed;
     private int numCorrectFirstAttempt;
     private int numCorrectSecondAttempt;
@@ -25,7 +30,10 @@ public class Score
      */
     public Score()
     {
-        this.dateTimePlayed = LocalDateTime.now();
+        this.currentTime = LocalDateTime.now();
+        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        formattedDateTime = currentTime.format(formatter);
+
         this.numGamesPlayed = 0;
         this.numCorrectFirstAttempt = 0;
         this.numCorrectSecondAttempt = 0;
@@ -37,9 +45,9 @@ public class Score
      *
      * @return the date and time played
      */
-    public final LocalDateTime getDateTimePlayed()
+    public final LocalDateTime getCurrentTime()
     {
-        return dateTimePlayed;
+        return currentTime;
     }
 
     /**
