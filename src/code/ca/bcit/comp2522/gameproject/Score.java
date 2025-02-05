@@ -16,14 +16,14 @@ import java.time.format.DateTimeFormatter;
  */
 public class Score
 {
-    final LocalDateTime currentTime;
-    final DateTimeFormatter formatter;
-    final String formattedDateTime;
-    
     private int numGamesPlayed;
     private int numCorrectFirstAttempt;
     private int numCorrectSecondAttempt;
     private int numIncorrectTwoAttempts;
+    
+    final LocalDateTime currentTime;
+    final DateTimeFormatter formatter;
+    final String formattedDateTime;
 
     /**
      * Constructs a new Score object.
