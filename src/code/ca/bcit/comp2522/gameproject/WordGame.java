@@ -32,6 +32,11 @@ public class WordGame
         
         System.out.println("Starting Word Game...");
 
+        while (questionsAsked < 10)
+        {
+            askQuestion();
+            questionsAsked++;
+        }
     }
 
     private static void askQuestion()
@@ -113,7 +118,6 @@ public class WordGame
                            "\nOne more guess:");
         userAnswer = scan.nextLine();
         answerIsCorrect = userAnswer.equals(expectedAnswer);
-        currentScore.incrementNumIncorrectAttempts();
 
         if (answerIsCorrect)
         {
@@ -121,8 +125,11 @@ public class WordGame
             currentScore.incrementNumCorrectSecondAttempt();
         }
         
-        System.out.println("INCORRECT");
-        currentScore.incrementNumIncorrectAttempts();
+        System.out.println("INCORRECT" + 
+                            "\n" + 
+                            "The correct answer was " + 
+                            expectedAnswer);
+        currentScore.incrementNumIncorrectTwoAttempts();
     }
 
     
