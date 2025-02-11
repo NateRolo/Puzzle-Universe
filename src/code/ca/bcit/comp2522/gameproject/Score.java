@@ -19,7 +19,7 @@ public class Score
     private int numGamesPlayed;
     private int numCorrectFirstAttempt;
     private int numCorrectSecondAttempt;
-    private int numIncorrectAttempts;
+    private int numIncorrectTwoAttempts;
     
     final LocalDateTime currentTime;
     final DateTimeFormatter formatter;
@@ -37,7 +37,7 @@ public class Score
         this.numGamesPlayed = 0;
         this.numCorrectFirstAttempt = 0;
         this.numCorrectSecondAttempt = 0;
-        this.numIncorrectAttempts = 0;
+        this.numIncorrectTwoAttempts = 0;
     }
 
     /**
@@ -85,9 +85,9 @@ public class Score
      *
      * @return number of incorrect attempts after two tries
      */
-    public final int getNumIncorrectAttempts()
+    public final int getNumIncorrectTwoAttempts()
     {
-        return numIncorrectAttempts;
+        return numIncorrectTwoAttempts;
     }
 
     /**
@@ -117,8 +117,8 @@ public class Score
     /**
      * Increments the number of incorrect attempts after two tries.
      */
-    public final void incrementNumIncorrectAttempts()
+    public final void incrementNumIncorrectTwoAttempts()
     {
-        this.numIncorrectAttempts++;
+        this.numIncorrectTwoAttempts++;
     }
 }
