@@ -27,16 +27,29 @@ public class WordGame
     static void play()
     {
         int questionsAsked;
+        String playAgain;
 
-        questionsAsked = 0;
+        
         
         System.out.println("Starting Word Game...");
 
-        while (questionsAsked < 10)
+        do
         {
-            askQuestion();
-            questionsAsked++;
-        }
+            questionsAsked = 0;
+            
+            while (questionsAsked < 10) 
+            {
+                askQuestion();
+                questionsAsked++;
+            }
+
+            currentScore.incrementNumGamesPlayed();
+
+            System.out.println("Would you like to play again?");
+            playAgain = scan.nextLine();
+            // add input validation
+
+        } while (playAgain.equals("yes"));
     }
 
     private static void askQuestion()
