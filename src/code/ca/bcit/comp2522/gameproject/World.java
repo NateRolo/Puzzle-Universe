@@ -1,9 +1,10 @@
 package ca.bcit.comp2522.gameproject;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a world containing multiple countries.
@@ -64,13 +65,13 @@ public class World
     public World() throws IOException
     {
         this.countries = new HashMap<>();
-        loadCountriesFromFiles();
+        loadCountriesFromAllFiles();
     }
 
     /* 
      * Loads countries from all resource files.
      */
-    private void loadCountriesFromFiles() throws IOException
+    private void loadCountriesFromAllFiles() throws IOException
     {
         for(final String file : RESOURCE_FILES)
         {
@@ -169,6 +170,23 @@ public class World
         }
 
         return countries.get(name);
+    }
+
+
+    /**
+     * Returns a random {@code Country} from the list of available countries.
+     *
+     * @return A randomly selected {@code Country} object.
+     */
+    public final Country getRandomCountry()
+    {
+        final List<Country> countryList;
+        final int randomIndex;
+        
+        countryList = new ArrayList<>(countries.values());
+        randomIndex = (int) (Math.random() * countryList.size());
+    
+        return countryList.get(randomIndex);
     }
 
     /**
