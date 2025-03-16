@@ -56,18 +56,22 @@ public class FileManager
         return lines;
     }
 
-    public static void writeToResource(final List<String> formattedScore) throws IOException
+    public static void writeToResource(final List<String> formattedScore,
+                                       final String file)
     {
-        final Path scorePath;
-        scorePath = Paths.get("src", "res", "score.txt");
-        if(Files.notExists(scorePath))
+        try
         {
-            Files.createFile(scorePath);
-        }
+            final Path scorePath;
+            scorePath = Paths.get("src", "res", file);
 
-        Files.write(scorePath,
-                    formattedScore,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.APPEND);
+            Files.write(scorePath,
+                        formattedScore,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.APPEND);
+        }
+        catch(IOException error)
+        {
+            error.printStackTrace();
+        }
     }
 }
