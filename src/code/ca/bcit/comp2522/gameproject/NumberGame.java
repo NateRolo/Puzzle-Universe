@@ -1,8 +1,9 @@
 package ca.bcit.comp2522.gameproject;
 
-public class NumberGame
+public class NumberGame implements Playable
 {
-    static void play()
+    @Override
+    public void play()
     {
         System.out.println("Starting Number Game...");
     }
