@@ -1,8 +1,10 @@
 package ca.bcit.comp2522.gameproject;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a player's score in the game.
@@ -16,26 +18,29 @@ import java.time.format.DateTimeFormatter;
  */
 public class Score
 {
-    private int numGamesPlayed;
-    private int numCorrectFirstAttempt;
-    private int numCorrectSecondAttempt;
-    private int numIncorrectTwoAttempts;
-    
-    final LocalDateTime currentTime;
+    private static final int CORRECT_FIRST_GUESS_SCORE  = 2;
+    private static final int CORRECT_SECOND_GUESS_SCORE = 1;
+    private              int numGamesPlayed;
+    private              int numCorrectFirstAttempt;
+    private              int numCorrectSecondAttempt;
+    private              int numIncorrectTwoAttempts;
+    private              int score;
+
+    final LocalDateTime     currentTime;
     final DateTimeFormatter formatter;
-    final String formattedDateTime;
+    final String            formattedDateTime;
 
     /**
      * Constructs a new Score object.
      */
     public Score()
     {
-        this.currentTime = LocalDateTime.now();
-        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.currentTime  = LocalDateTime.now();
+        formatter         = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         formattedDateTime = currentTime.format(formatter);
 
-        this.numGamesPlayed = 0;
-        this.numCorrectFirstAttempt = 0;
+        this.numGamesPlayed          = 0;
+        this.numCorrectFirstAttempt  = 0;
         this.numCorrectSecondAttempt = 0;
         this.numIncorrectTwoAttempts = 0;
     }
@@ -99,19 +104,23 @@ public class Score
     }
 
     /**
-     * Increments the number of correct first attempts.
+     * Increments the number of correct first attempt and adds
+     * 2 points to score.
      */
     public final void incrementNumCorrectFirstAttempt()
     {
         this.numCorrectFirstAttempt++;
+        this.score += CORRECT_FIRST_GUESS_SCORE;
     }
 
     /**
-     * Increments the number of correct second attempts.
+     * Increments the number of correct second attempts and adds
+     * 1 point to score.
      */
     public final void incrementNumCorrectSecondAttempt()
     {
         this.numCorrectSecondAttempt++;
+        this.score += CORRECT_SECOND_GUESS_SCORE;
     }
 
     /**
@@ -120,5 +129,34 @@ public class Score
     public final void incrementNumIncorrectTwoAttempts()
     {
         this.numIncorrectTwoAttempts++;
+    }
+
+
+    public final List<String> formatScore()
+    {
+        final List<String> score;
+        score = new ArrayList<>();
+
+        score.add("Date and Time: " + this.formattedDateTime);
+        score.add("Games Played: " + this.numGamesPlayed);
+        score.add("Correct First Attempts: " + this.numCorrectFirstAttempt);
+        score.add("Correct Second Attempts: " + this.numCorrectSecondAttempt);
+        score.add("Incorrect Attempts: " + this.numIncorrectTwoAttempts);
+        score.add("Score: " + this.score);
+
+        return score;
+    }
+
+    public final void appendScoreToFile() throws IOException
+    {
+        final List<String> score;
+        score = this.formatScore();
+
+        FileManager.writeToResource(score);
+    }
+
+    public final void printScore()
+    {
+        this.formatScore().forEach(System.out::println);
     }
 }
