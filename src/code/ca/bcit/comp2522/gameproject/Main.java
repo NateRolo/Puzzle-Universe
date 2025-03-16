@@ -15,10 +15,16 @@ import java.util.Scanner;
 public class Main
 {
     private static final Scanner scan;
+    private static final Playable wordGame;
+    private static final Playable numberGame;
+    private static final Playable myGame;
 
     static
     {
         scan = new Scanner(System.in);
+        wordGame = new WordGame();
+        numberGame = new NumberGame();
+        myGame = new MyGame();
     }
 
     /**
@@ -45,9 +51,9 @@ public class Main
 
             switch(choice)
             {
-                case "w" -> WordGame.play();
-                case "n" -> NumberGame.play();
-                case "m" -> MyGame.play();
+                case "w" -> wordGame.play();
+                case "n" -> numberGame.play();
+                case "m" -> myGame.play();
                 case "q" -> System.out.println("Exiting the game. Goodbye!");
                 default -> System.out.println("Not a valid option, please select a valid game.");
             }

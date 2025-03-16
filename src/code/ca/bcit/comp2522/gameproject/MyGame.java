@@ -1,9 +1,10 @@
 package ca.bcit.comp2522.gameproject;
 
-public class MyGame
+public class MyGame implements Playable
 {
-    static void play()
+    public void play()
     {
         System.out.println("Starting My Game...");
     }
+
 }
