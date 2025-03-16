@@ -86,7 +86,7 @@ public class World
     {
         final List<String> lines;
 
-        lines = FileReader.readLinesFromResource(filePath);
+        lines = FileManager.readLinesFromResource(filePath);
         processFileLines(lines);
     }
 
@@ -102,6 +102,7 @@ public class World
         for(int lineIndex = 0; lineIndex < lines.size(); lineIndex++)
         {
             final String line;
+            final Country country;
 
             line = lines.get(lineIndex);
             if(line.isEmpty())
@@ -126,8 +127,6 @@ public class World
                                                 .trim();
                     }
                 }
-
-                final Country country;
 
                 country = new Country(countryName,
                                       capitalName,
