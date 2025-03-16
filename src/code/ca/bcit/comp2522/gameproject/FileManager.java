@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +18,7 @@ import java.util.List;
  * @author Nathan O
  * @version 1.0 2025
  */
-public class FileReader
+public class FileManager
 {
     /**
      * Reads lines from a resource file.
@@ -23,7 +27,7 @@ public class FileReader
      * @return List of strings, each representing a line from the file
      * @throws IOException if file cannot be read
      */
-    public final static List<String> readLinesFromResource(final String filePath) throws IOException
+    public static List<String> readLinesFromResource(final String filePath) throws IOException
     {
         final List<String> lines;
         final InputStream inputStream;
@@ -31,7 +35,7 @@ public class FileReader
         final BufferedReader bufferedReader;
         
         lines = new ArrayList<>();
-        inputStream = FileReader.class.getResourceAsStream(filePath);
+        inputStream = FileManager.class.getResourceAsStream(filePath);
         
         if (inputStream == null)
         {
@@ -50,5 +54,20 @@ public class FileReader
             }
         }
         return lines;
+    }
+
+    public static void writeToResource(final List<String> formattedScore) throws IOException
+    {
+        final Path scorePath;
+        scorePath = Paths.get("src", "res", "score.txt");
+        if(Files.notExists(scorePath))
+        {
+            Files.createFile(scorePath);
+        }
+
+        Files.write(scorePath,
+                    formattedScore,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND);
     }
 }
