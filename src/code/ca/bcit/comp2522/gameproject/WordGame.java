@@ -3,17 +3,25 @@ package ca.bcit.comp2522.gameproject;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class WordGame implements Playable
+public class WordGame implements
+                      Playable
 {
+    private static final int   QUESTIONS_PER_GAME    = 10;
+    protected static final int QUESTION_TYPES        = 3;
+    protected static final int CAPITAL_CITY_QUESTION = 0;
+    protected static final int COUNTRY_QUESTION      = 1;
+    protected static final int FACT_QUESTION         = 2;
+
     private static final Scanner scan;
-    private static final Score currentScore;
-    private static final World world;
-    
+    private static final World   world;
+
+    private Score                 currentScore;
+    private final AnswerValidator answerValidator;
+
     static
     {
         scan = new Scanner(System.in);
-        currentScore = new Score();
-        
+
         try
         {
             world = new World();
@@ -24,125 +32,83 @@ public class WordGame implements Playable
         }
     }
 
+    public WordGame()
+    {
+        currentScore    = new Score();
+        answerValidator = new AnswerValidator(scan,
+                                              currentScore);
+    }
+
     @Override
     public void play()
     {
-        int questionsAsked;
-        String playAgain;
-
         System.out.println("Starting Word Game...");
 
         do
         {
-            questionsAsked = 1;
-            
-            while (questionsAsked < 11)
-            {
-                System.out.printf("Question %d/10\n", questionsAsked);
-                askQuestion();
-                questionsAsked++;
-            }
-
+            playOneGame();
             currentScore.incrementNumGamesPlayed();
-
             currentScore.printScore();
-            System.out.println("Would you like to play again?");
-            playAgain = scan.nextLine();
-        } while (playAgain.equals("yes"));
+        } while(shouldPlayAgain());
+
+        handleGameEnd();
+    }
+
+    private void playOneGame()
+    {
+        for(int questionsAsked = 1; questionsAsked <= QUESTIONS_PER_GAME; questionsAsked++)
+        {
+            System.out.printf("----------Question %d/10----------\n",
+                              questionsAsked);
+            askQuestion();
+        }
 
     }
-    private static void askQuestion()
+
+    private boolean shouldPlayAgain()
+    {
+        String playAgain;
+        do
+        {
+            System.out.println("Would you like to play again? (yes/no)");
+            playAgain = scan.nextLine()
+                            .toLowerCase();
+            if(! playAgain.equals("yes") && ! playAgain.equals("no"))
+            {
+                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+            }
+        } while(! playAgain.equals("yes") && ! playAgain.equals("no"));
+
+        return playAgain.equals("yes");
+    }
+
+    private void handleGameEnd()
+    {
+        try
+        {
+            Score.displayHighScoreMessage(currentScore);
+            Score.appendScoreToFile(currentScore,
+                                    "score.txt");
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void askQuestion()
     {
         final Country thisCountry;
-        final int questionStyle;
+        final int     questionStyle;
+        Question      question;
 
-        thisCountry = world.getRandomCountry();
-        questionStyle = (int) (Math.random() * 3);
-        
-        switch(questionStyle)
-        {
-            case 0 -> capitalCityQuestion(thisCountry); 
-            case 1 -> countryQuestion(thisCountry);
-            case 2 -> factQuestion(thisCountry);
-        }
+        thisCountry   = world.getRandomCountry();
+        questionStyle = (int)(Math.random() * QUESTION_TYPES);
+        question      = QuestionFactory.createQuestion(thisCountry,
+                                                       questionStyle);
+
+        System.out.println(question.getPrompt());
+        answerValidator.validateAnswer(question.getExpectedAnswer());
     }
-
-    private static void capitalCityQuestion(final Country country)
-    {
-        final String countryName;
-        final String countryCapital;
-        
-        countryName = country.getName();
-        countryCapital = country.getCapitalCityName();
-
-        System.out.println(countryCapital + " is the capital of what country?");
-        checkAnswer(countryName);
-    }
-
-    private static void countryQuestion(final Country country)
-    {
-        final String countryName;
-        final String countryCapital;
-
-        countryName = country.getName();
-        countryCapital = country.getCapitalCityName();
-
-        System.out.println("What is the capital of " + countryName + "?");
-        checkAnswer(countryCapital);
-    }
-
-    private static void factQuestion(final Country country)
-    {
-        final String countryName;
-        final String[] countryFacts;
-        final int randomFact;
-
-        countryName = country.getName();
-        countryFacts = country.getFacts();
-        randomFact = (int)(Math.random() * countryFacts.length);
-
-        System.out.println(countryFacts[randomFact] + 
-                           "\n" + 
-                           "What country is this fact describing?");
-        checkAnswer(countryName);
-    }
-
-    /* 
-     * Checks if the user's answer matches the expected answer.
-     * Returns the number of points earned.
-     */
-    private static void checkAnswer(final String expectedAnswer)
-    {
-        String userAnswer;
-        boolean answerIsCorrect;
-        
-        userAnswer = scan.nextLine();
-        answerIsCorrect = userAnswer.equalsIgnoreCase(expectedAnswer);
-
-        if (answerIsCorrect)
-        {
-            System.out.println("CORRECT");
-            currentScore.incrementNumCorrectFirstAttempt();
-        }
-        else
-        {
-            System.out.println("INCORRECT" + "\nOne more guess:");
-            userAnswer      = scan.nextLine();
-            answerIsCorrect = userAnswer.equals(expectedAnswer);
-
-            if (answerIsCorrect)
-            {
-                System.out.println("CORRECT");
-                currentScore.incrementNumCorrectSecondAttempt();
-            }
-
-            System.out.println("INCORRECT" +
-                               "\n" +
-                               "The correct answer was " +
-                               expectedAnswer);
-            currentScore.incrementNumIncorrectTwoAttempts();
-        }
-    }
-
 
 }

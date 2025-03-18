@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -22,43 +21,21 @@ public class Score
 {
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private static final int DEFAULT_GAMES_PLAYED             = 0;
-    private static final int DEFAULT_CORRECT_FIRST_GUESSES = 0;
+    private static final int DEFAULT_GAMES_PLAYED           = 0;
+    private static final int DEFAULT_CORRECT_FIRST_GUESSES  = 0;
     private static final int DEFAULT_CORRECT_SECOND_GUESSES = 0;
     private static final int DEFAULT_INCORRECT_TWO_TIMES    = 0;
-    private static final int DEFAULT_SCORE              = 0;
 
     private static final int CORRECT_FIRST_GUESS_SCORE  = 2;
     private static final int CORRECT_SECOND_GUESS_SCORE = 1;
 
-    private              int numGamesPlayed;
-    private              int numCorrectFirstAttempt;
-    private              int numCorrectSecondAttempt;
-    private              int numIncorrectTwoAttempts;
-    private              int score;
+    private int numGamesPlayed;
+    private int numCorrectFirstAttempt;
+    private int numCorrectSecondAttempt;
+    private int numIncorrectTwoAttempts;
+    private int score;
 
-    final String            formattedDateTime;
-
-    public Score(final LocalDateTime dateTime,
-                 final int gamesPlayed,
-                 final int numCorrectFirstGuess,
-                 final int numCorrectSecondGuess,
-                 final int twoIncorrectAttempts,
-                 final int totalScore)
-    {
-        validateDateTime(dateTime);
-        validateNumber(gamesPlayed);
-        validateNumber(numCorrectFirstGuess);
-        validateNumber(numCorrectSecondGuess);
-        validateNumber(twoIncorrectAttempts);
-
-        formattedDateTime = dateTime.format(formatter);
-        this.numGamesPlayed = gamesPlayed;
-        numCorrectFirstAttempt = numCorrectFirstGuess;
-        numCorrectSecondAttempt = numCorrectSecondGuess;
-        numIncorrectTwoAttempts = twoIncorrectAttempts;
-        this.score = totalScore;
-    }
+    final String formattedDateTime;
 
     public Score(final LocalDateTime dateTime,
                  final int gamesPlayed,
@@ -66,12 +43,14 @@ public class Score
                  final int numCorrectSecondGuess,
                  final int twoIncorrectAttempts)
     {
-        this(dateTime,
-             gamesPlayed,
-             numCorrectFirstGuess,
-             numCorrectSecondGuess,
-             twoIncorrectAttempts,
-             DEFAULT_SCORE);
+        formattedDateTime       = dateTime.format(formatter);
+        this.numGamesPlayed     = gamesPlayed;
+        numCorrectFirstAttempt  = numCorrectFirstGuess;
+        numCorrectSecondAttempt = numCorrectSecondGuess;
+        numIncorrectTwoAttempts = twoIncorrectAttempts;
+
+        this.score = (numCorrectFirstGuess * CORRECT_FIRST_GUESS_SCORE) +
+                     (numCorrectSecondGuess * CORRECT_SECOND_GUESS_SCORE);
     }
 
     /**
@@ -80,21 +59,10 @@ public class Score
     public Score()
     {
         this(LocalDateTime.now(),
-              DEFAULT_GAMES_PLAYED,
-              DEFAULT_CORRECT_FIRST_GUESSES,
-              DEFAULT_CORRECT_SECOND_GUESSES,
-              DEFAULT_INCORRECT_TWO_TIMES,
-              DEFAULT_SCORE);
-    }
-
-    private void validateNumber(final int gamesPlayed)
-    {
-
-    }
-
-    private void validateDateTime(final LocalDateTime dateTime)
-    {
-
+             DEFAULT_GAMES_PLAYED,
+             DEFAULT_CORRECT_FIRST_GUESSES,
+             DEFAULT_CORRECT_SECOND_GUESSES,
+             DEFAULT_INCORRECT_TWO_TIMES);
     }
 
     /**
@@ -151,6 +119,7 @@ public class Score
     {
         return score;
     }
+
     /**
      * Increments the number of games played.
      */
@@ -203,12 +172,30 @@ public class Score
         return scoreAsList;
     }
 
-    public static void appendScoreToFile(Score score, String file) throws IOException
+    @Override
+    public String toString()
+    {
+        final StringBuilder builder;
+        final List<String>  list = formatScore(this);
+
+        builder = new StringBuilder();
+        for(String str : list)
+        {
+            builder.append(str)
+                   .append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    public static void appendScoreToFile(Score score,
+                                         String file) throws IOException
     {
         final List<String> scoreAsList;
         scoreAsList = formatScore(score);
 
-        FileManager.writeToResource(scoreAsList, file);
+        FileManager.writeToResource(scoreAsList,
+                                    file);
     }
 
     public final void printScore()
@@ -219,19 +206,91 @@ public class Score
     public static List<Score> readScoresFromFile(final String filePath) throws IOException
     {
         final List<String> scoresLines;
-        final List<Score> scores;
-        scoresLines = FileManager.readLinesFromResource("/" + filePath);
+        final List<Score>  scores;
+        scoresLines = FileManager.readLinesFromResource(filePath);
 
-        scores = IntStream.range(0, scoresLines.size())
-                          .filter(i -> scoresLines.get(i).startsWith("Date and Time:"))
-                          .mapToObj(i -> new Score(
-                                  LocalDateTime.parse(scoresLines.get(i).split(": ", 2)[1], formatter),
-                                  Integer.parseInt(scoresLines.get(i + 1).split(": ", 2)[1]),
-                                  Integer.parseInt(scoresLines.get(i + 2).split(": ", 2)[1]),
-                                  Integer.parseInt(scoresLines.get(i + 3).split(": ", 2)[1]),
-                                  Integer.parseInt(scoresLines.get(i + 4).split(": ", 2)[1]),
-                                  Integer.parseInt(scoresLines.get(i + 5).split(": ", 2)[1].replace(" points", ""))
-                          )).toList();
+        if(scoresLines.isEmpty())
+        {
+            scores = new ArrayList<Score>();
+            return scores;
+        }
+
+        scores = IntStream.range(0,
+                                 scoresLines.size())
+                          .filter(i -> scoresLines.get(i)
+                                                  .startsWith("Date and Time:"))
+                          .mapToObj(i -> new Score(LocalDateTime.parse(scoresLines.get(i)
+                                                                                  .split(": ",
+                                                                                         2)[1],
+                                                                       formatter),
+                                                   Integer.parseInt(scoresLines.get(i + 1)
+                                                                               .split(": ",
+                                                                                      2)[1]),
+                                                   Integer.parseInt(scoresLines.get(i + 2)
+                                                                               .split(": ",
+                                                                                      2)[1]),
+                                                   Integer.parseInt(scoresLines.get(i + 3)
+                                                                               .split(": ",
+                                                                                      2)[1]),
+                                                   Integer.parseInt(scoresLines.get(i + 4)
+                                                                               .split(": ",
+                                                                                      2)[1])))
+                          .toList();
         return scores;
+    }
+
+    public static void displayHighScoreMessage(Score currentScore) throws IOException
+    {
+        final List<Score> allScores;
+        final double      currentAverage;
+
+        Score  highestScore;
+        double highestAverage;
+
+        allScores      = readScoresFromFile("score.txt");
+        currentAverage = calculateAverageScore(currentScore);
+        highestScore   = null;
+        highestAverage = 0.0;
+
+        for(Score score : allScores)
+        {
+            final double average = calculateAverageScore(score);
+            if(average > highestAverage)
+            {
+                highestAverage = average;
+                highestScore   = score;
+            }
+        }
+
+        if(highestScore == null || currentAverage > highestAverage)
+        {
+            System.out.printf("CONGRATULATIONS! You are the new high score with an average of %.2f points per game",
+                              currentAverage);
+            if(highestScore != null)
+            {
+                System.out.printf("; the previous record was %.2f points per game on %s%n",
+                                  highestAverage,
+                                  highestScore.formattedDateTime);
+            }
+            else
+            {
+                System.out.println("!");
+            }
+        }
+        else
+        {
+            System.out.printf("You did not beat the high score of %.2f points per game from %s%n",
+                              highestAverage,
+                              highestScore.formattedDateTime);
+        }
+    }
+
+    private static double calculateAverageScore(Score score)
+    {
+        if(score.numGamesPlayed == 0)
+        {
+            return 0.0;
+        }
+        return (double)score.score / score.numGamesPlayed;
     }
 }

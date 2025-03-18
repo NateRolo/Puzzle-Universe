@@ -14,17 +14,25 @@ import java.util.Scanner;
  */
 public class Main
 {
-    private static final Scanner scan;
+    private static final Scanner  scan;
     private static final Playable wordGame;
     private static final Playable numberGame;
     private static final Playable myGame;
 
+    private static final String WORD_GAME_CHOICE   = "w";
+    private static final String NUMBER_GAME_CHOICE = "n";
+    private static final String MY_GAME_CHOICE     = "m";
+    private static final String QUIT_CHOICE        = "q";
+
+    private static final String INVALID_CHOICE_MESSAGE = "Not a valid option, please select a valid game.";
+    private static final String EXIT_MESSAGE           = "Exiting the game. Goodbye!";
+
     static
     {
-        scan = new Scanner(System.in);
-        wordGame = new WordGame();
+        scan       = new Scanner(System.in);
+        wordGame   = new WordGame();
         numberGame = new NumberGame();
-        myGame = new MyGame();
+        myGame     = new MyGame();
     }
 
     /**
@@ -51,13 +59,13 @@ public class Main
 
             switch(choice)
             {
-                case "w" -> wordGame.play();
-                case "n" -> numberGame.play();
-                case "m" -> myGame.play();
-                case "q" -> System.out.println("Exiting the game. Goodbye!");
-                default -> System.out.println("Not a valid option, please select a valid game.");
+                case WORD_GAME_CHOICE -> wordGame.play();
+                case NUMBER_GAME_CHOICE -> numberGame.play();
+                case MY_GAME_CHOICE -> myGame.play();
+                case QUIT_CHOICE -> System.out.println(EXIT_MESSAGE);
+                default -> System.out.println(INVALID_CHOICE_MESSAGE);
             }
-        } while(! choice.equals("q"));
+        } while(! choice.equals(QUIT_CHOICE));
     }
 
     /*

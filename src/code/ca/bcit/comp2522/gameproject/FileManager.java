@@ -29,26 +29,34 @@ public class FileManager
      */
     public static List<String> readLinesFromResource(final String filePath) throws IOException
     {
-        final List<String> lines;
-        final InputStream inputStream;
+        final List<String>      lines;
+        final InputStream       inputStream;
         final InputStreamReader inputStreamReader;
-        final BufferedReader bufferedReader;
-        
-        lines = new ArrayList<>();
+        final BufferedReader    bufferedReader;
+        final Path              path;
+
+        path = Paths.get(filePath);
+        if(Files.exists(path))
+        {
+            return Files.readAllLines(path);
+        }
+
+        lines       = new ArrayList<>();
         inputStream = FileManager.class.getResourceAsStream(filePath);
-        
-        if (inputStream == null)
+
+        if(inputStream == null)
         {
             throw new IOException("Resource not found: " + filePath);
         }
-        
-        inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        bufferedReader = new BufferedReader(inputStreamReader);
-        
-        try (inputStream; bufferedReader) 
+
+        inputStreamReader = new InputStreamReader(inputStream,
+                                                  StandardCharsets.UTF_8);
+        bufferedReader    = new BufferedReader(inputStreamReader);
+
+        try(inputStream; bufferedReader)
         {
             String line;
-            while ((line = bufferedReader.readLine()) != null) 
+            while((line = bufferedReader.readLine()) != null)
             {
                 lines.add(line);
             }
@@ -62,7 +70,7 @@ public class FileManager
         try
         {
             final Path scorePath;
-            scorePath = Paths.get("src", "res", file);
+            scorePath = Paths.get(file);
 
             Files.write(scorePath,
                         formattedScore,
