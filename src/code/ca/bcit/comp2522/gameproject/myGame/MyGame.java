@@ -1,4 +1,6 @@
-package ca.bcit.comp2522.gameproject;
+package ca.bcit.comp2522.gameproject.myGame;
+
+import ca.bcit.comp2522.gameproject.Playable;
 
 public class MyGame implements Playable
 {

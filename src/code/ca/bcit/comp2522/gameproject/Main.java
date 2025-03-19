@@ -1,5 +1,9 @@
 package ca.bcit.comp2522.gameproject;
 
+import ca.bcit.comp2522.gameproject.myGame.MyGame;
+import ca.bcit.comp2522.gameproject.numberGame.NumberGame;
+import ca.bcit.comp2522.gameproject.wordGame.WordGame;
+
 import java.util.Scanner;
 
 /**

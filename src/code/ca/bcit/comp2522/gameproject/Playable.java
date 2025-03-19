@@ -1,7 +1,7 @@
 package ca.bcit.comp2522.gameproject;
 
 @FunctionalInterface
-interface Playable
+public interface Playable
 {
-    abstract void play();
+    void play();
 }
