@@ -5,7 +5,7 @@ import ca.bcit.comp2522.gameproject.Playable;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class WordGame implements Playable
+public class WordGameLauncher implements Playable
 {
     private static final int   QUESTIONS_PER_GAME    = 10;
     protected static final int QUESTION_TYPES        = 3;
@@ -16,7 +16,7 @@ public class WordGame implements Playable
     private static final Scanner scan;
     private static final World   world;
 
-    private Score                 currentScore;
+    private final Score           currentScore;
     private final AnswerValidator answerValidator;
 
     static
@@ -33,7 +33,7 @@ public class WordGame implements Playable
         }
     }
 
-    public WordGame()
+    public WordGameLauncher()
     {
         currentScore    = new Score();
         answerValidator = new AnswerValidator(scan,

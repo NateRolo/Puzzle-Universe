@@ -2,12 +2,12 @@ package ca.bcit.comp2522.gameproject.wordGame;
 
 import java.util.Scanner;
 
-public class AnswerValidator
+class AnswerValidator
 {
     private final Scanner scanner;
     private final Score   score;
 
-    public AnswerValidator(Scanner scanner,
+    AnswerValidator(Scanner scanner,
                            Score score)
     {
         validateDependencies(scanner,
@@ -16,7 +16,7 @@ public class AnswerValidator
         this.score   = score;
     }
 
-    public void validateAnswer(final String expectedAnswer)
+    void validateAnswer(final String expectedAnswer)
     {
         if(expectedAnswer == null)
         {

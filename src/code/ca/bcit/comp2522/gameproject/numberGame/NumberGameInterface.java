@@ -1,6 +1,6 @@
 package ca.bcit.comp2522.gameproject.numberGame;
 
-public interface NumberGameInterface
+interface NumberGameInterface
 {
     void startNewGame();
     void placeNumber(int position);

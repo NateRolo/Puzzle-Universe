@@ -18,7 +18,7 @@ import java.util.List;
  * @author Nathan O
  * @version 1.0 2025
  */
-public class FileManager
+class FileManager
 {
     /**
      * Reads lines from a resource file.
@@ -27,7 +27,7 @@ public class FileManager
      * @return List of strings, each representing a line from the file
      * @throws IOException if file cannot be read
      */
-    public static List<String> readLinesFromResource(final String filePath) throws IOException
+    static List<String> readLinesFromResource(final String filePath) throws IOException
     {
         final List<String>      lines;
         final InputStream       inputStream;
@@ -64,7 +64,7 @@ public class FileManager
         return lines;
     }
 
-    public static void writeToResource(final List<String> formattedScore,
+    static void writeToResource(final List<String> formattedScore,
                                        final String file)
     {
         try

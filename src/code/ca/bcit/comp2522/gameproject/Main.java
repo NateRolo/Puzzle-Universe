@@ -1,8 +1,8 @@
 package ca.bcit.comp2522.gameproject;
 
-import ca.bcit.comp2522.gameproject.barkingBombs.BarkingBombs;
-import ca.bcit.comp2522.gameproject.numberGame.NumberGame;
-import ca.bcit.comp2522.gameproject.wordGame.WordGame;
+import ca.bcit.comp2522.gameproject.barkingBombs.BarkingBombsLauncher;
+import ca.bcit.comp2522.gameproject.numberGame.NumberGameLauncher;
+import ca.bcit.comp2522.gameproject.wordGame.WordGameLauncher;
 
 import java.util.Scanner;
 
@@ -34,9 +34,9 @@ public class Main
     static
     {
         scan       = new Scanner(System.in);
-        wordGame   = new WordGame();
-        numberGame   = new NumberGame();
-        barkingBombs = new BarkingBombs();
+        wordGame   = new WordGameLauncher();
+        numberGame   = new NumberGameLauncher();
+        barkingBombs = new BarkingBombsLauncher();
     }
 
     /**

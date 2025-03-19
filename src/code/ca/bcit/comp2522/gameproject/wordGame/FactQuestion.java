@@ -1,23 +1,23 @@
 package ca.bcit.comp2522.gameproject.wordGame;
 
-public class FactQuestion extends Question
+class FactQuestion extends Question
 {
     private final int factIndex;
 
-    public FactQuestion(Country country)
+    FactQuestion(Country country)
     {
         super(country);
         this.factIndex = (int)(Math.random() * country.getFacts().length);
     }
 
     @Override
-    public String getPrompt()
+    String getPrompt()
     {
         return country.getFacts()[factIndex] + "\nWhat country is this fact describing?";
     }
 
     @Override
-    public String getExpectedAnswer()
+    String getExpectedAnswer()
     {
         return country.getName();
     }

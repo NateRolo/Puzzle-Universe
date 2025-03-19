@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
  * @author Nathan O
  * @version 1.0 2025
  */
-public class Score
+class Score
 {
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -37,7 +37,7 @@ public class Score
 
     final String formattedDateTime;
 
-    public Score(final LocalDateTime dateTime,
+    Score(final LocalDateTime dateTime,
                  final int gamesPlayed,
                  final int numCorrectFirstGuess,
                  final int numCorrectSecondGuess,
@@ -56,7 +56,7 @@ public class Score
     /**
      * Constructs a new Score object.
      */
-    public Score()
+    Score()
     {
         this(LocalDateTime.now(),
              DEFAULT_GAMES_PLAYED,
@@ -70,7 +70,7 @@ public class Score
      *
      * @return the date and time played
      */
-    public final String getCurrentTime()
+    final String getCurrentTime()
     {
         return formattedDateTime;
     }
@@ -80,7 +80,7 @@ public class Score
      *
      * @return number of games played
      */
-    public final int getNumGamesPlayed()
+    final int getNumGamesPlayed()
     {
         return numGamesPlayed;
     }
@@ -90,7 +90,7 @@ public class Score
      *
      * @return number of correct first attempts
      */
-    public final int getNumCorrectFirstAttempt()
+    final int getNumCorrectFirstAttempt()
     {
         return numCorrectFirstAttempt;
     }
@@ -100,7 +100,7 @@ public class Score
      *
      * @return number of correct second attempts
      */
-    public final int getNumCorrectSecondAttempt()
+    final int getNumCorrectSecondAttempt()
     {
         return numCorrectSecondAttempt;
     }
@@ -110,12 +110,12 @@ public class Score
      *
      * @return number of incorrect attempts after two tries
      */
-    public final int getNumIncorrectTwoAttempts()
+    final int getNumIncorrectTwoAttempts()
     {
         return numIncorrectTwoAttempts;
     }
 
-    public final int getScore()
+    final int getScore()
     {
         return score;
     }
@@ -123,7 +123,7 @@ public class Score
     /**
      * Increments the number of games played.
      */
-    public final void incrementNumGamesPlayed()
+    final void incrementNumGamesPlayed()
     {
         this.numGamesPlayed++;
     }
@@ -132,7 +132,7 @@ public class Score
      * Increments the number of correct first attempt and adds
      * 2 points to score.
      */
-    public final void incrementNumCorrectFirstAttempt()
+    final void incrementNumCorrectFirstAttempt()
     {
         this.numCorrectFirstAttempt++;
         this.score += CORRECT_FIRST_GUESS_SCORE;
@@ -142,7 +142,7 @@ public class Score
      * Increments the number of correct second attempts and adds
      * 1 point to score.
      */
-    public final void incrementNumCorrectSecondAttempt()
+    final void incrementNumCorrectSecondAttempt()
     {
         this.numCorrectSecondAttempt++;
         this.score += CORRECT_SECOND_GUESS_SCORE;
@@ -151,7 +151,7 @@ public class Score
     /**
      * Increments the number of incorrect attempts after two tries.
      */
-    public final void incrementNumIncorrectTwoAttempts()
+    final void incrementNumIncorrectTwoAttempts()
     {
         this.numIncorrectTwoAttempts++;
     }
@@ -188,7 +188,7 @@ public class Score
         return builder.toString();
     }
 
-    public static void appendScoreToFile(Score score,
+    static void appendScoreToFile(Score score,
                                          String file) throws IOException
     {
         final List<String> scoreAsList;
@@ -198,12 +198,12 @@ public class Score
                                     file);
     }
 
-    public final void printScore()
+    final void printScore()
     {
         formatScore(this).forEach(System.out::println);
     }
 
-    public static List<Score> readScoresFromFile(final String filePath) throws IOException
+    static List<Score> readScoresFromFile(final String filePath) throws IOException
     {
         final List<String> scoresLines;
         final List<Score>  scores;
@@ -239,7 +239,7 @@ public class Score
         return scores;
     }
 
-    public static void displayHighScoreMessage(Score currentScore) throws IOException
+    static void displayHighScoreMessage(Score currentScore) throws IOException
     {
         final List<Score> allScores;
         final double      currentAverage;

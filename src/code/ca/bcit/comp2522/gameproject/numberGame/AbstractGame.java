@@ -2,7 +2,7 @@ package ca.bcit.comp2522.gameproject.numberGame;
 
 import java.util.Random;
 
-public abstract class AbstractGame
+abstract class AbstractGame
 {
     protected int[]  board;
     protected int    currentNumber;
@@ -11,7 +11,7 @@ public abstract class AbstractGame
     protected int    totalPlacements;
     protected Random random;
 
-    public AbstractGame()
+    AbstractGame()
     {
         board           = new int[20];
         random          = new Random();

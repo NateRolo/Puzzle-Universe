@@ -1,20 +1,20 @@
 package ca.bcit.comp2522.gameproject.wordGame;
 
-public class CountryQuestion extends Question
+class CountryQuestion extends Question
 {
-    public CountryQuestion(Country country)
+    CountryQuestion(Country country)
     {
         super(country);
     }
 
     @Override
-    public String getPrompt()
+    String getPrompt()
     {
         return "What is the capital of " + country.getName() + "?";
     }
 
     @Override
-    public String getExpectedAnswer()
+    String getExpectedAnswer()
     {
         return country.getCapitalCityName();
     }

@@ -1,10 +1,10 @@
 package ca.bcit.comp2522.gameproject.wordGame;
 
-public abstract class Question
+abstract class Question
 {
     protected final Country country;
 
-    public Question(final Country country)
+    Question(final Country country)
     {
         validateCountry(country);
         this.country = country;
@@ -18,6 +18,6 @@ public abstract class Question
         }
     }
 
-    public abstract String getPrompt();
-    public abstract String getExpectedAnswer();
+    abstract String getPrompt();
+    abstract String getExpectedAnswer();
 }

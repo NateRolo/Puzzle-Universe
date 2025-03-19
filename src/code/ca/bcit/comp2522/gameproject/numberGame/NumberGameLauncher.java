@@ -5,7 +5,7 @@ import ca.bcit.comp2522.gameproject.Playable;
 import java.awt.*;
 import javax.swing.*;
 
-public class NumberGame extends
+public class NumberGameLauncher extends
                         AbstractGame
                         implements NumberGameInterface,
                                    Playable
@@ -15,7 +15,7 @@ public class NumberGame extends
     private JLabel    statusLabel;
     private int       successfulPlacements;
 
-    public NumberGame()
+    public NumberGameLauncher()
     {
         super();
         createGUI();

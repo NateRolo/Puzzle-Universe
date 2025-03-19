@@ -17,7 +17,7 @@ import java.util.Map;
  * @author Nathan O
  * @version 1.0 2025
  */
-public class World
+class World
 {
     private final Map<String, Country> countries;
 
@@ -62,7 +62,7 @@ public class World
      *
      * @throws IOException if there's an error reading the resource files
      */
-    public World() throws IOException
+    World() throws IOException
     {
         this.countries = new HashMap<>();
         loadCountriesFromAllFiles();
@@ -144,7 +144,7 @@ public class World
      *
      * @param country the country to add
      */
-    public final void addCountry(final Country country)
+    final void addCountry(final Country country)
     {
         if(country == null)
         {
@@ -161,7 +161,7 @@ public class World
      * @param name the name of the country to retrieve
      * @return the Country object if found, null otherwise
      */
-    public final Country getCountry(final String name)
+    final Country getCountry(final String name)
     {
         if(name == null || name.isBlank())
         {
@@ -177,7 +177,7 @@ public class World
      *
      * @return A randomly selected {@code Country} object.
      */
-    public final Country getRandomCountry()
+    final Country getRandomCountry()
     {
         final List<Country> countryList;
         final int randomIndex;
@@ -194,7 +194,7 @@ public class World
      * @param name the name of the country to check
      * @return true if the country exists, false otherwise
      */
-    public final boolean hasCountry(final String name)
+    final boolean hasCountry(final String name)
     {
         if(name == null || name.isBlank())
         {
@@ -209,7 +209,7 @@ public class World
      *
      * @return the number of countries
      */
-    public final int getCountryCount()
+    final int getCountryCount()
     {
         return countries.size();
     }
