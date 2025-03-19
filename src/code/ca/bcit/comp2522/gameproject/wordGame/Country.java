@@ -1,4 +1,4 @@
-package ca.bcit.comp2522.gameproject;
+package ca.bcit.comp2522.gameproject.wordGame;
 
 /**
  * Represents a country with its name, capital city, and interesting facts.

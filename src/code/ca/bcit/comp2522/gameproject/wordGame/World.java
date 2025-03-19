@@ -1,4 +1,4 @@
-package ca.bcit.comp2522.gameproject;
+package ca.bcit.comp2522.gameproject.wordGame;
 
 import java.io.IOException;
 import java.util.ArrayList;

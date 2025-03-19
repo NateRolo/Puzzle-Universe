@@ -1,10 +1,11 @@
-package ca.bcit.comp2522.gameproject;
+package ca.bcit.comp2522.gameproject.wordGame;
+
+import ca.bcit.comp2522.gameproject.Playable;
 
 import java.io.IOException;
 import java.util.Scanner;
 
-public class WordGame implements
-                      Playable
+public class WordGame implements Playable
 {
     private static final int   QUESTIONS_PER_GAME    = 10;
     protected static final int QUESTION_TYPES        = 3;
