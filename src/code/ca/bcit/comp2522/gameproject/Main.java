@@ -1,6 +1,6 @@
 package ca.bcit.comp2522.gameproject;
 
-import ca.bcit.comp2522.gameproject.myGame.MyGame;
+import ca.bcit.comp2522.gameproject.barkingBombs.BarkingBombs;
 import ca.bcit.comp2522.gameproject.numberGame.NumberGame;
 import ca.bcit.comp2522.gameproject.wordGame.WordGame;
 
@@ -21,12 +21,12 @@ public class Main
     private static final Scanner  scan;
     private static final Playable wordGame;
     private static final Playable numberGame;
-    private static final Playable myGame;
+    private static final Playable barkingBombs;
 
     private static final String WORD_GAME_CHOICE   = "w";
-    private static final String NUMBER_GAME_CHOICE = "n";
-    private static final String MY_GAME_CHOICE     = "m";
-    private static final String QUIT_CHOICE        = "q";
+    private static final String NUMBER_GAME_CHOICE   = "n";
+    private static final String BARKING_BOMBS_CHOICE = "b";
+    private static final String QUIT_CHOICE          = "q";
 
     private static final String INVALID_CHOICE_MESSAGE = "Not a valid option, please select a valid game.";
     private static final String EXIT_MESSAGE           = "Exiting the game. Goodbye!";
@@ -35,8 +35,8 @@ public class Main
     {
         scan       = new Scanner(System.in);
         wordGame   = new WordGame();
-        numberGame = new NumberGame();
-        myGame     = new MyGame();
+        numberGame   = new NumberGame();
+        barkingBombs = new BarkingBombs();
     }
 
     /**
@@ -65,7 +65,7 @@ public class Main
             {
                 case WORD_GAME_CHOICE -> wordGame.play();
                 case NUMBER_GAME_CHOICE -> numberGame.play();
-                case MY_GAME_CHOICE -> myGame.play();
+                case BARKING_BOMBS_CHOICE -> barkingBombs.play();
                 case QUIT_CHOICE -> System.out.println(EXIT_MESSAGE);
                 default -> System.out.println(INVALID_CHOICE_MESSAGE);
             }
@@ -80,7 +80,7 @@ public class Main
         System.out.println("""
                            Press W to play the Word game.
                            Press N to play the Number game.
-                           Press M to play the <your game's name> game.
+                           Press B to play the Barking Bombs.
                            Press Q to quit.
                            """);
     }
