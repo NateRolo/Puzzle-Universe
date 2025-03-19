@@ -9,5 +9,15 @@ public class BarkingBombsLauncher implements Playable
         System.out.println("Starting Barking Bombs...");
     }
 
+    private void nextTurn()
+    {
+        // next players turn
+    }
+
+    private void eliminatePlayer()
+    {
+        // remove player from game
+    }
+
 
 }
