@@ -18,7 +18,7 @@ class AnswerValidator
 
     void validateAnswer(final String expectedAnswer)
     {
-        if(expectedAnswer == null)
+        if(expectedAnswer == null) // extract to own method
         {
             throw new IllegalArgumentException("Expected answer cannot be null");
         }
@@ -41,6 +41,8 @@ class AnswerValidator
 
     private void handleSecondAttempt(final String expectedAnswer)
     {
+        //validate expectedAnswer
+
         final String userAnswer;
         final boolean answerIsCorrect;
 
@@ -63,6 +65,8 @@ class AnswerValidator
     private static void validateDependencies(final Scanner scanner,
                                              final Score score)
     {
+        //validate scanner
+        //validate score
         if(scanner == null)
         {
             throw new IllegalArgumentException("Scanner cannot be null");

@@ -1,6 +1,8 @@
 package ca.bcit.comp2522.gameproject.wordGame;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +73,7 @@ class World
     /* 
      * Loads countries from all resource files.
      */
-    private void loadCountriesFromAllFiles() throws IOException
+    private void loadCountriesFromAllFiles()
     {
         for(final String file : RESOURCE_FILES)
         {
@@ -82,12 +84,20 @@ class World
     /* 
      * Loads countries from a single resource file.
      */
-    private void loadCountriesFromFile(final String filePath) throws IOException
+    private void loadCountriesFromFile(final String filePath)
     {
-        final List<String> lines;
+        try
+        {
+            validatePath(filePath);
+            final List<String> lines;
 
-        lines = FileManager.readLinesFromResource(filePath);
-        processFileLines(lines);
+            lines = FileManager.readLinesFromResource(filePath);
+            processFileLines(lines);
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /* 
@@ -146,10 +156,7 @@ class World
      */
     final void addCountry(final Country country)
     {
-        if(country == null)
-        {
-            throw new IllegalArgumentException("Invalid country:" + country);
-        }
+        validateCountry(country);
 
         this.countries.put(country.getName(),
                            country);
@@ -163,14 +170,10 @@ class World
      */
     final Country getCountry(final String name)
     {
-        if(name == null || name.isBlank())
-        {
-            throw new IllegalArgumentException("Invalid country name: " + name);
-        }
+        validateCountryName(name);
 
         return countries.get(name);
     }
-
 
     /**
      * Returns a random {@code Country} from the list of available countries.
@@ -196,10 +199,7 @@ class World
      */
     final boolean hasCountry(final String name)
     {
-        if(name == null || name.isBlank())
-        {
-            throw new IllegalArgumentException("Invalid country name: " + name);
-        }
+        validateCountryName(name);
 
         return countries.containsKey(name);
     }
@@ -213,4 +213,40 @@ class World
     {
         return countries.size();
     }
+
+    private static void validatePath(final String filePath) throws IOException
+    {
+        if(filePath == null || filePath.isBlank())
+        {
+            throw new IllegalArgumentException("Path can't be null or blank.");
+        }
+
+        if(Files.notExists(Paths.get(filePath)))
+        {
+            throw new IOException("Path does not exist.");
+        }
+    }
+
+    private static void validateCountry(final Country country)
+    {
+        if(country == null)
+        {
+            throw new IllegalArgumentException("Country cannot be null.");
+        }
+    }
+
+    private void validateCountryName(final String countryName)
+    {
+        if(countryName == null || countryName.isBlank())
+        {
+            throw new IllegalArgumentException("Country name can't be null or blank");
+        }
+
+        if(!hasCountry(countryName))
+        {
+            throw new NullPointerException("Country doesn't exist: " + countryName);
+        }
+    }
+
+
 }

@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.FileNotFoundException;
 
 /**
  * Utility class for reading text files from resources.
@@ -29,6 +30,8 @@ class FileManager
      */
     static List<String> readLinesFromResource(final String filePath) throws IOException
     {
+        validateFilePath(filePath);
+
         final List<String>      lines;
         final InputStream       inputStream;
         final InputStreamReader inputStreamReader;
@@ -65,8 +68,11 @@ class FileManager
     }
 
     static void writeToResource(final List<String> formattedScore,
-                                       final String file)
+                                       final String file) throws FileNotFoundException
     {
+        validateFormattedScore(formattedScore);
+        validateFilePath(file);
+
         try
         {
             final Path scorePath;
@@ -80,6 +86,24 @@ class FileManager
         catch(IOException error)
         {
             error.printStackTrace();
+        }
+    }
+
+    private static void validateFormattedScore(final List<String> formattedScore)
+    {
+        if(formattedScore == null || formattedScore.isEmpty())
+        {
+            throw new IllegalArgumentException("Cannot write null or empty scores to file.");
+        }
+    }
+
+    private static void validateFilePath(final String file) throws FileNotFoundException
+    {
+        if(file == null ||
+           file.isBlank() ||
+           Files.notExists(Paths.get(file)))
+        {
+            throw new FileNotFoundException("Invalid file path");
         }
     }
 }

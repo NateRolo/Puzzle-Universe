@@ -1,9 +1,7 @@
 package ca.bcit.comp2522.gameproject;
 
-import ca.bcit.comp2522.gameproject.barkingBombs.BarkingBombsLauncher;
 import ca.bcit.comp2522.gameproject.numberGame.NumberGameLauncher;
 import ca.bcit.comp2522.gameproject.wordGame.WordGameLauncher;
-
 import java.util.Scanner;
 
 /**
@@ -21,11 +19,11 @@ public class Main
     private static final Scanner  scan;
     private static final Playable wordGame;
     private static final Playable numberGame;
-    private static final Playable barkingBombs;
+    // mastermind
 
     private static final String WORD_GAME_CHOICE   = "w";
     private static final String NUMBER_GAME_CHOICE   = "n";
-    private static final String BARKING_BOMBS_CHOICE = "b";
+    //mastermind
     private static final String QUIT_CHOICE          = "q";
 
     private static final String INVALID_CHOICE_MESSAGE = "Not a valid option, please select a valid game.";
@@ -36,7 +34,7 @@ public class Main
         scan       = new Scanner(System.in);
         wordGame   = new WordGameLauncher();
         numberGame   = new NumberGameLauncher();
-        barkingBombs = new BarkingBombsLauncher();
+        //mastermind
     }
 
     /**
@@ -65,7 +63,7 @@ public class Main
             {
                 case WORD_GAME_CHOICE -> wordGame.play();
                 case NUMBER_GAME_CHOICE -> numberGame.play();
-                case BARKING_BOMBS_CHOICE -> barkingBombs.play();
+                // mastermind
                 case QUIT_CHOICE -> System.out.println(EXIT_MESSAGE);
                 default -> System.out.println(INVALID_CHOICE_MESSAGE);
             }

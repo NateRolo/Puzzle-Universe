@@ -2,6 +2,8 @@ package ca.bcit.comp2522.gameproject.numberGame;
 
 import java.util.Random;
 
+
+//magic numbers all over file
 abstract class AbstractGame
 {
     protected int[]  board;

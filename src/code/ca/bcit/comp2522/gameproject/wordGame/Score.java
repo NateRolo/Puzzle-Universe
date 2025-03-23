@@ -25,6 +25,7 @@ class Score
     private static final int DEFAULT_CORRECT_FIRST_GUESSES  = 0;
     private static final int DEFAULT_CORRECT_SECOND_GUESSES = 0;
     private static final int DEFAULT_INCORRECT_TWO_TIMES    = 0;
+    private static final int DEFAULT_SCORE                  = 0;
 
     private static final int CORRECT_FIRST_GUESS_SCORE  = 2;
     private static final int CORRECT_SECOND_GUESS_SCORE = 1;
@@ -43,6 +44,11 @@ class Score
                  final int numCorrectSecondGuess,
                  final int twoIncorrectAttempts)
     {
+        //validate dateTime
+        //validate gamesPlayed
+        //validate firstguesses, secondguesses, incorrect attempts
+        //validate gamesplayed (check if # of guesses doesn't add up to the number corresponding to num of games played
+
         formattedDateTime       = dateTime.format(formatter);
         this.numGamesPlayed     = gamesPlayed;
         numCorrectFirstAttempt  = numCorrectFirstGuess;
@@ -159,6 +165,8 @@ class Score
 
     private static List<String> formatScore(Score score)
     {
+        //validate score object
+
         final List<String> scoreAsList;
         scoreAsList = new ArrayList<>();
 
@@ -191,6 +199,7 @@ class Score
     static void appendScoreToFile(Score score,
                                          String file) throws IOException
     {
+        //validate arguments
         final List<String> scoreAsList;
         scoreAsList = formatScore(score);
 
@@ -205,6 +214,8 @@ class Score
 
     static List<Score> readScoresFromFile(final String filePath) throws IOException
     {
+        //validate path
+
         final List<String> scoresLines;
         final List<Score>  scores;
         scoresLines = FileManager.readLinesFromResource(filePath);
@@ -241,6 +252,8 @@ class Score
 
     static void displayHighScoreMessage(Score currentScore) throws IOException
     {
+        //validate currentScore
+
         final List<Score> allScores;
         final double      currentAverage;
 
@@ -287,9 +300,11 @@ class Score
 
     private static double calculateAverageScore(Score score)
     {
-        if(score.numGamesPlayed == 0)
+        //validate score
+
+        if(score.numGamesPlayed == DEFAULT_GAMES_PLAYED)
         {
-            return 0.0;
+            return DEFAULT_SCORE;
         }
         return (double)score.score / score.numGamesPlayed;
     }

@@ -34,7 +34,7 @@ public class NumberGameLauncher extends
                                                      5));
         buttons = new JButton[20];
 
-        for(int i = 0; i < 20; i++)
+        for(int i = 0; i < 20; i++) // magic number
         {
             buttons[i] = new JButton("[ ]");
             final int position = i;
@@ -60,7 +60,7 @@ public class NumberGameLauncher extends
     @Override
     public void startNewGame()
     {
-        board                = new int[20];
+        board                = new int[20]; //magic number
         successfulPlacements = 0;
         currentNumber        = generateNumber();
         updateButtons();
@@ -98,14 +98,14 @@ public class NumberGameLauncher extends
     @Override
     public boolean isValidPlacement(int position)
     {
-        if(board[position] != 0) return false;
+        if(board[position] != 0) return false; //magic number
 
         // Check if placement maintains ascending order
         for(int i = 0; i < position; i++)
         {
             if(board[i] != 0 && board[i] > currentNumber) return false;
         }
-        for(int i = position + 1; i < board.length; i++)
+        for(int i = position + 1; i < board.length; i++) //magic number
         {
             if(board[i] != 0 && board[i] < currentNumber) return false;
         }
@@ -183,7 +183,7 @@ public class NumberGameLauncher extends
     {
         for(int i = 0; i < buttons.length; i++)
         {
-            buttons[i].setText(board[i] == 0 ? "[ ]" : String.valueOf(board[i]));
+            buttons[i].setText(board[i] == 0 ? "[ ]" : String.valueOf(board[i])); //magic number
         }
     }
 

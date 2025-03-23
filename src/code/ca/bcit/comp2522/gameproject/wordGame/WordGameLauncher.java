@@ -57,13 +57,12 @@ public class WordGameLauncher implements Playable
 
     private void playOneGame()
     {
-        for(int questionsAsked = 1; questionsAsked <= QUESTIONS_PER_GAME; questionsAsked++)
+        for(int questionsAsked = 1; questionsAsked <= QUESTIONS_PER_GAME; questionsAsked++) //magic number
         {
             System.out.printf("----------Question %d/10----------\n",
                               questionsAsked);
             askQuestion();
         }
-
     }
 
     private boolean shouldPlayAgain()
@@ -74,11 +73,11 @@ public class WordGameLauncher implements Playable
             System.out.println("Would you like to play again? (yes/no)");
             playAgain = scan.nextLine()
                             .toLowerCase();
-            if(! playAgain.equals("yes") && ! playAgain.equals("no"))
+            if(!playAgain.equals("yes") && !playAgain.equals("no"))
             {
                 System.out.println("Invalid input. Please enter 'yes' or 'no'.");
             }
-        } while(! playAgain.equals("yes") && ! playAgain.equals("no"));
+        } while(!playAgain.equals("yes") && !playAgain.equals("no"));
 
         return playAgain.equals("yes");
     }
