@@ -12,7 +12,7 @@ package ca.bcit.comp2522.gameproject.wordGame;
  * @version 1.0 2025
  */
 
-public class Country
+class Country
 {
     private final String name;
     private final String capitalCityName;
