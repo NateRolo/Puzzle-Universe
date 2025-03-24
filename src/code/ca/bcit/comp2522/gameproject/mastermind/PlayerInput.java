@@ -24,7 +24,6 @@ public final class PlayerInput extends
      * Constructs a PlayerInput representing a guess.
      *
      * @param digits the sequence of digits that make up the guess
-     * @throws IllegalArgumentException if digits is null
      */
     public PlayerInput(final List<Integer> digits)
     {
