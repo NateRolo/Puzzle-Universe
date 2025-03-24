@@ -192,7 +192,7 @@ public final class MastermindGame implements
             }
             else
             {
-                guess = input.getGuess();
+                guess = input;
             }
         }
         return guess;
