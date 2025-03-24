@@ -73,10 +73,8 @@ final class InputHandler
             try
             {
                 validateGuessFormat(input);
-                final List<Integer> digits;
-
-                digits = parseGuess(input);
-                return new PlayerInput(new PlayerGuess(digits));
+                final List<Integer> digits = parseGuess(input);
+                return new PlayerInput(digits);
             }
             catch(InvalidGuessException e)
             {
