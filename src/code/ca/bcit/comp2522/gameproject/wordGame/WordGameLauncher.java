@@ -1,10 +1,19 @@
 package ca.bcit.comp2522.gameproject.wordGame;
 
 import ca.bcit.comp2522.gameproject.Playable;
-
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * Launcher for the Word Game that implements the Playable interface.
+ * <p>
+ * This class manages the game flow, including asking questions, validating answers,
+ * tracking scores, and handling game progression.
+ * </p>
+ *
+ * @author Nathan O
+ * @version 1.0 2025
+ */
 public class WordGameLauncher implements Playable
 {
     private static final int   QUESTIONS_PER_GAME    = 10;
@@ -29,10 +38,13 @@ public class WordGameLauncher implements Playable
         }
         catch(IOException e)
         {
-            throw new RuntimeException("Failed to load world data.");
+            throw new RuntimeException("Failed to initialize world data", e);
         }
     }
 
+    /**
+     * Constructs a new WordGameLauncher with a fresh score and answer validator.
+     */
     public WordGameLauncher()
     {
         currentScore    = new Score();
@@ -40,6 +52,13 @@ public class WordGameLauncher implements Playable
                                               currentScore);
     }
 
+    /**
+     * Starts and manages the word game play session.
+     * <p>
+     * This method controls the main game loop, allowing the player to play
+     * multiple games until they choose to stop.
+     * </p>
+     */
     @Override
     public void play()
     {
@@ -55,9 +74,16 @@ public class WordGameLauncher implements Playable
         handleGameEnd();
     }
 
+    /*
+     * Plays a single game consisting of multiple questions.
+     * <p>
+     * This method runs through one complete game cycle, asking the configured
+     * number of questions.
+     * </p>
+     */
     private void playOneGame()
     {
-        for(int questionsAsked = 1; questionsAsked <= QUESTIONS_PER_GAME; questionsAsked++) //magic number
+        for(int questionsAsked = 1; questionsAsked <= QUESTIONS_PER_GAME; questionsAsked++) 
         {
             System.out.printf("----------Question %d/10----------\n",
                               questionsAsked);
@@ -65,6 +91,15 @@ public class WordGameLauncher implements Playable
         }
     }
 
+    /*
+     * Determines if the player wants to play another game.
+     * <p>
+     * This method prompts the user and validates their response to ensure
+     * it's either "yes" or "no".
+     * </p>
+     *
+     * @return true if the player wants to play again, false otherwise
+     */
     private boolean shouldPlayAgain()
     {
         String playAgain;
@@ -82,6 +117,12 @@ public class WordGameLauncher implements Playable
         return playAgain.equals("yes");
     }
 
+    /*
+     * Handles end-of-game operations.
+     * <p>
+     * This method displays the high score message and saves the current score to a file.
+     * </p>
+     */
     private void handleGameEnd()
     {
         try
@@ -96,6 +137,13 @@ public class WordGameLauncher implements Playable
         }
     }
 
+    /*
+     * Asks a single question and validates the player's answer.
+     * <p>
+     * This method selects a random country and question type, creates the appropriate
+     * question, and processes the player's response.
+     * </p>
+     */
     private void askQuestion()
     {
         final Country thisCountry;
