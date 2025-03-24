@@ -1,6 +1,7 @@
 package ca.bcit.comp2522.gameproject.wordGame;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,10 +12,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.FileNotFoundException;
 
 /**
- * Utility class for reading text files from resources.
+ * Utility class for reading and writing text files from resources.
+ * <p>
+ * This class provides static methods to read lines from resource files
+ * and write formatted scores to files. It handles file validation and
+ * resource management.
+ * </p>
  *
  * @author Nathan O
  * @version 1.0 2025
@@ -23,6 +28,10 @@ class FileManager
 {
     /**
      * Reads lines from a resource file.
+     * <p>
+     * First attempts to read from the file system. If the file doesn't exist
+     * in the file system, attempts to read it from the classpath resources.
+     * </p>
      *
      * @param filePath path to the resource file
      * @return List of strings, each representing a line from the file
@@ -67,8 +76,18 @@ class FileManager
         return lines;
     }
 
+    /**
+     * Writes formatted score data to a file.
+     * <p>
+     * Creates the file if it doesn't exist or appends to it if it does.
+     * </p>
+     *
+     * @param formattedScore list of strings to write to the file
+     * @param file           path to the file where data should be written
+     * @throws FileNotFoundException if the file path is invalid
+     */
     static void writeToResource(final List<String> formattedScore,
-                                       final String file) throws FileNotFoundException
+                                final String file) throws FileNotFoundException
     {
         validateFormattedScore(formattedScore);
         validateFilePath(file);
@@ -89,6 +108,11 @@ class FileManager
         }
     }
 
+    /*
+     * Validates that the formatted score list is not null or empty.
+     *
+     * @param formattedScore the list of score strings to validate
+     */
     private static void validateFormattedScore(final List<String> formattedScore)
     {
         if(formattedScore == null || formattedScore.isEmpty())
@@ -97,11 +121,14 @@ class FileManager
         }
     }
 
+    /*
+     * Validates that the file path is not null, blank, or non-existent.
+     *
+     * @param file the file path to validate
+     */
     private static void validateFilePath(final String file) throws FileNotFoundException
     {
-        if(file == null ||
-           file.isBlank() ||
-           Files.notExists(Paths.get(file)))
+        if(file == null || file.isBlank() || Files.notExists(Paths.get(file)))
         {
             throw new FileNotFoundException("Invalid file path");
         }
