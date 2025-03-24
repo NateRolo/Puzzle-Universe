@@ -1,5 +1,6 @@
 package ca.bcit.comp2522.gameproject;
 
+import ca.bcit.comp2522.gameproject.mastermind.MastermindGame;
 import ca.bcit.comp2522.gameproject.numberGame.NumberGameLauncher;
 import ca.bcit.comp2522.gameproject.wordGame.WordGameLauncher;
 import java.util.Scanner;
@@ -19,11 +20,12 @@ public class Main
     private static final Scanner  scan;
     private static final Playable wordGame;
     private static final Playable numberGame;
-    // mastermind
+    private static final Playable mastermindGame;
+    
 
     private static final String WORD_GAME_CHOICE   = "w";
     private static final String NUMBER_GAME_CHOICE   = "n";
-    //mastermind
+    private static final String MASTERMIND_GAME_CHOICE = "m";
     private static final String QUIT_CHOICE          = "q";
 
     private static final String INVALID_CHOICE_MESSAGE = "Not a valid option, please select a valid game.";
@@ -34,7 +36,7 @@ public class Main
         scan       = new Scanner(System.in);
         wordGame   = new WordGameLauncher();
         numberGame   = new NumberGameLauncher();
-        //mastermind
+        mastermindGame = new MastermindGame();
     }
 
     /**
@@ -63,7 +65,7 @@ public class Main
             {
                 case WORD_GAME_CHOICE -> wordGame.play();
                 case NUMBER_GAME_CHOICE -> numberGame.play();
-                // mastermind
+                case MASTERMIND_GAME_CHOICE -> mastermindGame.play();
                 case QUIT_CHOICE -> System.out.println(EXIT_MESSAGE);
                 default -> System.out.println(INVALID_CHOICE_MESSAGE);
             }
@@ -78,7 +80,7 @@ public class Main
         System.out.println("""
                            Press W to play the Word game.
                            Press N to play the Number game.
-                           Press B to play the Barking Bombs.
+                           Press M to play Mastermind - Deception.
                            Press Q to quit.
                            """);
     }
