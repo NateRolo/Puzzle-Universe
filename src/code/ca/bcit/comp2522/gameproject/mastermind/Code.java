@@ -56,6 +56,14 @@ abstract class Code
         {
             throw new IllegalArgumentException("Digits cannot be empty");
         }
+
+        for(Integer num: digits)
+        {
+            if(num < MIN_DIGIT || num > MAX_DIGIT)
+            {
+                throw new IllegalArgumentException("Invalid code digit:" + num);
+            }
+        }
     }
 
     @Override
