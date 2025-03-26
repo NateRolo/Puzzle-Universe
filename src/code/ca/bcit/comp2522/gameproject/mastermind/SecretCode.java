@@ -16,9 +16,7 @@ import java.util.Random;
  */
 final class SecretCode extends Code
 {
-    private static final int MIN_DIGIT = 1;
-    private static final int MAX_DIGIT = 6;
-    private static final int MIN_CODE_LENGTH = 4;
+
     private static final Random RANDOM = new Random();
 
     /**
@@ -39,9 +37,9 @@ final class SecretCode extends Code
      */
     static SecretCode generateRandomCode(final int length)
     {
-        if (length < MIN_CODE_LENGTH)
+        if (length != CODE_LENGTH)
         {
-            throw new IllegalArgumentException("Code length must be at least 4");
+            throw new IllegalArgumentException("Code length must be 4");
         }
 
         final List<Integer> randomDigits;

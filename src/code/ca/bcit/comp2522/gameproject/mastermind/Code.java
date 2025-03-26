@@ -16,6 +16,9 @@ import java.util.List;
 abstract class Code
 {
     private final List<Integer> digits;
+    static final int MIN_DIGIT = 1;
+    static final int MAX_DIGIT = 6;
+    static final int CODE_LENGTH = 4;
 
     /**
      * Constructs a new Code with the specified sequence of digits.
