@@ -64,10 +64,6 @@ class Score
                            "Second guess count");
         validateGuessCount(twoIncorrectAttempts,
                            "Incorrect attempts count");
-        validateGuessesMatchGamesPlayed(gamesPlayed,
-                                        numCorrectFirstGuess,
-                                        numCorrectSecondGuess,
-                                        twoIncorrectAttempts);
 
         formattedDateTime       = dateTime.format(formatter);
         this.numGamesPlayed     = gamesPlayed;
