@@ -26,7 +26,7 @@ final class SecretCode extends Code
      *
      * @param digits the sequence of digits that make up the code
      */
-    private SecretCode(final List<Integer> digits)
+    SecretCode(final List<Integer> digits)
     {
         super(digits);
     }
