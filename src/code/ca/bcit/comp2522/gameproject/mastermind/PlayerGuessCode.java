@@ -12,7 +12,7 @@ import java.util.List;
  * @author Nathan O
  * @version 1.0 2025
  */
-public final class PlayerInput extends
+public final class PlayerGuessCode extends
                                Code
 {
     private static final String NULL_DIGITS_ERROR = "Digits cannot be null";
@@ -21,30 +21,30 @@ public final class PlayerInput extends
     private final boolean isTruthScanRequest;
 
     /**
-     * Constructs a PlayerInput representing a guess.
+     * Constructs a PlayerGuessCode representing a guess.
      *
      * @param digits the sequence of digits that make up the guess
      */
-    public PlayerInput(final List<Integer> digits)
+    public PlayerGuessCode(final List<Integer> digits)
     {
         super(digits);
         this.isTruthScanRequest = false;
     }
 
     /**
-     * Creates a PlayerInput representing a truth scan request.
+     * Creates a PlayerGuessCode representing a truth scan request.
      *
-     * @return a new PlayerInput configured as a truth scan request
+     * @return a new PlayerGuessCode configured as a truth scan request
      */
-    public static PlayerInput createTruthScanRequest()
+    public static PlayerGuessCode createTruthScanRequest()
     {
-        return new PlayerInput();
+        return new PlayerGuessCode();
     }
 
     /*
      * Private constructor for truth scan request.
      */
-    private PlayerInput()
+    private PlayerGuessCode()
     {
         super(null);
         this.isTruthScanRequest = true;

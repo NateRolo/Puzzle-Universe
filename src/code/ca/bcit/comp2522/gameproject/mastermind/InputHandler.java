@@ -53,10 +53,10 @@ final class InputHandler
     /**
      * Gets and validates the player's input.
      *
-     * @return a PlayerInput object representing either a guess or truth scan request
+     * @return a PlayerGuessCode object representing either a guess or truth scan request
      * @throws InvalidGuessException if the guess input is invalid
      */
-    PlayerInput getPlayerInput()
+    PlayerGuessCode getPlayerInput()
     {
         do
         {
@@ -67,14 +67,14 @@ final class InputHandler
 
             if(input.equalsIgnoreCase("T"))
             {
-                return PlayerInput.createTruthScanRequest();
+                return PlayerGuessCode.createTruthScanRequest();
             }
 
             try
             {
                 validateGuessFormat(input);
                 final List<Integer> digits = parseGuess(input);
-                return new PlayerInput(digits);
+                return new PlayerGuessCode(digits);
             }
             catch(InvalidGuessException e)
             {
