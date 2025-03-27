@@ -3,6 +3,7 @@ package ca.bcit.comp2522.gameproject.mastermind;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 import ca.bcit.comp2522.gameproject.Playable;
 
 /**
@@ -121,7 +122,7 @@ public final class MastermindGame implements
      */
     private void playGameLoop()
     {
-        while(! isGameOver())
+        while(!isGameOver())
         {
             playRound();
         }
@@ -157,14 +158,19 @@ public final class MastermindGame implements
     {
         System.out.println("\nRound " + (rounds.size() + INCREMENT));
 
-        final Code guess = handlePlayerInput();
+        final Code guess;
+        final Feedback feedback;
+        final Round round;
+
+        guess = handlePlayerInput();
+
         if(guess == null)
         {
             return;
         }
 
-        final Feedback feedback = generateFeedback(guess);
-        final Round    round    = new Round(rounds.size() + INCREMENT,
+        feedback = generateFeedback(guess);
+        round    = new Round(rounds.size() + INCREMENT,
                                             guess,
                                             feedback,
                                             isDeceptiveRound(feedback));
@@ -181,7 +187,7 @@ public final class MastermindGame implements
         Code guess = null;
         while(guess == null)
         {
-            final PlayerInput input = inputHandler.getPlayerInput();
+            final PlayerGuessCode input = inputHandler.getPlayerInput();
 
             if(input.isTruthScanRequest())
             {

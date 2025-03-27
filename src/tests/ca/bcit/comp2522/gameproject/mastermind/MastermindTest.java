@@ -18,63 +18,40 @@ public class MastermindTest
     public void testSecretCodeLength()
     {
         final int tooShortLength = 3;
-        final int tooLongLength = 7;
-        final int validLength = 4;
-        
+        final int tooLongLength  = 7;
+        final int validLength    = 4;
+
         // Test length too short
-        IllegalArgumentException shortException = assertThrows(
-            IllegalArgumentException.class,
-            () -> SecretCode.generateRandomCode(tooShortLength)
-        );
-        
+        IllegalArgumentException shortException = assertThrows(IllegalArgumentException.class,
+                                                               () -> SecretCode.generateRandomCode(tooShortLength));
+
         // Test valid length should not throw
-        assertDoesNotThrow(
-            () -> SecretCode.generateRandomCode(validLength)
-        );
-        
+        assertDoesNotThrow(() -> SecretCode.generateRandomCode(validLength));
+
         // Verify the generated code has correct length
         final SecretCode validCode = SecretCode.generateRandomCode(validLength);
-        assertTrue(validCode.getDigits().toString().length() >= validLength);
+        assertTrue(validCode.getDigits()
+                            .toString()
+                            .length() >= validLength);
     }
 
     @Test
     public void testSecretCodeValidDigits()
     {
-        final List<Integer> smallCodeDigits = Arrays.asList(0, 0, 0, 0);
-        final List<Integer> largeCodeDigits = Arrays.asList(6, 7, 9, 10);
+        final List<Integer> smallCodeDigits = Arrays.asList(0,
+                                                            0,
+                                                            0,
+                                                            0);
+        final List<Integer> largeCodeDigits = Arrays.asList(6,
+                                                            7,
+                                                            9,
+                                                            10);
 
-        IllegalArgumentException digitsTooSmallException = assertThrows(IllegalArgumentException.class, () ->
-                new SecretCode(smallCodeDigits));
+        IllegalArgumentException digitsTooSmallException = assertThrows(IllegalArgumentException.class,
+                                                                        () -> new SecretCode(smallCodeDigits));
 
-        IllegalArgumentException digitsTooLargeException = assertThrows(IllegalArgumentException.class, () ->
-                new SecretCode(largeCodeDigits));
-    }
-
-    @Test
-    public void testFeedbackCalculation()
-    {
-
-    }
-
-
-    @Test
-    public void testPerfectMatch()
-    {
-
-    }
-
-    @Test
-    public void testNoMatches()
-    {
-
-    }
-
-    @Test
-    public void testInvalidGuessException()
-    {
-        assertThrows(InvalidGuessException.class, () ->
-        {
-            throw new InvalidGuessException("Invalid guess");
-        });
+        IllegalArgumentException digitsTooLargeException = assertThrows(IllegalArgumentException.class,
+                                                                        () -> new SecretCode(largeCodeDigits));
     }
 }
+
