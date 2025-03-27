@@ -25,8 +25,6 @@ public final class MastermindGame implements
     private static final int MAX_DECEPTIVE_ROUNDS = 3;
 
     // Counter Constants
-    private static final int MIN_COUNT        = 0;
-    private static final int MIN_ROUND_NUMBER = 1;
     private static final int INCREMENT        = 1;
 
     // Message Templates
@@ -57,9 +55,7 @@ public final class MastermindGame implements
 
     private final List<Round>  rounds;
     private final SecretCode   secretCode;
-    private final Scanner      scanner;
 
-    private int     deceptiveRoundsUsed;
     private boolean truthScanUsed;
 
     /**
@@ -67,10 +63,8 @@ public final class MastermindGame implements
      */
     public MastermindGame()
     {
-        scanner             = new Scanner(System.in);
         rounds              = new ArrayList<>();
         secretCode          = SecretCode.generateRandomCode(CODE_LENGTH);
-        deceptiveRoundsUsed = 0;
         truthScanUsed       = false;
     }
 
@@ -140,7 +134,7 @@ public final class MastermindGame implements
     {
         System.out.println("\nRound " + (rounds.size() + INCREMENT));
 
-        final Code guess;
+        final PlayerGuessCode guess;
         final Feedback feedback;
         final Round round;
 
@@ -151,33 +145,31 @@ public final class MastermindGame implements
             return;
         }
 
-        feedback = generateFeedback(guess);
+        feedback = new Feedback(secretCode, guess);
         round    = new Round(rounds.size() + INCREMENT,
                                             guess,
-                                            feedback,
-                                            isDeceptiveRound(feedback));
+                                            feedback);
 
         rounds.add(round);
-        System.out.println(feedback);
+        System.out.println(round.getFeedback());
     }
 
     /*
      * Handles player input including truth scan requests.
      */
-    private Code handlePlayerInput()
+    private PlayerGuessCode handlePlayerInput()
     {
         final PlayerGuessCode input;
-        final Code guess;
 
         input = InputHandler.getPlayerInput();
-        guess = input;
 
-        return guess;
+        return input;
     }
 
     /*
      * Handles a truth scan request.
      */
+    //refactor
     private boolean handleTruthScanRequest()
     {
         if(truthScanUsed)
@@ -196,56 +188,9 @@ public final class MastermindGame implements
     }
 
     /*
-     * Evaluates a guess against the secret code.
-     */
-    private Feedback evaluateGuess(final Code guess)
-    {
-        final List<Integer> secretDigits;
-        final List<Integer> guessDigits;
-        final List<Integer> secretCopy;
-        final List<Integer> guessCopy;
-        int                 correctPosition;
-        int                 misplaced;
-
-        secretDigits = secretCode.getDigits();
-        guessDigits  = guess.getDigits();
-
-        correctPosition = MIN_COUNT;
-        misplaced       = MIN_COUNT;
-
-        // Count correct positions
-        for(int i = 0; i < CODE_LENGTH; i++)
-        {
-            if(secretDigits.get(i)
-                           .equals(guessDigits.get(i)))
-            {
-                correctPosition++;
-            }
-        }
-
-        secretCopy = new ArrayList<>(secretDigits);
-        guessCopy  = new ArrayList<>(guessDigits);
-
-        for(int i = 0; i < CODE_LENGTH; i++)
-        {
-            if(secretCopy.contains(guessCopy.get(i)))
-            {
-                misplaced++;
-                secretCopy.remove(guessCopy.get(i));
-            }
-        }
-
-        // Adjust for double counting
-        misplaced = misplaced - correctPosition;
-
-        return new Feedback(correctPosition,
-                            misplaced,
-                            false);
-    }
-
-    /*
      * Handles the truth scan feature.
      */
+    //refactor
     private void useTruthScan()
     {
         final int   roundNumber;
@@ -256,7 +201,7 @@ public final class MastermindGame implements
 
         if(round.isDeceptiveRound())
         {
-            final Feedback trueFeedback = evaluateGuess(round.getGuess());
+            final Feedback trueFeedback = new Feedback(secretCode, round.getGuess());
             System.out.println("True feedback for round " + roundNumber + ":");
             System.out.println(trueFeedback);
         }
@@ -314,36 +259,8 @@ public final class MastermindGame implements
                                              secretCode));
         }
 
-        System.out.println("Deceptive rounds used: " + deceptiveRoundsUsed);
+        System.out.println("Deceptive rounds used: " + Round.getDeceptiveRoundsUsed());
     }
 
-    /*
-     * Generates feedback for the current round.
-     */
-    private Feedback generateFeedback(final Code guess)
-    {
-        final Feedback trueFeedback;
-        final boolean  isDeceptive;
-        
-        trueFeedback = evaluateGuess(guess);
-        isDeceptive = DeceptionEngine.shouldApplyDeception(deceptiveRoundsUsed,
-                                                          MAX_DECEPTIVE_ROUNDS);
 
-        if(isDeceptive)
-        {
-            deceptiveRoundsUsed++;
-            return DeceptionEngine.applyDeception(trueFeedback);
-        }
-
-        return trueFeedback;
-    }
-
-    /*
-     * Checks if a feedback represents a deceptive round.
-     */
-    private boolean isDeceptiveRound(final Feedback feedback)
-    {
-        return DeceptionEngine.shouldApplyDeception(deceptiveRoundsUsed,
-                                                    MAX_DECEPTIVE_ROUNDS);
-    }
 }
