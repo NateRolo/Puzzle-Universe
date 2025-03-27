@@ -12,7 +12,7 @@ import java.util.Arrays;
  *
  * @author Nathan O
  */
-public class MastermindTest
+public class SecretCodeTest
 {
     @Test
     public void testSecretCodeLength()
