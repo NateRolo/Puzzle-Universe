@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+
 /**
  * Handles user input for the Mastermind game.
  * <p>
@@ -21,10 +22,12 @@ final class InputHandler
     private static final int MAX_DIGIT        = 6;
     private static final int MIN_ROUND_NUMBER = 1;
 
+    private static final Scanner scan = new Scanner(System.in);
+
     // Message Constants
     private static final String YES_NO_PROMPT = "Error: Please answer 'yes' or 'no'";
     private static final String GUESS_PROMPT  = "Enter your guess (4 digits, each 1-6) or 'T' to use truth scan:";
-    private static final String RETRY_PROMPT  = "Please try again.";
+    private static final String RETRY_PROMPT  = "Invalid guess, please try again.";
 
     // Input Validation
     private static final String DIGIT_RANGE_ERROR = "Each digit must be between %d and %d";
@@ -34,20 +37,12 @@ final class InputHandler
     // Regex Pattern
     private static final String VALID_DIGITS_PATTERN = "^[1-6]+$";
 
-    private final Scanner scanner;
-
     /**
      * Constructs a new InputHandler with the specified scanner.
      *
-     * @param scanner the Scanner to use for input
      */
-    InputHandler(final Scanner scanner)
+    InputHandler()
     {
-        if(scanner == null)
-        {
-            throw new NullPointerException("Scanner cannot be null");
-        }
-        this.scanner = scanner;
     }
 
     /**
@@ -56,14 +51,15 @@ final class InputHandler
      * @return a PlayerGuessCode object representing either a guess or truth scan request
      * @throws InvalidGuessException if the guess input is invalid
      */
-    PlayerGuessCode getPlayerInput()
+    static PlayerGuessCode getPlayerInput()
     {
-        do
+        while(scan.hasNextLine())
         {
-            System.out.println(GUESS_PROMPT);
-            final String input = scanner.nextLine()
-                                        .trim()
-                                        .toUpperCase();
+            final String input;
+
+            input = scan.nextLine()
+                    .trim()
+                    .toUpperCase();
 
             if(input.equalsIgnoreCase("T"))
             {
@@ -80,7 +76,8 @@ final class InputHandler
             {
                 System.out.println(RETRY_PROMPT);
             }
-        } while(true);
+        }
+        return null;
     }
 
     /**
@@ -90,7 +87,7 @@ final class InputHandler
      * @return the selected round number
      * @throws InvalidGuessException if input is invalid
      */
-    int getRoundNumberForScan(final int currentRound)
+    static int getRoundNumberForScan(final int currentRound)
     {
         validateCurrentRound(currentRound);
         return getRoundNumberWithValidation(currentRound);
@@ -99,7 +96,7 @@ final class InputHandler
     /*
      * Validates the current round number.
      */
-    private void validateCurrentRound(final int currentRound)
+    private static void validateCurrentRound(final int currentRound)
     {
         if(currentRound < MIN_ROUND_NUMBER)
         {
@@ -110,13 +107,13 @@ final class InputHandler
     /*
      * Gets and validates the round number input.
      */
-    private int getRoundNumberWithValidation(final int currentRound)
+    private static int getRoundNumberWithValidation(final int currentRound)
     {
         System.out.println("Enter round number to scan (1-" + currentRound + "):");
 
         try
         {
-            final int roundNumber = Integer.parseInt(scanner.nextLine()
+            final int roundNumber = Integer.parseInt(scan.nextLine()
                                                             .trim());
             validateRoundNumberRange(roundNumber,
                                      currentRound);
@@ -132,10 +129,11 @@ final class InputHandler
     /*
      * Validates the round number is within valid range.
      */
-    private void validateRoundNumberRange(final int roundNumber,
+    private static void validateRoundNumberRange(final int roundNumber,
                                           final int currentRound)
     {
-        if(roundNumber < MIN_ROUND_NUMBER || roundNumber > currentRound)
+        if(roundNumber < MIN_ROUND_NUMBER ||
+           roundNumber > currentRound)
         {
             throw new InvalidGuessException(String.format(ROUND_RANGE_ERROR,
                                                           MIN_ROUND_NUMBER,
@@ -146,7 +144,7 @@ final class InputHandler
     /*
      * Validates the format of the guess input string.
      */
-    private void validateGuessFormat(final String input)
+    private static void validateGuessFormat(final String input)
     {
         if(input == null || input.isEmpty())
         {
@@ -170,8 +168,10 @@ final class InputHandler
     /*
      * Parses and validates the digits from the input string.
      */
-    private List<Integer> parseGuess(final String input)
+    private static List<Integer> parseGuess(final String input)
     {
+        validateGuessFormat(input);
+
         final List<Integer> digits;
 
         digits = new ArrayList<>();
@@ -194,25 +194,26 @@ final class InputHandler
         return digits;
     }
 
-    /*
-     * Gets a yes/no response from user with validation.
+    /**
+     * Gets a yes/no response from the user.
+     *
+     * @return the user's response (either "yes" or "no")
      */
-    private String getYesNoResponse(final String prompt)
+    static String getYesNoResponse()
     {
         String response;
-
         do
         {
-            System.out.println(prompt);
-            response = scanner.nextLine()
+            response = scan.nextLine()
                               .trim()
                               .toLowerCase();
-
-            if(! response.equals("yes") && ! response.equals("no"))
+            if(!response.equalsIgnoreCase("yes") &&
+               !response.equalsIgnoreCase("no"))
             {
-                System.out.println(YES_NO_PROMPT);
+                System.out.println("Please enter either 'yes' or 'no':");
             }
-        } while(! response.equals("yes") && ! response.equals("no"));
+        } while(!response.equalsIgnoreCase("yes") &&
+                !response.equalsIgnoreCase("no"));
 
         return response;
     }

@@ -56,7 +56,6 @@ public final class MastermindGame implements
                                         Are you ready to start? (yes/no): """;
 
     private final List<Round>  rounds;
-    private final InputHandler inputHandler;
     private final SecretCode   secretCode;
     private final Scanner      scanner;
 
@@ -69,7 +68,6 @@ public final class MastermindGame implements
     public MastermindGame()
     {
         scanner             = new Scanner(System.in);
-        inputHandler        = new InputHandler(scanner);
         rounds              = new ArrayList<>();
         secretCode          = SecretCode.generateRandomCode(CODE_LENGTH);
         deceptiveRoundsUsed = 0;
@@ -82,7 +80,7 @@ public final class MastermindGame implements
     @Override
     public void play()
     {
-        if(! handleGameIntroduction())
+        if(!handleGameIntroduction())
         {
             return;
         }
@@ -96,24 +94,31 @@ public final class MastermindGame implements
      */
     private boolean handleGameIntroduction()
     {
+        final String response;
+        final String ready;
+
         System.out.println("Welcome to Mastermind!");
         System.out.println("Have you played this game before? (yes/no):");
 
-        String response = getYesNoResponse("Please enter either 'yes' or 'no':");
+        response = InputHandler.getYesNoResponse();
 
-        if(! response.equals("yes"))
+        if(!response.equalsIgnoreCase("yes"))
         {
             System.out.println(RULES);
-            String ready = getYesNoResponse("Please enter either 'yes' or 'no':");
+            ready = InputHandler.getYesNoResponse();
 
-            if(! ready.equals("yes"))
+            if(!ready.equalsIgnoreCase("yes"))
             {
                 System.out.println("Maybe next time! Goodbye.");
                 return false;
             }
         }
 
-        System.out.println("\nTry to guess the " + CODE_LENGTH + "-digit code. You have " + MAX_ROUNDS + " attempts.");
+        System.out.println("\nTry to guess the " +
+                           CODE_LENGTH +
+                           "-digit code. You have " +
+                           MAX_ROUNDS +
+                           " attempts.");
         return true;
     }
 
@@ -126,29 +131,6 @@ public final class MastermindGame implements
         {
             playRound();
         }
-    }
-
-    /**
-     * Gets a yes/no response from the user.
-     *
-     * @param promptMessage the message to display if input is invalid
-     * @return the user's response (either "yes" or "no")
-     */
-    private String getYesNoResponse(final String promptMessage)
-    {
-        String response;
-        do
-        {
-            response = scanner.nextLine()
-                              .trim()
-                              .toLowerCase();
-            if(! response.equals("yes") && ! response.equals("no"))
-            {
-                System.out.println(promptMessage);
-            }
-        } while(! response.equals("yes") && ! response.equals("no"));
-
-        return response;
     }
 
     /*
@@ -184,23 +166,12 @@ public final class MastermindGame implements
      */
     private Code handlePlayerInput()
     {
-        Code guess = null;
-        while(guess == null)
-        {
-            final PlayerGuessCode input = inputHandler.getPlayerInput();
+        final PlayerGuessCode input;
+        final Code guess;
 
-            if(input.isTruthScanRequest())
-            {
-                if(! handleTruthScanRequest())
-                {
-                    continue;
-                }
-            }
-            else
-            {
-                guess = input;
-            }
-        }
+        input = InputHandler.getPlayerInput();
+        guess = input;
+
         return guess;
     }
 
@@ -280,7 +251,7 @@ public final class MastermindGame implements
         final int   roundNumber;
         final Round round;
 
-        roundNumber = inputHandler.getRoundNumberForScan(rounds.size());
+        roundNumber = InputHandler.getRoundNumberForScan(rounds.size());
         round       = rounds.get(roundNumber - INCREMENT);
 
         if(round.isDeceptiveRound())
@@ -293,7 +264,6 @@ public final class MastermindGame implements
         {
             System.out.println("This round was not deceptive!");
         }
-
         truthScanUsed = true;
     }
 
