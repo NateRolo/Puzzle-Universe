@@ -38,14 +38,6 @@ final class InputHandler
     private static final String VALID_DIGITS_PATTERN = "^[1-6]+$";
 
     /**
-     * Constructs a new InputHandler with the specified scanner.
-     *
-     */
-    InputHandler()
-    {
-    }
-
-    /**
      * Gets and validates the player's input.
      *
      * @return a PlayerGuessCode object representing either a guess or truth scan request
