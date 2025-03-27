@@ -84,20 +84,6 @@ final class InputHandler
     }
 
     /**
-     * Asks if the player wants to use their truth scan.
-     *
-     * @return true if player wants to use truth scan, false otherwise
-     */
-    boolean promptForTruthScan()
-    {
-        final String TRUTH_SCAN_PROMPT;
-
-        TRUTH_SCAN_PROMPT = "Would you like to use your truth scan? (yes/no):";
-
-        return getYesNoResponse(TRUTH_SCAN_PROMPT).equals("yes");
-    }
-
-    /**
      * Gets the round number to reveal true feedback for.
      *
      * @param currentRound the current round number
