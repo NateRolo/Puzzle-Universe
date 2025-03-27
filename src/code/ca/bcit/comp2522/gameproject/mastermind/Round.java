@@ -13,33 +13,45 @@ package ca.bcit.comp2522.gameproject.mastermind;
 final class Round
 {
     private static final int MIN_ROUND_NUMBER = 1;
+    private static final int DECEPTIVE_ROUNDS_ALLOWED = 3;
+
+    private static int deceptiveRoundsUsed;
 
     private final int      roundNumber;
-    private final Code     guess;
-    private final Feedback feedback;
-    private final boolean  deceptiveRound;
+    private final PlayerGuessCode     guess;
+    private final Feedback trueFeedback;
+    private final Feedback falseFeedback;
+    private final boolean  isDeceptiveRound;
 
     /**
      * Constructs a new Round with the specified details.
      *
      * @param roundNumber    the number of this round
      * @param guess          the player's guess for this round
-     * @param feedback       the feedback given for the guess
-     * @param deceptiveRound whether this round's feedback was altered
+     * @param trueFeedback       the feedback given for the guess
      */
     Round(final int roundNumber,
-          final Code guess,
-          final Feedback feedback,
-          final boolean deceptiveRound)
+          final PlayerGuessCode guess,
+          final Feedback trueFeedback)
     {
         validateRoundData(roundNumber,
                           guess,
-                          feedback);
+                          trueFeedback);
 
         this.roundNumber    = roundNumber;
         this.guess          = guess;
-        this.feedback       = feedback;
-        this.deceptiveRound = deceptiveRound;
+        this.trueFeedback   = trueFeedback;
+        this.isDeceptiveRound = DeceptionEngine.shouldApplyDeception(deceptiveRoundsUsed,
+                                                                     DECEPTIVE_ROUNDS_ALLOWED);
+        if(this.isDeceptiveRound)
+        {
+            this.falseFeedback  = DeceptionEngine.applyDeception(trueFeedback);
+            incrementDeceptiveRounds();
+        }
+        else
+        {
+            this.falseFeedback = null;
+        }
     }
 
     /**
@@ -47,7 +59,7 @@ final class Round
      *
      * @return the round number
      */
-    final int getRoundNumber()
+    int getRoundNumber()
     {
         return roundNumber;
     }
@@ -57,7 +69,7 @@ final class Round
      *
      * @return the Code object representing the guess
      */
-    final Code getGuess()
+    PlayerGuessCode getGuess()
     {
         return guess;
     }
@@ -67,9 +79,13 @@ final class Round
      *
      * @return the Feedback object
      */
-    final Feedback getFeedback()
+    Feedback getFeedback()
     {
-        return feedback;
+        if(this.isDeceptiveRound)
+        {
+            return falseFeedback;
+        }
+        return trueFeedback;
     }
 
     /**
@@ -77,9 +93,19 @@ final class Round
      *
      * @return true if the feedback was altered, false otherwise
      */
-    final boolean isDeceptiveRound()
+    boolean isDeceptiveRound()
     {
-        return deceptiveRound;
+        return isDeceptiveRound;
+    }
+
+    static void incrementDeceptiveRounds()
+    {
+        Round.deceptiveRoundsUsed++;
+    }
+
+    public static int getDeceptiveRoundsUsed()
+    {
+        return deceptiveRoundsUsed;
     }
 
     /*
@@ -89,7 +115,7 @@ final class Round
      * @param guess      the guess to validate
      * @param feedback   the feedback to validate
      */
-    private void validateRoundData(final int roundNumber,
+    private static void validateRoundData(final int roundNumber,
                                    final Code guess,
                                    final Feedback feedback)
     {
@@ -117,12 +143,15 @@ final class Round
               .append(roundNumber)
               .append(": Guess = ")
               .append(guess)
-              .append(", ")
-              .append(feedback);
+              .append(", ");
 
-        if(deceptiveRound)
+        if(isDeceptiveRound)
         {
-            result.append(" [Deceptive Round]");
+            result.append(trueFeedback);
+        }
+        else
+        {
+            result.append(falseFeedback);
         }
 
         return result.toString();
