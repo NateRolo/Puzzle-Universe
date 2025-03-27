@@ -1,5 +1,6 @@
 package ca.bcit.comp2522.gameproject.mastermind;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -16,7 +17,6 @@ final class DeceptionEngine
 {
     private static final Random RANDOM                  = new Random();
     private static final double DECEPTION_CHANCE        = 0.3;
-    private static final int    MAX_FEEDBACK_ADJUSTMENT = 1;
 
     /**
      * Private constructor to prevent instantiation.
@@ -55,39 +55,22 @@ final class DeceptionEngine
             throw new NullPointerException("True feedback cannot be null");
         }
 
-        final int     correctPositionCount;
-        final int     misplacedCount;
-        final boolean adjustCorrectPosition;
-
-        adjustCorrectPosition = RANDOM.nextBoolean();
-
-        if(adjustCorrectPosition)
+        Feedback falseFeedback;
+        do
         {
-            correctPositionCount = adjustFeedbackValue(trueFeedback.getCorrectPositionCount());
-            misplacedCount       = trueFeedback.getMisplacedCount();
-        }
-        else
-        {
-            correctPositionCount = trueFeedback.getCorrectPositionCount();
-            misplacedCount       = adjustFeedbackValue(trueFeedback.getMisplacedCount());
-        }
+            final SecretCode      falseCode;
+            final PlayerGuessCode falseGuess;
 
-        return new Feedback(correctPositionCount,
-                            misplacedCount,
-                            true);
-    }
+            falseCode     = SecretCode.generateRandomCode(Code.CODE_LENGTH);
+            falseGuess    = new PlayerGuessCode(Arrays.asList(1,
+                                                              2,
+                                                              3,
+                                                              4));
+            falseFeedback = new Feedback(falseCode,
+                                         falseGuess);
+        } while(trueFeedback.equals(falseFeedback));
 
-    /*
-     * Adjusts a feedback value by ±1 while ensuring it remains non-negative.
-     */
-    private static int adjustFeedbackValue(final int originalValue)
-    {
-        final int adjustment;
-
-        adjustment = RANDOM.nextBoolean() ? MAX_FEEDBACK_ADJUSTMENT : - MAX_FEEDBACK_ADJUSTMENT;
-
-        return Math.max(0,
-                        originalValue + adjustment);
+        return falseFeedback;
     }
 
     /*
