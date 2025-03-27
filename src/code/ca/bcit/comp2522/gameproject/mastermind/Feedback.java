@@ -1,5 +1,8 @@
 package ca.bcit.comp2522.gameproject.mastermind;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Stores and displays the result of a guess in Mastermind.
  * <p>
@@ -17,24 +20,64 @@ final class Feedback
 
     private final int     correctPositionCount;
     private final int     misplacedCount;
-    private final boolean deceptive;
 
     /**
      * Constructs a new Feedback object.
      *
-     * @param correctPositionCount number of digits in correct position
-     * @param misplacedCount       number of correct digits in wrong positions
-     * @param deceptive            whether this feedback is intentionally altered
      */
-    Feedback(final int correctPositionCount,
-             final int misplacedCount,
-             final boolean deceptive)
+    Feedback(final SecretCode secretCode,
+             final PlayerGuessCode guessCode)
     {
-        validateCounts(correctPositionCount,
-                       misplacedCount);
-        this.correctPositionCount = correctPositionCount;
-        this.misplacedCount       = misplacedCount;
-        this.deceptive            = deceptive;
+        validateCodes(secretCode, guessCode);
+        evaluateGuess(secretCode, guessCode);
+
+        this.correctPositionCount = evaluateGuess(secretCode, guessCode)[0];
+        this.misplacedCount       = evaluateGuess(secretCode, guessCode)[1];
+    }
+
+    private static void validateCodes(final SecretCode secretCode,
+                                  final PlayerGuessCode guessCode)
+    {
+        // throw exception
+    }
+
+    private static int[] evaluateGuess(final SecretCode secretCode,
+                                      final PlayerGuessCode guessCode)
+    {
+        final List<Integer> secretCodeDigits;
+        final List<Integer> guessCodeDigits;
+        final List<Integer> secretCopy;
+        final List<Integer> guessCopy;
+
+        int correctPosition = 0;
+        int misplaced = 0;
+
+        secretCodeDigits = secretCode.getDigits();
+        guessCodeDigits = guessCode.getDigits();
+
+        for(int i = 0; i < Code.CODE_LENGTH; i++)
+        {
+            if(secretCodeDigits.get(i).equals(guessCodeDigits.get(i)))
+            {
+                correctPosition++;
+            }
+        }
+
+        secretCopy = new ArrayList<>(secretCodeDigits);
+        guessCopy = new ArrayList<>(guessCodeDigits);
+
+        for(int j = 0; j < Code.CODE_LENGTH; j++)
+        {
+            if(secretCopy.contains(guessCopy.get(j)))
+            {
+                misplaced++;
+                secretCopy.remove(guessCopy.get(j));
+            }
+        }
+
+        misplaced = misplaced - correctPosition;
+
+        return new int[] {correctPosition, misplaced};
     }
 
     /**
@@ -55,16 +98,6 @@ final class Feedback
     final int getMisplacedCount()
     {
         return misplacedCount;
-    }
-
-    /**
-     * Checks if this feedback has been intentionally altered.
-     *
-     * @return true if feedback is deceptive, false otherwise
-     */
-    final boolean isDeceptive()
-    {
-        return deceptive;
     }
 
     /*
@@ -97,11 +130,8 @@ final class Feedback
               .append(", Misplaced: ")
               .append(misplacedCount);
 
-        if(deceptive)
-        {
-            result.append(" (?)");
-        }
-
         return result.toString();
     }
+
+
 }
