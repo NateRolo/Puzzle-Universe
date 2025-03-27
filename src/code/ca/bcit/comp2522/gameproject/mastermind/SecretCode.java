@@ -16,7 +16,6 @@ import java.util.Random;
  */
 final class SecretCode extends Code
 {
-
     private static final Random RANDOM = new Random();
 
     /**
