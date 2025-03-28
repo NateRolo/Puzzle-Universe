@@ -1,4 +1,4 @@
-package ca.bcit.comp2522.gameproject.wordGame;
+package ca.bcit.comp2522.gameproject.wordgame;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
