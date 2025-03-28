@@ -21,7 +21,7 @@ public final class TruthScanHandler
     /**
      * Constructs a new TruthScanHandler.
      */
-    public TruthScanHandler()
+    TruthScanHandler()
     {
         this.truthScanUsed = false;
     }
@@ -31,25 +31,23 @@ public final class TruthScanHandler
      * 
      * @param rounds the list of game rounds
      * @param secretCode the secret code
-     * @return true if the scan was performed, false otherwise
      */
-    public boolean handleTruthScanRequest(final List<Round> rounds, 
+    void handleTruthScanRequest(final List<Round> rounds,
                                          final SecretCode secretCode)
     {
         if (truthScanUsed)
         {
             System.out.println("You have already used your truth scan!");
-            return false;
+            return;
         }
         
         if (rounds.isEmpty())
         {
             System.out.println("No previous rounds to scan!");
-            return false;
+            return;
         }
 
         useTruthScan(rounds, secretCode);
-        return true;
     }
     
     /**
@@ -58,7 +56,7 @@ public final class TruthScanHandler
      * @param rounds the list of game rounds
      * @param secretCode the secret code
      */
-    private void useTruthScan(final List<Round> rounds, 
+    private void useTruthScan(final List<Round> rounds,
                              final SecretCode secretCode)
     {
         final int   roundNumber;
@@ -86,7 +84,7 @@ public final class TruthScanHandler
      * 
      * @return true if the truth scan has been used, false otherwise
      */
-    public boolean isTruthScanUsed()
+    boolean isTruthScanUsed()
     {
         return truthScanUsed;
     }
