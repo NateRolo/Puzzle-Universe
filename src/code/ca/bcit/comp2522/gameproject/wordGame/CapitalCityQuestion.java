@@ -10,14 +10,14 @@ package ca.bcit.comp2522.gameproject.wordgame;
  * @author Nathan O
  * @version 1.0 2025
  */
-class CapitalCityQuestion extends Question
+final class CapitalCityQuestion extends Question
 {
     /**
      * Constructs a new CapitalCityQuestion with the specified country.
      *
      * @param country the Country object containing the data for this question
      */
-    CapitalCityQuestion(Country country)
+    CapitalCityQuestion(final Country country)
     {
         super(country);
     }
