@@ -17,6 +17,9 @@ import java.util.List;
 final class Feedback
 {
     private static final int MIN_COUNT = 0;
+    private static final int RESULT_SIZE = 2;
+    private static final int CORRECT_POSITION = 0;
+    private static final int MISPLACED = 1;
 
     private final int     correctPositionCount;
     private final int     misplacedCount;
@@ -48,6 +51,7 @@ final class Feedback
         final List<Integer> guessCodeDigits;
         final List<Integer> secretCopy;
         final List<Integer> guessCopy;
+        final int[] result;
 
         int correctPosition = 0;
         int misplaced = 0;
@@ -77,7 +81,12 @@ final class Feedback
 
         misplaced = misplaced - correctPosition;
 
-        return new int[] {correctPosition, misplaced};
+
+        result = new int[RESULT_SIZE];
+        result[CORRECT_POSITION] = correctPosition;
+        result[MISPLACED] = misplaced;
+
+        return result;
     }
 
     /**
@@ -106,7 +115,7 @@ final class Feedback
      * @param correctPos number of correct positions to validate
      * @param misplaced  number of misplaced digits to validate
      */
-    private void validateCounts(final int correctPos,
+    private static void validateCounts(final int correctPos,
                                 final int misplaced)
     {
         if(correctPos < MIN_COUNT)
