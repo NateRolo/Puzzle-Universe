@@ -12,7 +12,7 @@ package ca.bcit.comp2522.gameproject.wordgame;
  * @version 1.0 2025
  */
 
-class Country
+final class Country
 {
     private final String name;
     private final String capitalCityName;
@@ -27,7 +27,7 @@ class Country
      * @param fact2           second fact about the country
      * @param fact3           third fact about the country
      */
-    public Country(final String name,
+    Country(final String name,
                   final String capitalCityName,
                   final String fact1,
                   final String fact2,

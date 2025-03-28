@@ -1,8 +1,9 @@
 package ca.bcit.comp2522.gameproject.wordgame;
 
-import ca.bcit.comp2522.gameproject.Playable;
 import java.io.IOException;
 import java.util.Scanner;
+
+import ca.bcit.comp2522.gameproject.Playable;
 
 /**
  * Launcher for the Word Game that implements the Playable interface.
@@ -14,7 +15,7 @@ import java.util.Scanner;
  * @author Nathan O
  * @version 1.0 2025
  */
-public class WordGameLauncher implements Playable
+public final class WordGameLauncher implements Playable
 {
     private static final int   QUESTIONS_PER_GAME    = 10;
     protected static final int QUESTION_TYPES        = 3;

@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
  * @author Nathan O
  * @version 1.0 2025
  */
-class Score
+final class Score
 {
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

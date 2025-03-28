@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Nathan O
  * @version 1.0 2025
  */
-class World
+final class World
 {
     private final Map<String, Country> countries;
 
@@ -276,6 +276,4 @@ class World
             throw new NullPointerException("Country doesn't exist: " + countryName);
         }
     }
-
-
 }
