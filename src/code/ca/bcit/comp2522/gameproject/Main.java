@@ -1,8 +1,8 @@
 package ca.bcit.comp2522.gameproject;
 
 import ca.bcit.comp2522.gameproject.mastermind.MastermindGame;
-import ca.bcit.comp2522.gameproject.numberGame.NumberGameLauncher;
-import ca.bcit.comp2522.gameproject.wordGame.WordGameLauncher;
+import ca.bcit.comp2522.gameproject.numbergame.NumberGameLauncher;
+import ca.bcit.comp2522.gameproject.wordgame.WordGameLauncher;
 import java.util.Scanner;
 
 /**
