@@ -13,7 +13,7 @@ import java.util.Scanner;
  * @author Nathan O
  * @version 1.0 2025
  */
-class AnswerValidator
+final class AnswerValidator
 {
     private final Scanner scanner;
     private final Score   score;
@@ -60,7 +60,6 @@ class AnswerValidator
             score.incrementNumCorrectFirstAttempt();
             return;
         }
-
         handleSecondAttempt(expectedAnswer);
     }
 
