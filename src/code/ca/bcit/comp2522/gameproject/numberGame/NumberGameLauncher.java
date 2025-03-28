@@ -1,9 +1,15 @@
 package ca.bcit.comp2522.gameproject.numbergame;
 
-import ca.bcit.comp2522.gameproject.Playable;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
-import java.awt.*;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import ca.bcit.comp2522.gameproject.Playable;
 
 public class NumberGameLauncher extends
                         AbstractGame
@@ -24,7 +30,7 @@ public class NumberGameLauncher extends
     private void createGUI()
     {
         frame = new JFrame("20-Number Challenge");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  // Changed to DISPOSE_ON_CLOSE to work better with main menu
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);  
         frame.setLayout(new BorderLayout());
 
         // Create grid panel
