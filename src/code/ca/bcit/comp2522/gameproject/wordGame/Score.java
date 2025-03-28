@@ -1,4 +1,4 @@
-package ca.bcit.comp2522.gameproject.wordGame;
+package ca.bcit.comp2522.gameproject.wordgame;
 
 import java.io.IOException;
 import java.nio.file.Files;

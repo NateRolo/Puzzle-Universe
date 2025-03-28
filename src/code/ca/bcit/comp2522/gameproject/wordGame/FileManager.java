@@ -1,4 +1,4 @@
-package ca.bcit.comp2522.gameproject.wordGame;
+package ca.bcit.comp2522.gameproject.wordgame;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
