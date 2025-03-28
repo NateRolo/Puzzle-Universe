@@ -2,7 +2,6 @@ package ca.bcit.comp2522.gameproject.mastermind;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import ca.bcit.comp2522.gameproject.Playable;
 
@@ -23,6 +22,7 @@ public final class MastermindGame implements
     private static final int MAX_ROUNDS           = 12;
     private static final int CODE_LENGTH          = 4;
     private static final int MAX_DECEPTIVE_ROUNDS = 3;
+    private static final TruthScanHandler TRUTH_SCAN_HANDLER = new TruthScanHandler();
 
     // Counter Constants
     private static final int INCREMENT        = 1;
@@ -53,10 +53,9 @@ public final class MastermindGame implements
 
                                         Are you ready to start? (yes/no): """;
 
-    private final List<Round>  rounds;
-    private final SecretCode   secretCode;
-
-    private boolean truthScanUsed;
+    private final List<Round>         rounds;
+    private final SecretCode          secretCode;
+    
 
     /**
      * Constructs a new MastermindGame.
@@ -65,7 +64,6 @@ public final class MastermindGame implements
     {
         rounds              = new ArrayList<>();
         secretCode          = SecretCode.generateRandomCode(CODE_LENGTH);
-        truthScanUsed       = false;
     }
 
     /**
@@ -163,53 +161,12 @@ public final class MastermindGame implements
 
         input = InputHandler.getPlayerInput();
 
+        if(input != null && input.isTruthScanRequest())
+        {
+            TRUTH_SCAN_HANDLER.handleTruthScanRequest(rounds, secretCode);
+            return null;
+        }
         return input;
-    }
-
-    /*
-     * Handles a truth scan request.
-     */
-    //refactor
-    private boolean handleTruthScanRequest()
-    {
-        if(truthScanUsed)
-        {
-            System.out.println("You have already used your truth scan!");
-            return false;
-        }
-        if(rounds.isEmpty())
-        {
-            System.out.println("No previous rounds to scan!");
-            return false;
-        }
-
-        useTruthScan();
-        return true;
-    }
-
-    /*
-     * Handles the truth scan feature.
-     */
-    //refactor
-    private void useTruthScan()
-    {
-        final int   roundNumber;
-        final Round round;
-
-        roundNumber = InputHandler.getRoundNumberForScan(rounds.size());
-        round       = rounds.get(roundNumber - INCREMENT);
-
-        if(round.isDeceptiveRound())
-        {
-            final Feedback trueFeedback = new Feedback(secretCode, round.getGuess());
-            System.out.println("True feedback for round " + roundNumber + ":");
-            System.out.println(trueFeedback);
-        }
-        else
-        {
-            System.out.println("This round was not deceptive!");
-        }
-        truthScanUsed = true;
     }
 
     /*
