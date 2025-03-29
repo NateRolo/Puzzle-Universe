@@ -22,7 +22,7 @@ public final class MastermindGame implements
     private static final int MAX_ROUNDS           = 12;
     private static final int CODE_LENGTH          = 4;
     private static final int MAX_DECEPTIVE_ROUNDS = 3;
-    private static final TruthScanHandler TRUTH_SCAN_HANDLER = new TruthScanHandler();
+    private static final TruthScanner TRUTH_SCAN_HANDLER = new TruthScanner();
 
     // Counter Constants
     private static final int INCREMENT        = 1;
