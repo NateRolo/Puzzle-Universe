@@ -17,11 +17,11 @@ import ca.bcit.comp2522.gameproject.Playable;
  */
 public final class WordGameLauncher implements Playable
 {
-    private static final int   QUESTIONS_PER_GAME    = 10;
-    protected static final int QUESTION_TYPES        = 3;
-    protected static final int CAPITAL_CITY_QUESTION = 0;
-    protected static final int COUNTRY_QUESTION      = 1;
-    protected static final int FACT_QUESTION         = 2;
+    private static final   int QUESTIONS_PER_GAME    = 10;
+    private static final   int QUESTION_TYPES        = 3;
+    static final int CAPITAL_CITY_QUESTION = 0;
+    static final int COUNTRY_QUESTION      = 1;
+    static final int FACT_QUESTION         = 2;
 
     private static final Scanner scan;
     private static final World   world;
