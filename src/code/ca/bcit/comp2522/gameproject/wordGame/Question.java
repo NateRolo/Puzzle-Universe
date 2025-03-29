@@ -45,7 +45,7 @@ abstract class Question
      * @param country the Country object to validate
      * @throws NullPointerException if country is null
      */
-    private void validateCountry(final Country country)
+    private static void validateCountry(final Country country)
     {
         if(country == null)
         {
