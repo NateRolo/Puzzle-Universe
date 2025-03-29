@@ -12,16 +12,16 @@ import java.util.List;
  * @author Nathan O
  * @version 1.0 2025
  */
-public final class TruthScanHandler
+public final class TruthScanner
 {
     private static final int INCREMENT = 1;
     
     private boolean truthScanUsed;
     
     /**
-     * Constructs a new TruthScanHandler.
+     * Constructs a new TruthScanner.
      */
-    TruthScanHandler()
+    TruthScanner()
     {
         this.truthScanUsed = false;
     }

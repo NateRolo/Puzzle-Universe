@@ -15,7 +15,6 @@ import java.util.List;
 public final class PlayerGuessCode extends
                                Code
 {
-    private static final String NULL_DIGITS_ERROR = "Digits cannot be null";
     private static final String TRUTH_SCAN_ERROR  = "Cannot get digits from truth scan request";
 
     private final boolean isTruthScanRequest;
