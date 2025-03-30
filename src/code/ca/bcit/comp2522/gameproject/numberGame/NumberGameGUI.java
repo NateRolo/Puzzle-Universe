@@ -33,6 +33,8 @@ public class NumberGameGUI implements
     private static final String WINDOW_TITLE      = "20-Number Challenge";
     private static final String INITIAL_MESSAGE   = "Click 'Try Again' to start a new game.";
     private static final int    BOARD_SIZE        = GRID_ROWS * GRID_COLS;
+    private static final int    NO_GAMES_PLAYED   = 0;
+    private static final int    TRY_AGAIN         = 0;
 
     private final NumberGameLogic gameLogic;
 
@@ -87,7 +89,12 @@ public class NumberGameGUI implements
         });
     }
 
-    private void createGUI()
+    /**
+     * Initializes and sets up the main graphical user interface components for the game.
+     * This includes creating the main frame, status label, grid panel with buttons,
+     * setting layouts, and adding necessary event listeners.
+     */
+    private final void createGUI()
     {
         final JPanel gridPanel;
 
@@ -100,7 +107,7 @@ public class NumberGameGUI implements
             public void windowClosed(final WindowEvent e)
             {
 
-                if(gameLogic.getGamesPlayed() > 0)
+                if(gameLogic.getGamesPlayed() > NO_GAMES_PLAYED)
                 {
                     showFinalScoreMessage();
                 }
@@ -119,7 +126,7 @@ public class NumberGameGUI implements
                                               GRID_COLS,
                                               GRID_GAP,
                                               GRID_GAP));
-        buttons = new JButton[BOARD_SIZE];
+        buttons   = new JButton[BOARD_SIZE];
         for(int i = 0; i < BOARD_SIZE; i++)
         {
             buttons[i] = new JButton(EMPTY_BUTTON_TEXT);
@@ -141,7 +148,7 @@ public class NumberGameGUI implements
     /*
      * Starts a new game by resetting the logic and updating the GUI.
      */
-    private void startNewGame()
+    private final void startNewGame()
     {
         gameLogic.startNewGame();
         updateGUIState();
@@ -159,7 +166,7 @@ public class NumberGameGUI implements
      *
      * @param position The 0-based index of the clicked button.
      */
-    private void handleButtonClick(final int position)
+    private final void handleButtonClick(final int position)
     {
         final int     numberToPlace;
         final boolean placementSuccess;
@@ -206,7 +213,7 @@ public class NumberGameGUI implements
      * Updates the GUI elements (buttons, status label) to reflect the current
      * game state obtained from NumberGameLogic.
      */
-    private void updateGUIState()
+    private final void updateGUIState()
     {
         final int[]   currentBoard;
         final boolean gameOver;
@@ -255,12 +262,12 @@ public class NumberGameGUI implements
      * Shows an initial welcome message with instructions.
      * Offers "Try Again" (start game) and "Quit" options.
      */
-    private void showWelcomeMessage()
+    private final void showWelcomeMessage()
     {
         final Object[] options;
         final int      choice;
 
-        options = new Object[]{"Try Again", "Quit"};
+        options = new Object[] {"Try Again", "Quit"};
         choice  = JOptionPane.showOptionDialog(frame,
                                                "Welcome to the 20-Number Challenge! Click 'Try Again' to start.",
                                                "Game Start",
@@ -268,7 +275,7 @@ public class NumberGameGUI implements
                                                JOptionPane.INFORMATION_MESSAGE,
                                                null,
                                                options,
-                                               options[0]);
+                                               options[TRY_AGAIN]);
 
         if(choice == JOptionPane.YES_OPTION)
         {
@@ -283,7 +290,7 @@ public class NumberGameGUI implements
     /*
      * Handles the display and actions for the game win condition.
      */
-    private void handleGameWon()
+    private final void handleGameWon()
     {
         final int choice;
 
@@ -310,7 +317,7 @@ public class NumberGameGUI implements
      *
      * @param impossibleNumber The number that could not be placed.
      */
-    private void handleGameLost(final int impossibleNumber)
+    private final void handleGameLost(final int impossibleNumber)
     {
         final String lossMsg;
         final String fullMsg;
@@ -343,7 +350,7 @@ public class NumberGameGUI implements
     /*
      * Shows a final message with the overall score when the window is closed.
      */
-    private void showFinalScoreMessage()
+    private final void showFinalScoreMessage()
     {
         System.out.println("[GUI] Window Closed - Showing Final Stats.");
 
@@ -359,7 +366,7 @@ public class NumberGameGUI implements
      * @param gameJustWon Hint whether the last game ended in a win (for phrasing).
      * @return A formatted string with score details.
      */
-    private String buildScoreString(final boolean gameJustWon)
+    private final String buildScoreString(final boolean gameJustWon)
     {
         final int    played;
         final int    won;
@@ -380,7 +387,7 @@ public class NumberGameGUI implements
                                      lost,
                                      played);
 
-        if(played > 0)
+        if(played > NO_GAMES_PLAYED)
         {
             avgPlacements = (double)totalPlaced / played;
             placementInfo = String.format("Avg %.2f placements/game (%d total placements).",

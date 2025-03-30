@@ -7,6 +7,7 @@ package ca.bcit.comp2522.gameproject.numbergame;
  * and determining game outcomes in the 20-Number Challenge.
  *
  * @author Nathan O
+ * @version 1.0 2025
  */
 interface NumberGameInterface
 {

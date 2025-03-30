@@ -12,13 +12,16 @@ import java.util.Random;
  * @version 1.1 2025
  */
 abstract class AbstractGame implements
-        NumberGameInterface
+                            NumberGameInterface
 {
-    static final int BOARD_SIZE        = 20;
-    static final int MAX_RANDOM_NUMBER = 1000;
-    static final int MIN_RANDOM_NUMBER = 1;
-    static final int EMPTY_CELL        = 0;
-    static final int INITIAL_VALUE     = 0;
+    private static final int RANGE_OFFSET      = 1;
+    static final int         BOARD_SIZE        = 20;
+    static final int         MAX_RANDOM_NUMBER = 1000;
+    static final int         MIN_RANDOM_NUMBER = 1;
+    static final int         EMPTY_CELL        = 0;
+    static final int         INITIAL_VALUE     = 0;
+
+    static final int INVALID_NUMBER_SENTINEL = - 1;
 
     private final Random random;
     private boolean      gameWon;
@@ -30,7 +33,7 @@ abstract class AbstractGame implements
     int   gamesPlayed;
 
     /**
-     * Constructs an AbstractGame.
+     * Constructs an AbstractGame. Initializes game statistics and the random number generator.
      */
     AbstractGame()
     {
@@ -44,14 +47,14 @@ abstract class AbstractGame implements
 
     /**
      * Initializes the game state for a new round.
-     * Resets the game won status.
-     * Subclasses should override to reset their specific state (like the board).
+     * Resets the game won status and clears the board.
      */
     @Override
     public void initializeGame()
     {
         this.gameWon = false;
-        Arrays.fill(this.board, EMPTY_CELL); 
+        Arrays.fill(this.board,
+                    EMPTY_CELL);
     }
 
     /**
@@ -63,7 +66,10 @@ abstract class AbstractGame implements
      */
     boolean isGameComplete()
     {
-        return this.gameWon || this.gamesPlayed >= this.totalPlacements;
+        final boolean gameComplete;
+        gameComplete = this.gameWon || this.gamesPlayed >= this.totalPlacements;
+
+        return gameComplete;
     }
 
     /**
@@ -93,8 +99,13 @@ abstract class AbstractGame implements
      */
     int generateNumber()
     {
-        int range = MAX_RANDOM_NUMBER - MIN_RANDOM_NUMBER + 1;
-        return this.random.nextInt(range) + MIN_RANDOM_NUMBER;
+        final int range;
+        final int randomIntInRange;
+
+        range            = MAX_RANDOM_NUMBER - MIN_RANDOM_NUMBER + RANGE_OFFSET;
+        randomIntInRange = this.random.nextInt(range) + MIN_RANDOM_NUMBER;
+
+        return randomIntInRange;
     }
 
     /**
@@ -104,9 +115,9 @@ abstract class AbstractGame implements
      */
     boolean isBoardFull()
     {
-        for (int cellValue : this.board)
+        for(final int cellValue : this.board)
         {
-            if (cellValue == EMPTY_CELL)
+            if(cellValue == EMPTY_CELL)
             {
                 return false;
             }
@@ -122,12 +133,15 @@ abstract class AbstractGame implements
      */
     boolean isValidSequence()
     {
-        int lastNumber = -1;
-        for (int cellValue : this.board)
+        int lastNumber;
+        lastNumber = INVALID_NUMBER_SENTINEL;
+
+        for(final int cellValue : this.board)
         {
-            if (cellValue != EMPTY_CELL)
+            if(cellValue != EMPTY_CELL)
             {
-                if (lastNumber != -1 && cellValue <= lastNumber)
+
+                if(lastNumber != INVALID_NUMBER_SENTINEL && cellValue <= lastNumber)
                 {
                     return false;
                 }
@@ -144,8 +158,12 @@ abstract class AbstractGame implements
      *
      * @return A copy of the board array.
      */
-    protected int[] getBoard()
+    int[] getBoard()
     {
-        return Arrays.copyOf(this.board, this.board.length);
+        final int[] boardCopy;
+        boardCopy = Arrays.copyOf(this.board,
+                                  this.board.length);
+
+        return boardCopy;
     }
 }
