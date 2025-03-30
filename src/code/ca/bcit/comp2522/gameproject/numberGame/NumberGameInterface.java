@@ -1,5 +1,13 @@
 package ca.bcit.comp2522.gameproject.numbergame;
 
+/**
+ * Defines the contract for the Number Game logic.
+ * This interface outlines the essential operations required
+ * for managing the game state, handling player actions,
+ * and determining game outcomes in the 20-Number Challenge.
+ *
+ * @author Nathan O
+ */
 interface NumberGameInterface
 {
     /**
@@ -15,14 +23,14 @@ interface NumberGameInterface
     void placeNumber(final int position);
 
     /**
-     * Determines if the game is over.
+     * Determines if the game is over (win or loss condition met).
      *
      * @return true if the game is over, false otherwise
      */
     boolean isGameOver();
 
     /**
-     * Displays the current game statistics and score information.
+     * Displays the current game statistics and score information (e.g., to console).
      */
     void showScore();
 
@@ -34,27 +42,17 @@ interface NumberGameInterface
     int getNextNumber();
 
     /**
-     * Checks if a number can be legally placed at the specified position.
+     * Checks if placing the current number at the specified position is valid
+     * according to the game's ascending order rules.
      *
      * @param position the position to check for valid placement
-     * @return true if the current number can be placed at the position, false otherwise
+     * @return true if the current number can be placed at the position,
+     *         false otherwise
      */
     boolean isValidPlacement(final int position);
-    
+
     /**
-     * Processes a single game turn.
-     * @return boolean indicating if game should continue
-     */
-    boolean processTurn();
-    
-    /**
-     * Initializes or resets the game state.
+     * Initializes or resets the game state. Called before starting a new game.
      */
     void initializeGame();
-    
-    /**
-     * Checks if the game is complete.
-     * @return boolean indicating game completion status
-     */
-    boolean isGameComplete();
 }
