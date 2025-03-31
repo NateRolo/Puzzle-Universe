@@ -33,7 +33,7 @@ final class DeceptionEngine
      * @param deceptiveRoundsAllowed maximum allowed deceptive rounds
      * @return true if deception should be applied, false otherwise
      */
-    static boolean shouldApplyDeception(final int deceptiveRoundsUsed,
+    static final boolean shouldApplyDeception(final int deceptiveRoundsUsed,
                                         final int deceptiveRoundsAllowed)
     {
         validateDeceptionParameters(deceptiveRoundsUsed,
@@ -48,7 +48,7 @@ final class DeceptionEngine
      * @param trueFeedback the original, true feedback
      * @return modified feedback marked as deceptive
      */
-    static Feedback applyDeception(final Feedback trueFeedback)
+    static final Feedback applyDeception(final Feedback trueFeedback)
     {
         if(trueFeedback == null)
         {
@@ -76,7 +76,7 @@ final class DeceptionEngine
     /*
      * Validates parameters for deception calculation.
      */
-    private static void validateDeceptionParameters(final int used,
+    private static final void validateDeceptionParameters(final int used,
                                                     final int allowed)
     {
         if(used < 0)
