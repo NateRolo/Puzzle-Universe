@@ -25,9 +25,8 @@ final class InputHandler
     private static final Scanner scan = new Scanner(System.in);
 
     // Message Constants
-    private static final String YES_NO_PROMPT = "Error: Please answer 'yes' or 'no'";
-    private static final String GUESS_PROMPT  = "Enter your guess (4 digits, each 1-6) or 'T' to use truth scan:";
     private static final String RETRY_PROMPT  = "Invalid guess, please try again.";
+    private static final String TRUTH_SCAN_INPUT = "t";
 
     // Input Validation
     private static final String DIGIT_RANGE_ERROR = "Each digit must be between %d and %d";
@@ -43,7 +42,7 @@ final class InputHandler
      * @return a PlayerGuessCode object representing either a guess or truth scan request
      * @throws InvalidGuessException if the guess input is invalid
      */
-    static PlayerGuessCode getPlayerInput()
+    static PlayerAction getPlayerInput()
     {
         while(scan.hasNextLine())
         {
@@ -53,19 +52,25 @@ final class InputHandler
                     .trim()
                     .toUpperCase();
 
-            if(input.equalsIgnoreCase("T"))
+            if(input.equalsIgnoreCase(TRUTH_SCAN_INPUT))
             {
-                return PlayerGuessCode.createTruthScanRequest();
+                return new TruthScanRequest();
             }
 
             try
             {
                 validateGuessFormat(input);
-                final List<Integer> digits = parseGuess(input);
-                return new PlayerGuessCode(digits);
+                final List<Integer> digits;
+                final PlayerGuessCode guessCode;
+
+                digits = parseGuess(input);
+                guessCode = new PlayerGuessCode(digits);
+
+                return guessCode;
             }
             catch(InvalidGuessException e)
             {
+                System.out.println(e.getMessage());
                 System.out.println(RETRY_PROMPT);
             }
         }
@@ -97,40 +102,68 @@ final class InputHandler
     }
 
     /*
-     * Gets and validates the round number input.
+     * Gets and validates the round number input from the user.
+     * Continuously prompts until a valid round number is provided.
+     *
+     * @param currentRound the current round number to use as upper bound
+     * @return the validated round number selected by the user
      */
     private static int getRoundNumberWithValidation(final int currentRound)
     {
-        System.out.println("Enter round number to scan (1-" + currentRound + "):");
-
-        try
+        while(true)
         {
-            final int roundNumber = Integer.parseInt(scan.nextLine()
-                                                            .trim());
-            validateRoundNumberRange(roundNumber,
-                                     currentRound);
-            return roundNumber;
-        }
-        catch(NumberFormatException e)
-        {
-            throw new InvalidGuessException("Invalid round number format",
-                                            e);
+            System.out.println("Enter round number to scan (1-" + currentRound + "):");
+            final String input = scan.nextLine().trim();
+            
+            if(!isValidNumericInput(input))
+            {
+                System.out.println("Please enter a valid number.");
+                continue;
+            }
+            
+            try
+            {
+                final int roundNumber = Integer.parseInt(input);
+                
+                if(!isValidRoundNumber(roundNumber, currentRound))
+                {
+                    System.out.printf("Please enter a number between %d and %d.%n", 
+                                    MIN_ROUND_NUMBER, 
+                                    currentRound);
+                    continue;
+                }
+                
+                return roundNumber;
+            }
+            catch(NumberFormatException e)
+            {
+                System.out.println("Please enter a valid number.");
+            }
         }
     }
 
     /*
-     * Validates the round number is within valid range.
+     * Checks if the input string contains only digits.
+     *
+     * @param input the string to validate
+     * @return true if the input contains only digits, false otherwise
      */
-    private static void validateRoundNumberRange(final int roundNumber,
-                                          final int currentRound)
+    private static boolean isValidNumericInput(final String input)
     {
-        if(roundNumber < MIN_ROUND_NUMBER ||
-           roundNumber > currentRound)
-        {
-            throw new InvalidGuessException(String.format(ROUND_RANGE_ERROR,
-                                                          MIN_ROUND_NUMBER,
-                                                          currentRound));
-        }
+        return input.matches("\\d+");
+    }
+
+    /*
+     * Checks if the round number is within the valid range.
+     *
+     * @param roundNumber the number to validate
+     * @param currentRound the current round number (upper bound)
+     * @return true if the round number is valid, false otherwise
+     */
+    private static boolean isValidRoundNumber(final int roundNumber,
+                                            final int currentRound)
+    {
+        return roundNumber >= MIN_ROUND_NUMBER && roundNumber <= currentRound;
     }
 
     /*
