@@ -27,6 +27,7 @@ final class InputHandler
     // Message Constants
     private static final String RETRY_PROMPT  = "Invalid guess, please try again.";
     private static final String TRUTH_SCAN_INPUT = "t";
+    private static final String GUESS_SUMMARY_INPUT = "g";
 
     // Input Validation
     private static final String DIGIT_RANGE_ERROR = "Each digit must be between %d and %d";
@@ -48,6 +49,7 @@ final class InputHandler
         {
             final String input;
 
+            System.out.print("Enter your guess (4 digits 1-6), 't' for Truth Scan, or 'g' for summary: ");
             input = scan.nextLine()
                     .trim()
                     .toUpperCase();
@@ -55,6 +57,10 @@ final class InputHandler
             if(input.equalsIgnoreCase(TRUTH_SCAN_INPUT))
             {
                 return new TruthScanRequest();
+            }
+            else if(input.equalsIgnoreCase(GUESS_SUMMARY_INPUT))
+            {
+                return new GuessSummaryRequest();
             }
 
             try
