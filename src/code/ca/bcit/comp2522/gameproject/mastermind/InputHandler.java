@@ -261,4 +261,9 @@ final class InputHandler
 
         return response;
     }
+
+    static final void closeScanner()
+    {
+        scan.close();
+    }
 }
