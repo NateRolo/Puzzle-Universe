@@ -49,7 +49,6 @@ final class InputHandler
         {
             final String input;
 
-            System.out.print("Enter your guess (4 digits 1-6), 't' for Truth Scan, or 'g' for summary: ");
             input = scan.nextLine()
                     .trim()
                     .toUpperCase();
