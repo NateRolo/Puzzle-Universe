@@ -36,7 +36,7 @@ abstract class Code
      *
      * @return a new List containing the code's digits
      */
-    List<Integer> getDigits()
+    final List<Integer> getDigits()
     {
         return new ArrayList<>(digits);
     }
@@ -46,7 +46,7 @@ abstract class Code
      *
      * @param digits the digits to validate
      */
-    private static void validateDigits(final List<Integer> digits)
+    private static final void validateDigits(final List<Integer> digits)
     {
         if(digits == null)
         {
