@@ -109,25 +109,6 @@ final class Feedback
         return misplacedCount;
     }
 
-    /*
-     * Validates that the feedback counts are non-negative.
-     *
-     * @param correctPos number of correct positions to validate
-     * @param misplaced  number of misplaced digits to validate
-     */
-    private static void validateCounts(final int correctPos,
-                                final int misplaced)
-    {
-        if(correctPos < MIN_COUNT)
-        {
-            throw new IllegalArgumentException("Correct position count cannot be negative");
-        }
-        if(misplaced < MIN_COUNT)
-        {
-            throw new IllegalArgumentException("Misplaced count cannot be negative");
-        }
-    }
-
     @Override
     public String toString()
     {
