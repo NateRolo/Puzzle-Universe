@@ -16,7 +16,6 @@ import java.util.List;
  */
 final class Feedback
 {
-    private static final int MIN_COUNT = 0;
     private static final int RESULT_SIZE = 2;
     private static final int CORRECT_POSITION = 0;
     private static final int MISPLACED = 1;
@@ -32,16 +31,31 @@ final class Feedback
              final PlayerGuessCode guessCode)
     {
         validateCodes(secretCode, guessCode);
-        evaluateGuess(secretCode, guessCode);
 
-        this.correctPositionCount = evaluateGuess(secretCode, guessCode)[0];
-        this.misplacedCount       = evaluateGuess(secretCode, guessCode)[1];
+        this.correctPositionCount = evaluateGuess(secretCode, guessCode)[CORRECT_POSITION];
+        this.misplacedCount       = evaluateGuess(secretCode, guessCode)[MISPLACED];
     }
 
     private static void validateCodes(final SecretCode secretCode,
                                   final PlayerGuessCode guessCode)
     {
-        // throw exception
+        if(secretCode == null || guessCode == null)
+        {
+            throw new IllegalArgumentException("Codes cannot be null");
+        }
+
+        final int secretCodeLength;
+        final int guessCodeLength;
+
+        secretCodeLength = secretCode.getDigits().size();
+        guessCodeLength = secretCode.getDigits()
+                                     .size();
+
+        if(secretCodeLength != Code.CODE_LENGTH ||
+           guessCodeLength != Code.CODE_LENGTH)
+        {
+            throw new IllegalArgumentException("Codes must be of length " + Code.CODE_LENGTH);
+        }
     }
 
     private static int[] evaluateGuess(final SecretCode secretCode,
@@ -53,8 +67,11 @@ final class Feedback
         final List<Integer> guessCopy;
         final int[] result;
 
-        int correctPosition = 0;
-        int misplaced = 0;
+        int correctPosition;
+        int misplaced;
+
+        correctPosition = 0;
+        misplaced = 0;
 
         secretCodeDigits = secretCode.getDigits();
         guessCodeDigits = guessCode.getDigits();
@@ -80,7 +97,6 @@ final class Feedback
         }
 
         misplaced = misplaced - correctPosition;
-
 
         result = new int[RESULT_SIZE];
         result[CORRECT_POSITION] = correctPosition;
