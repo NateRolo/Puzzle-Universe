@@ -19,13 +19,12 @@ public final class MastermindGame implements
                                   Playable
 {
     // Game Configuration
-    private static final int MAX_ROUNDS           = 12;
-    private static final int CODE_LENGTH          = 4;
-    private static final int MAX_DECEPTIVE_ROUNDS = 3;
+    private static final int          MAX_ROUNDS         = 12;
+    private static final int          CODE_LENGTH        = 4;
     private static final TruthScanner TRUTH_SCAN_HANDLER = new TruthScanner();
 
     // Counter Constants
-    private static final int INCREMENT        = 1;
+    private static final int INCREMENT = 1;
 
     // Message Templates
     private static final String GAME_OVER_MESSAGE = "Game Over! The secret code was: %s";
@@ -53,17 +52,17 @@ public final class MastermindGame implements
 
                                         Are you ready to start? (yes/no): """;
 
-    private final List<Round>         rounds;
-    private final SecretCode          secretCode;
-    
+    private final List<Round> rounds;
+    private final SecretCode  secretCode;
+
 
     /**
      * Constructs a new MastermindGame.
      */
     public MastermindGame()
     {
-        rounds              = new ArrayList<>();
-        secretCode          = SecretCode.generateRandomCode(CODE_LENGTH);
+        rounds     = new ArrayList<>();
+        secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
     }
 
     /**
@@ -72,7 +71,7 @@ public final class MastermindGame implements
     @Override
     public void play()
     {
-        if(!handleGameIntroduction())
+        if(! handleGameIntroduction())
         {
             return;
         }
@@ -84,7 +83,7 @@ public final class MastermindGame implements
     /*
      * Handles the game introduction and rules explanation.
      */
-    private boolean handleGameIntroduction()
+    private static boolean handleGameIntroduction()
     {
         final String response;
         final String ready;
@@ -94,12 +93,12 @@ public final class MastermindGame implements
 
         response = InputHandler.getYesNoResponse();
 
-        if(!response.equalsIgnoreCase("yes"))
+        if(! response.equalsIgnoreCase("yes"))
         {
             System.out.println(RULES);
             ready = InputHandler.getYesNoResponse();
 
-            if(!ready.equalsIgnoreCase("yes"))
+            if(! ready.equalsIgnoreCase("yes"))
             {
                 System.out.println("Maybe next time! Goodbye.");
                 return false;
@@ -119,7 +118,7 @@ public final class MastermindGame implements
      */
     private void playGameLoop()
     {
-        while(!isGameOver())
+        while(! isGameOver())
         {
             playRound();
         }
@@ -130,11 +129,14 @@ public final class MastermindGame implements
      */
     private void playRound()
     {
-        System.out.println("\nRound " + (rounds.size() + INCREMENT));
-
+        final int             roundNumber;
         final PlayerGuessCode guess;
-        final Feedback feedback;
-        final Round round;
+        final Feedback        actualFeedback;
+        final Round           round;
+        final Feedback        thisRoundFeedback;
+
+        roundNumber = rounds.size() + INCREMENT;
+        System.out.println("\nRound " + roundNumber);
 
         guess = handlePlayerInput();
 
@@ -143,13 +145,18 @@ public final class MastermindGame implements
             return;
         }
 
-        feedback = new Feedback(secretCode, guess);
+        actualFeedback = new Feedback(secretCode,
+                                guess);
         round    = new Round(rounds.size() + INCREMENT,
-                                            guess,
-                                            feedback);
+                             guess,
+                             actualFeedback);
 
         rounds.add(round);
-        System.out.println(round.getFeedback());
+
+        // Round may provide deceptive feedback based on game rules
+        thisRoundFeedback = round.getFeedback();
+
+        System.out.println(thisRoundFeedback);
     }
 
     /*
@@ -163,7 +170,8 @@ public final class MastermindGame implements
 
         if(input != null && input.isTruthScanRequest())
         {
-            TRUTH_SCAN_HANDLER.handleTruthScanRequest(rounds, secretCode);
+            TRUTH_SCAN_HANDLER.handleTruthScanRequest(rounds,
+                                                      secretCode);
             return null;
         }
         return input;
@@ -181,13 +189,17 @@ public final class MastermindGame implements
 
         final Round    lastRound;
         final Feedback lastFeedback;
-        
+        final boolean  gameOver;
+
         lastRound    = rounds.get(rounds.size() - 1);
         lastFeedback = lastRound.getFeedback();
 
-        return lastFeedback.getCorrectPositionCount() == CODE_LENGTH || rounds.size() >= MAX_ROUNDS;
+        gameOver = lastFeedback.getCorrectPositionCount() == CODE_LENGTH ||
+                   rounds.size() >= MAX_ROUNDS;
+                   
+        return gameOver;
     }
-    
+
     /*
      * Handles game end conditions and displays final message.
      */
@@ -199,10 +211,10 @@ public final class MastermindGame implements
             return;
         }
 
-        final Round lastRound;
+        final Round    lastRound;
         final Feedback lastFeedback;
-        
-        lastRound = rounds.get(rounds.size() - INCREMENT);
+
+        lastRound    = rounds.get(rounds.size() - INCREMENT);
         lastFeedback = lastRound.getFeedback();
 
         if(lastFeedback.getCorrectPositionCount() == CODE_LENGTH)
@@ -216,7 +228,8 @@ public final class MastermindGame implements
                                              secretCode));
         }
 
-        System.out.println("Deceptive rounds used: " + Round.getDeceptiveRoundsUsed());
+        System.out.println("Deceptive rounds used: " +
+                           Round.getDeceptiveRoundsUsed());
     }
 
 

@@ -12,7 +12,7 @@ import java.util.List;
  * @author Nathan O
  * @version 1.0 2025
  */
-public final class TruthScanner
+final class TruthScanner
 {
     private static final int INCREMENT = 1;
     

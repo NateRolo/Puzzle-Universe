@@ -64,7 +64,7 @@ class NumberGameLogic extends
      * @param position The 0-based index where the number should be placed.
      * @return true if the number was successfully placed, false otherwise.
      */
-    private final boolean placeNumberOnBoard(final int position)
+    final boolean placeNumberOnBoard(final int position)
     {
         if(isGameOver() || isGameWon())
         {
