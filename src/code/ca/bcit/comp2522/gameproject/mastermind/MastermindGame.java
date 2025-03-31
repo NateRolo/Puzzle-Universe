@@ -2,6 +2,8 @@ package ca.bcit.comp2522.gameproject.mastermind;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import ca.bcit.comp2522.gameproject.Playable;
 
@@ -13,7 +15,7 @@ import ca.bcit.comp2522.gameproject.Playable;
  * </p>
  *
  * @author Nathan O
- * @version 1.1 2025
+ * @version 1.3 2025
  */
 public final class MastermindGame implements
                                   Playable
@@ -93,9 +95,9 @@ public final class MastermindGame implements
      */
     private void initializeNewGame()
     {
-        rounds     = new ArrayList<>(); 
+        rounds     = new ArrayList<>();
         secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
-        Round.resetDeceptiveRounds(); 
+        Round.resetDeceptiveRounds();
         TRUTH_SCANNER.resetTruthScanner();
         System.out.println("\n" + NEW_GAME_SEPARATOR);
     }
@@ -151,60 +153,78 @@ public final class MastermindGame implements
      * Plays a single round of the game.
      * Handles player input (guess, scan, summary) and processes the guess.
      */
-    private void playRound()
+    private final void playRound()
     {
-        final int          roundNumber;
-        final PlayerAction guess;
-
-        roundNumber = rounds.size() + INCREMENT;
+        final int roundNumber = rounds.size() + INCREMENT;
         System.out.printf("%n--- Round %d of %d ---%n",
                           roundNumber,
                           MAX_ROUNDS);
 
-        guess = handlePlayerInput();
+        final PlayerAction action = handlePlayerInput();
 
-        if(guess instanceof PlayerGuessCode playerGuess)
+        if(action instanceof PlayerGuessCode playerGuess)
         {
             processGuess(playerGuess);
         }
-        else if(guess instanceof TruthScanRequest)
+        else if(action instanceof TruthScanRequest)
         {
             System.out.println("(Continuing round after Truth Scan...)");
         }
-        else if(guess instanceof GuessSummaryRequest)
+        else if(action instanceof GuessSummaryRequest)
         {
-            printGuessSummary();
-        }
-        else
-        {
-            System.err.println("Unexpected input received, skipping round.");
+            System.out.println("(Continuing round after Guess Summary...)");
         }
     }
 
     /*
-     * Processes a player's guess.
-     * Creates feedback, adds a new round to the history, and displays feedback.
+     * Processes a player's guess asynchronously.
+     * Creates feedback and a new round object in a background thread,
+     * then waits for the result before adding it to the history and displaying
+     * feedback.
      *
      * @param guess The player's guess code for the current round.
      */
     private void processGuess(final PlayerGuessCode guess)
     {
-        final Round    thisRound;
-        final Feedback actualFeedback;
-        final Feedback thisRoundFeedback;
-        final int      roundsPlayed;
+        final int                      nextRoundNumber;
+        final CompletableFuture<Round> roundFuture;
 
-        roundsPlayed   = rounds.size() + INCREMENT;
-        actualFeedback = new Feedback(secretCode,
-                                      guess);
-        thisRound      = new Round(roundsPlayed,
-                                   guess,
-                                   actualFeedback);
-        rounds.add(thisRound);
+        nextRoundNumber = rounds.size() + INCREMENT;
 
-        thisRoundFeedback = thisRound.getFeedback();
+        roundFuture = CompletableFuture.supplyAsync(() ->
+        {
+            final Feedback actualFeedback;
+            final Round    calculatedRound;
 
-        System.out.println("\nFeedback: " + thisRoundFeedback);
+            actualFeedback  = new Feedback(secretCode,
+                                           guess);
+            calculatedRound = new Round(nextRoundNumber,
+                                        guess,
+                                        actualFeedback);
+            return calculatedRound;
+        });
+
+        try
+        {
+            final Round    thisRound;
+            final Feedback displayFeedback;
+
+            thisRound = roundFuture.join();
+            rounds.add(thisRound);
+
+            displayFeedback = thisRound.getFeedback();
+            System.out.println("\nFeedback: " + displayFeedback);
+        }
+        catch(final CompletionException e)
+        {
+            System.err.println("Error during feedback calculation: " +
+                               e.getCause());
+        }
+        catch(final Exception e)
+        {
+            System.err.println("Unexpected error processing guess: " +
+                               e.getMessage());
+        }
     }
 
     /*
@@ -212,23 +232,24 @@ public final class MastermindGame implements
      * Loops until a valid action (guess, scan, summary) is received.
      * Processes scan and summary requests directly.
      *
-     * @return The PlayerAction representing the player's choice (only PlayerGuessCode exits loop).
+     * @return The PlayerAction representing the player's choice (only
+     * PlayerGuessCode exits loop).
      */
     private final PlayerAction handlePlayerInput()
     {
-        while (true)
+        while(true)
         {
             final PlayerAction input = InputHandler.getPlayerInput();
 
-            if (input instanceof TruthScanRequest)
+            if(input instanceof TruthScanRequest)
             {
                 handleTruthScanAction();
             }
-            else if (input instanceof PlayerGuessCode guess)
+            else if(input instanceof PlayerGuessCode guess)
             {
                 return guess;
             }
-            else if (input instanceof GuessSummaryRequest)
+            else if(input instanceof GuessSummaryRequest)
             {
                 handleGuessSummaryAction();
             }
@@ -248,7 +269,7 @@ public final class MastermindGame implements
         System.out.println("\n--- Truth Scan Requested ---");
         final boolean scanSuccess = TRUTH_SCANNER.handleTruthScanRequest(rounds,
                                                                          secretCode);
-        if (scanSuccess)
+        if(scanSuccess)
         {
             System.out.println("--- Truth Scan Complete ---");
         }
@@ -271,17 +292,19 @@ public final class MastermindGame implements
      * Checks if the guess in a given round matches the secret code.
      *
      * @param round The round to check.
+     * 
      * @return true if the guess is correct, false otherwise.
      */
     private final boolean isCorrectGuess(final Round round)
     {
         final Feedback actualFeedback;
-        final boolean isCorrectGuess;
-        
+        final boolean  isCorrectGuess;
+
         actualFeedback = new Feedback(secretCode,
                                       round.getGuess());
-        isCorrectGuess = actualFeedback.getCorrectPositionCount() == CODE_LENGTH;
-        
+        isCorrectGuess = actualFeedback.getCorrectPositionCount() ==
+                         CODE_LENGTH;
+
         return isCorrectGuess;
     }
 
@@ -298,14 +321,14 @@ public final class MastermindGame implements
             return false;
         }
 
-        final Round lastRound;
+        final Round   lastRound;
         final boolean maxRoundsReached;
 
         lastRound = rounds.get(rounds.size() - INCREMENT);
-        
+
         if(isCorrectGuess(lastRound))
         {
-            return true; 
+            return true;
         }
 
         maxRoundsReached = rounds.size() >= MAX_ROUNDS;
@@ -329,23 +352,21 @@ public final class MastermindGame implements
         }
 
         final Round lastRound;
-        final int roundsPlayed;
-        
-        lastRound = rounds.get(rounds.size() - INCREMENT);
+        final int   roundsPlayed;
+
+        lastRound    = rounds.get(rounds.size() - INCREMENT);
         roundsPlayed = rounds.size();
 
         if(isCorrectGuess(lastRound))
         {
-            System.out.println(String.format(WIN_MESSAGE, roundsPlayed));
+            System.out.println(String.format(WIN_MESSAGE,
+                                             roundsPlayed));
         }
         else
         {
             System.out.println(String.format(GAME_OVER_MESSAGE,
                                              secretCode));
         }
-
-        System.out.println("Deceptive rounds used: " +
-                           Round.getDeceptiveRoundsUsed());
         System.out.println(GAME_OVER_SEPARATOR);
     }
 
@@ -357,7 +378,7 @@ public final class MastermindGame implements
     private final boolean askPlayAgain()
     {
         System.out.print("\nPlay again? (yes/no): ");
-        
+
         final String response;
         response = InputHandler.getYesNoResponse();
 
@@ -371,10 +392,14 @@ public final class MastermindGame implements
     private final void printGuessSummary()
     {
         System.out.println("\n--- Guess Summary ---");
-        if (rounds.isEmpty()) {
+        if(rounds.isEmpty())
+        {
             System.out.println("No guesses made yet.");
-        } else {
-            for (final Round round : rounds) {
+        }
+        else
+        {
+            for(final Round round : rounds)
+            {
                 System.out.println(round.toString());
             }
         }
