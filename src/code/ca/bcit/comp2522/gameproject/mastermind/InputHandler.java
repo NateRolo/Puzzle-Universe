@@ -45,41 +45,41 @@ final class InputHandler
      */
     static PlayerAction getPlayerInput()
     {
-        while(scan.hasNextLine())
-        {
-            final String input;
-
-            input = scan.nextLine()
-                    .trim()
-                    .toUpperCase();
-
-            if(input.equalsIgnoreCase(TRUTH_SCAN_INPUT))
-            {
-                return new TruthScanRequest();
-            }
-            else if(input.equalsIgnoreCase(GUESS_SUMMARY_INPUT))
-            {
-                return new GuessSummaryRequest();
-            }
-
-            try
-            {
-                validateGuessFormat(input);
-                final List<Integer> digits;
-                final PlayerGuessCode guessCode;
-
-                digits = parseGuess(input);
-                guessCode = new PlayerGuessCode(digits);
-
-                return guessCode;
-            }
-            catch(InvalidGuessException e)
-            {
-                System.out.println(e.getMessage());
-                System.out.println(RETRY_PROMPT);
-            }
+        if (!scan.hasNextLine()) {
+            throw new java.util.NoSuchElementException("Input stream ended unexpectedly.");
         }
-        return null;
+        final String input;
+
+        input = scan.nextLine()
+                .trim()
+                .toUpperCase();
+
+        if(input.equalsIgnoreCase(TRUTH_SCAN_INPUT))
+        {
+            return new TruthScanRequest();
+        }
+        else if(input.equalsIgnoreCase(GUESS_SUMMARY_INPUT))
+        {
+            return new GuessSummaryRequest();
+        }
+
+        try
+        {
+            validateGuessFormat(input);
+            final List<Integer> digits;
+            final PlayerGuessCode guessCode;
+
+            digits = parseGuess(input);
+            guessCode = new PlayerGuessCode(digits);
+
+            return guessCode;
+        }
+        catch(InvalidGuessException e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println(RETRY_PROMPT);
+            return null;
+        }
     }
 
     /**
