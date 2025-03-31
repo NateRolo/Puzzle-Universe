@@ -212,42 +212,59 @@ public final class MastermindGame implements
      * Loops until a valid action (guess, scan, summary) is received.
      * Processes scan and summary requests directly.
      *
-     * @return The PlayerAction representing the player's choice.
+     * @return The PlayerAction representing the player's choice (only PlayerGuessCode exits loop).
      */
-    private PlayerAction handlePlayerInput()
+    private final PlayerAction handlePlayerInput()
     {
-        while(true)
+        while (true)
         {
             final PlayerAction input = InputHandler.getPlayerInput();
 
-            if(input instanceof TruthScanRequest)
+            if (input instanceof TruthScanRequest)
             {
-                System.out.println("\n--- Truth Scan Requested ---");
-                final boolean scanSuccess = TRUTH_SCANNER.handleTruthScanRequest(rounds,
-                                                                                 secretCode);
-                if(scanSuccess)
-                {
-                    System.out.println("--- Truth Scan Complete ---");
-                }
-                else
-                {
-                    System.out.println("--- Truth Scan Failed ---");
-                }                
+                handleTruthScanAction();
             }
-            else if(input instanceof PlayerGuessCode)
+            else if (input instanceof PlayerGuessCode guess)
             {
-                return input; 
+                return guess;
             }
-            else if(input instanceof GuessSummaryRequest)
+            else if (input instanceof GuessSummaryRequest)
             {
-                printGuessSummary();
+                handleGuessSummaryAction();
             }
             else
             {
                 System.err.println("Input error detected. Please try again or restart.");
-                return null; 
             }
         }
+    }
+
+    /*
+     * Handles the action when a Truth Scan is requested by the player.
+     * Invokes the truth scanner and prints appropriate messages.
+     */
+    private final void handleTruthScanAction()
+    {
+        System.out.println("\n--- Truth Scan Requested ---");
+        final boolean scanSuccess = TRUTH_SCANNER.handleTruthScanRequest(rounds,
+                                                                         secretCode);
+        if (scanSuccess)
+        {
+            System.out.println("--- Truth Scan Complete ---");
+        }
+        else
+        {
+            System.out.println("--- Truth Scan Failed ---");
+        }
+    }
+
+    /*
+     * Handles the action when a Guess Summary is requested by the player.
+     * Calls the method to print the summary.
+     */
+    private final void handleGuessSummaryAction()
+    {
+        printGuessSummary();
     }
 
     /*
@@ -256,7 +273,7 @@ public final class MastermindGame implements
      * @param round The round to check.
      * @return true if the guess is correct, false otherwise.
      */
-    private boolean isCorrectGuess(final Round round)
+    private final boolean isCorrectGuess(final Round round)
     {
         final Feedback actualFeedback;
         final boolean isCorrectGuess;
@@ -274,7 +291,7 @@ public final class MastermindGame implements
      *
      * @return true if the game is over, false otherwise.
      */
-    private boolean isGameOver()
+    private final boolean isGameOver()
     {
         if(rounds.isEmpty())
         {
@@ -300,7 +317,7 @@ public final class MastermindGame implements
      * Handles the end-of-game sequence.
      * Displays win/loss message, secret code, and deceptive round count.
      */
-    private void endGame()
+    private final void endGame()
     {
         System.out.println("\n" + GAME_OVER_SEPARATOR);
 
@@ -337,7 +354,7 @@ public final class MastermindGame implements
      *
      * @return true if the player wants to play again, false otherwise.
      */
-    private boolean askPlayAgain()
+    private final boolean askPlayAgain()
     {
         System.out.print("\nPlay again? (yes/no): ");
         
@@ -351,7 +368,7 @@ public final class MastermindGame implements
      * Prints a summary of all previous guesses and their feedback.
      * Displays the actual feedback for rounds where truth was revealed.
      */
-    private void printGuessSummary()
+    private final void printGuessSummary()
     {
         System.out.println("\n--- Guess Summary ---");
         if (rounds.isEmpty()) {
