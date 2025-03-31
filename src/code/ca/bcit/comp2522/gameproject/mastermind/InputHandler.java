@@ -97,6 +97,7 @@ final class InputHandler
 
     /*
      * Validates the current round number.
+     * Ensures the round number is not less than the minimum allowed.
      */
     private static void validateCurrentRound(final int currentRound)
     {
@@ -107,8 +108,9 @@ final class InputHandler
     }
 
     /*
-     * Gets and validates the round number input from the user.
-     * Continuously prompts until a valid round number is provided.
+     * Gets and validates the round number input from the user for a scan.
+     * Continuously prompts until a valid round number within the allowed range
+     * (1 to currentRound) is entered.
      *
      * @param currentRound the current round number to use as upper bound
      * @return the validated round number selected by the user
@@ -159,7 +161,8 @@ final class InputHandler
     }
 
     /*
-     * Checks if the round number is within the valid range.
+     * Checks if the provided round number is within the valid range.
+     * The valid range is from the minimum round number up to the current round.
      *
      * @param roundNumber the number to validate
      * @param currentRound the current round number (upper bound)
@@ -175,6 +178,10 @@ final class InputHandler
 
     /*
      * Validates the format of the guess input string.
+     * Checks for null/empty, correct length, and valid digit characters.
+     *
+     * @param input The player's guess string.
+     * @throws InvalidGuessException If the format is invalid.
      */
     private static void validateGuessFormat(final String input)
     {
@@ -198,7 +205,12 @@ final class InputHandler
     }
 
     /*
-     * Parses and validates the digits from the input string.
+     * Parses the validated guess string into a list of integers.
+     * Assumes validateGuessFormat has already been called.
+     *
+     * @param input The validated guess string.
+     * @return A list of integers representing the guess digits.
+     * @throws InvalidGuessException If a character is not a valid digit (should not happen if pre-validated).
      */
     private static List<Integer> parseGuess(final String input)
     {
