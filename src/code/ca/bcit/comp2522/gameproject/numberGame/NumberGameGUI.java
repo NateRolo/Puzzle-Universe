@@ -98,7 +98,6 @@ public class NumberGameGUI implements
     {
         final JPanel gridPanel;
 
-
         frame = new JFrame(WINDOW_TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter()
@@ -106,7 +105,6 @@ public class NumberGameGUI implements
             @Override
             public void windowClosed(final WindowEvent e)
             {
-
                 if(gameLogic.getGamesPlayed() > NO_GAMES_PLAYED)
                 {
                     showFinalScoreMessage();
@@ -121,7 +119,6 @@ public class NumberGameGUI implements
         frame.add(statusLabel,
                   BorderLayout.NORTH);
 
-
         gridPanel = new JPanel(new GridLayout(GRID_ROWS,
                                               GRID_COLS,
                                               GRID_GAP,
@@ -129,13 +126,13 @@ public class NumberGameGUI implements
         buttons   = new JButton[BOARD_SIZE];
         for(int i = 0; i < BOARD_SIZE; i++)
         {
-            buttons[i] = new JButton(EMPTY_BUTTON_TEXT);
             final int position;
-
             position = i;
-            buttons[i].addActionListener(e -> handleButtonClick(position));
-            buttons[i].setEnabled(false);
-            gridPanel.add(buttons[i]);
+            
+            buttons[position] = new JButton(EMPTY_BUTTON_TEXT);
+            buttons[position].addActionListener(e -> handleButtonClick(position));
+            buttons[position].setEnabled(false);
+            gridPanel.add(buttons[position]);
         }
         frame.add(gridPanel,
                   BorderLayout.CENTER);
@@ -152,7 +149,6 @@ public class NumberGameGUI implements
     {
         gameLogic.startNewGame();
         updateGUIState();
-
 
         if(gameLogic.isGameOver())
         {
@@ -225,7 +221,6 @@ public class NumberGameGUI implements
         gameWon      = gameLogic.isGameWon();
         nextNumber   = gameLogic.getNextNumber();
 
-
         if(gameOver)
         {
             if(gameWon)
@@ -264,10 +259,10 @@ public class NumberGameGUI implements
      */
     private final void showWelcomeMessage()
     {
-        final Object[] options;
+        final String[] options;
         final int      choice;
 
-        options = new Object[] {"Try Again", "Quit"};
+        options = new String[] {"Try Again", "Quit"};
         choice  = JOptionPane.showOptionDialog(frame,
                                                "Welcome to the 20-Number Challenge! Click 'Try Again' to start.",
                                                "Game Start",
