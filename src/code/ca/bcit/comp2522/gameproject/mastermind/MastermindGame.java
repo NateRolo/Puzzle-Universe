@@ -242,6 +242,11 @@ public final class MastermindGame implements
             final PlayerAction input;
             input = InputHandler.getPlayerInput();
 
+            if(input == null)
+            {
+                continue;
+            }
+            
             if(input instanceof TruthScanRequest)
             {
                 handleTruthScanAction();
