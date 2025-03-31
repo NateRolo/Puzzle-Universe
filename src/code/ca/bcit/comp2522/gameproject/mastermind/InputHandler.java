@@ -168,7 +168,9 @@ final class InputHandler
     private static boolean isValidRoundNumber(final int roundNumber,
                                             final int currentRound)
     {
-        return roundNumber >= MIN_ROUND_NUMBER && roundNumber <= currentRound;
+        final boolean isValid;
+        isValid = roundNumber >= MIN_ROUND_NUMBER && roundNumber <= currentRound;
+        return isValid;
     }
 
     /*
