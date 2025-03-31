@@ -1,6 +1,7 @@
 package ca.bcit.comp2522.gameproject.mastermind;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -18,6 +19,7 @@ final class DeceptionEngine
     private static final Random RANDOM               = new Random();
     private static final double DECEPTION_CHANCE     = 0.3;
     private static final int    MIN_DECEPTION_ROUNDS = 0;
+    private static final List<Integer> FALSE_GUESS_DIGITS = Arrays.asList(1, 1, 1, 1);
 
     /**
      * Private constructor to prevent instantiation.
@@ -67,10 +69,7 @@ final class DeceptionEngine
             final PlayerGuessCode falseGuess;
 
             falseCode     = SecretCode.generateRandomCode(Code.CODE_LENGTH);
-            falseGuess    = new PlayerGuessCode(Arrays.asList(1,
-                                                              2,
-                                                              3,
-                                                              4));
+            falseGuess    = new PlayerGuessCode(FALSE_GUESS_DIGITS);
             falseFeedback = new Feedback(falseCode,
                                          falseGuess);
         } while(trueFeedback.equals(falseFeedback));
