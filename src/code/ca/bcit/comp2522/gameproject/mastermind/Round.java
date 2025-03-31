@@ -14,14 +14,15 @@ final class Round
 {
     private static final int MIN_ROUND_NUMBER = 1;
     private static final int DECEPTIVE_ROUNDS_ALLOWED = 3;
-
-    private static int deceptiveRoundsUsed;
+    private static final int INITIAL_DECEPTIVE_ROUNDS = 0;
 
     private final int      roundNumber;
     private final PlayerGuessCode     guess;
     private final Feedback trueFeedback;
     private final Feedback falseFeedback;
     private final boolean  isDeceptiveRound;
+    
+    private static int deceptiveRoundsUsed;
 
     /**
      * Constructs a new Round with the specified details.
@@ -103,9 +104,14 @@ final class Round
         Round.deceptiveRoundsUsed++;
     }
 
-    public static int getDeceptiveRoundsUsed()
+    public static final int getDeceptiveRoundsUsed()
     {
-        return deceptiveRoundsUsed;
+        return Round.deceptiveRoundsUsed;
+    }
+
+    static void resetDeceptiveRounds()
+    {
+        Round.deceptiveRoundsUsed = INITIAL_DECEPTIVE_ROUNDS;
     }
 
     /*
