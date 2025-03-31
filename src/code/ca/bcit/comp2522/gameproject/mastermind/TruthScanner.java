@@ -51,9 +51,11 @@ final class TruthScanner
         return true;
     }
     
-    /**
+    /*
      * Performs the truth scan on a selected round.
-     * 
+     * Prompts user for round, retrieves it, checks if deceptive, prints true
+     * feedback if needed, marks truth revealed, and sets scan as used.
+     *
      * @param rounds the list of game rounds
      * @param secretCode the secret code
      */
