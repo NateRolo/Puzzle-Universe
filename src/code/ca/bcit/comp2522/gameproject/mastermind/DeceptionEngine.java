@@ -15,9 +15,9 @@ import java.util.Random;
  */
 final class DeceptionEngine
 {
-    private static final Random RANDOM                  = new Random();
-    private static final double DECEPTION_CHANCE        = 0.3;
-    private static final int MIN_DECEPTION_ROUNDS       = 0;
+    private static final Random RANDOM               = new Random();
+    private static final double DECEPTION_CHANCE     = 0.3;
+    private static final int    MIN_DECEPTION_ROUNDS = 0;
 
     /**
      * Private constructor to prevent instantiation.
@@ -35,12 +35,16 @@ final class DeceptionEngine
      * @return true if deception should be applied, false otherwise
      */
     static final boolean shouldApplyDeception(final int deceptiveRoundsUsed,
-                                        final int deceptiveRoundsAllowed)
+                                              final int deceptiveRoundsAllowed)
     {
         validateDeceptionParameters(deceptiveRoundsUsed,
                                     deceptiveRoundsAllowed);
 
-        return deceptiveRoundsUsed < deceptiveRoundsAllowed && RANDOM.nextDouble() < DECEPTION_CHANCE;
+        final boolean shouldDeceive;
+        shouldDeceive = deceptiveRoundsUsed < deceptiveRoundsAllowed &&
+                        RANDOM.nextDouble() < DECEPTION_CHANCE;
+
+        return shouldDeceive;
     }
 
     /**
@@ -78,7 +82,7 @@ final class DeceptionEngine
      * Validates parameters for deception calculation.
      */
     private static final void validateDeceptionParameters(final int used,
-                                                    final int allowed)
+                                                          final int allowed)
     {
         if(used < MIN_DECEPTION_ROUNDS)
         {
