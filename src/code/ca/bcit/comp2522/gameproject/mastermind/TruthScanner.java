@@ -61,16 +61,17 @@ final class TruthScanner
                              final SecretCode secretCode)
     {
         final int   roundNumber;
-        final Round round;
+        final Round selectedRound;
 
-        roundNumber = InputHandler.getRoundNumberForScan(rounds.size());
-        round       = rounds.get(roundNumber - INCREMENT);
+        roundNumber   = InputHandler.getRoundNumberForScan(rounds.size());
+        selectedRound = rounds.get(roundNumber - INCREMENT);
 
-        if (round.isDeceptiveRound())
+        if (selectedRound.isDeceptiveRound())
         {
-            final Feedback trueFeedback = new Feedback(secretCode, round.getGuess());
+            final Feedback trueFeedback = new Feedback(secretCode, selectedRound.getGuess());
             System.out.println("True feedback for round " + roundNumber + ":");
             System.out.println(trueFeedback);
+            selectedRound.revealTruth();
         }
         else
         {
