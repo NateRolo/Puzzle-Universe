@@ -48,7 +48,7 @@ final class Feedback
         final int guessCodeLength;
 
         secretCodeLength = secretCode.getDigits().size();
-        guessCodeLength = secretCode.getDigits()
+        guessCodeLength = guessCode.getDigits()
                                      .size();
 
         if(secretCodeLength != Code.CODE_LENGTH ||
