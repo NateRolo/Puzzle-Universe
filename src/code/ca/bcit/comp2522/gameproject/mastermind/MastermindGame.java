@@ -72,7 +72,7 @@ public final class MastermindGame implements
     @Override
     public void play()
     {
-        if(! handleGameIntroduction())
+        if(!handleGameIntroduction())
         {
             return;
         }
@@ -119,12 +119,12 @@ public final class MastermindGame implements
 
         response = InputHandler.getYesNoResponse();
 
-        if(! response.equalsIgnoreCase(YES))
+        if(!response.equalsIgnoreCase(YES))
         {
             System.out.println(RULES);
             ready = InputHandler.getYesNoResponse();
 
-            if(! ready.equalsIgnoreCase(YES))
+            if(!ready.equalsIgnoreCase(YES))
             {
                 System.out.println("\nMaybe next time! Goodbye.\n");
                 return false;
@@ -143,7 +143,7 @@ public final class MastermindGame implements
      */
     private void playGameLoop()
     {
-        while(! isGameOver())
+        while(!isGameOver())
         {
             playRound();
         }
@@ -165,15 +165,7 @@ public final class MastermindGame implements
         if(action instanceof PlayerGuessCode playerGuess)
         {
             processGuess(playerGuess);
-        }
-        else if(action instanceof TruthScanRequest)
-        {
-            System.out.println("(Continuing round after Truth Scan...)");
-        }
-        else if(action instanceof GuessSummaryRequest)
-        {
-            System.out.println("(Continuing round after Guess Summary...)");
-        }
+        }       
     }
 
     /*
@@ -246,7 +238,7 @@ public final class MastermindGame implements
             {
                 continue;
             }
-            
+
             if(input instanceof TruthScanRequest)
             {
                 handleTruthScanAction();

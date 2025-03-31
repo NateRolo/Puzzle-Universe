@@ -32,7 +32,7 @@ final class InputHandler
     // Input Validation
     private static final String DIGIT_RANGE_ERROR = "Each digit must be between %d and %d";
     private static final String LENGTH_ERROR      = "Guess must be exactly %d digits";
-    private static final String ROUND_RANGE_ERROR = "Round number must be between %d and %d";
+    
 
     // Regex Pattern
     private static final String VALID_DIGITS_PATTERN = "^[1-6]+$";
