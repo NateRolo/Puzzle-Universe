@@ -95,7 +95,6 @@ class NumberGameLogic extends
             }
             else
             {
-
                 this.currentNumber = generateNumber();
                 System.out.printf("[Logic] Generated next number: %d%n",
                                   this.currentNumber);
