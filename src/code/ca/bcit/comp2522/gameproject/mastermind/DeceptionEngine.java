@@ -17,6 +17,7 @@ final class DeceptionEngine
 {
     private static final Random RANDOM                  = new Random();
     private static final double DECEPTION_CHANCE        = 0.3;
+    private static final int MIN_DECEPTION_ROUNDS       = 0;
 
     /**
      * Private constructor to prevent instantiation.
@@ -79,11 +80,11 @@ final class DeceptionEngine
     private static final void validateDeceptionParameters(final int used,
                                                     final int allowed)
     {
-        if(used < 0)
+        if(used < MIN_DECEPTION_ROUNDS)
         {
             throw new IllegalArgumentException("Deceptive rounds used cannot be negative");
         }
-        if(allowed < 0)
+        if(allowed < MIN_DECEPTION_ROUNDS)
         {
             throw new IllegalArgumentException("Deceptive rounds allowed cannot be negative");
         }
