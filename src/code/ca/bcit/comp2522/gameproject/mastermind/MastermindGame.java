@@ -87,8 +87,6 @@ public final class MastermindGame implements
         System.out.println("\n" + SEPARATOR_LINE);
         System.out.println("Returning to main menu...");
         System.out.println(SEPARATOR_LINE + "\n");
-
-        InputHandler.closeScanner();
     }
 
     /*
