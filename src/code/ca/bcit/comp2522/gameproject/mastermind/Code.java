@@ -36,7 +36,7 @@ abstract class Code
      *
      * @return a new List containing the code's digits
      */
-    final List<Integer> getDigits()
+    List<Integer> getDigits()
     {
         return new ArrayList<>(digits);
     }
