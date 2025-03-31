@@ -87,7 +87,10 @@ public final class MastermindGame implements
         System.out.println(SEPARATOR_LINE + "\n");
     }
 
-    // needs comments
+    /*
+     * Initializes the state for a new game.
+     * Resets rounds, generates a new secret code, and resets counters.
+     */
     private void initializeNewGame()
     {
         rounds     = new ArrayList<>(); 
@@ -97,7 +100,11 @@ public final class MastermindGame implements
         System.out.println("\n" + NEW_GAME_SEPARATOR);
     }
 
-    // needs comments
+    /*
+     * Handles the initial game introduction and rules display.
+     *
+     * @return true if the player is ready to start, false otherwise.
+     */
     private static boolean handleGameIntroduction()
     {
         final String response;
@@ -129,7 +136,9 @@ public final class MastermindGame implements
         return true;
     }
 
-    // needs comments
+    /*
+     * Manages the main loop of the game, playing rounds until the game is over.
+     */
     private void playGameLoop()
     {
         while(! isGameOver())
@@ -138,7 +147,10 @@ public final class MastermindGame implements
         }
     }
 
-    // needs comments
+    /*
+     * Plays a single round of the game.
+     * Handles player input (guess, scan, summary) and processes the guess.
+     */
     private void playRound()
     {
         final int          roundNumber;
@@ -169,7 +181,12 @@ public final class MastermindGame implements
         }
     }
 
-    // needs comments
+    /*
+     * Processes a player's guess.
+     * Creates feedback, adds a new round to the history, and displays feedback.
+     *
+     * @param guess The player's guess code for the current round.
+     */
     private void processGuess(final PlayerGuessCode guess)
     {
         final Round    thisRound;
@@ -190,7 +207,13 @@ public final class MastermindGame implements
         System.out.println("\nFeedback: " + thisRoundFeedback);
     }
 
-    // needs comments
+    /*
+     * Handles player input within a round.
+     * Loops until a valid action (guess, scan, summary) is received.
+     * Processes scan and summary requests directly.
+     *
+     * @return The PlayerAction representing the player's choice.
+     */
     private PlayerAction handlePlayerInput()
     {
         while(true)
@@ -227,7 +250,12 @@ public final class MastermindGame implements
         }
     }
 
-    // needs comments
+    /*
+     * Checks if the guess in a given round matches the secret code.
+     *
+     * @param round The round to check.
+     * @return true if the guess is correct, false otherwise.
+     */
     private boolean isCorrectGuess(final Round round)
     {
         final Feedback actualFeedback;
@@ -240,7 +268,12 @@ public final class MastermindGame implements
         return isCorrectGuess;
     }
 
-    // needs comments
+    /*
+     * Determines if the game has ended.
+     * The game ends if the last guess was correct or max rounds are reached.
+     *
+     * @return true if the game is over, false otherwise.
+     */
     private boolean isGameOver()
     {
         if(rounds.isEmpty())
@@ -263,7 +296,10 @@ public final class MastermindGame implements
         return maxRoundsReached;
     }
 
-    // needs comments
+    /*
+     * Handles the end-of-game sequence.
+     * Displays win/loss message, secret code, and deceptive round count.
+     */
     private void endGame()
     {
         System.out.println("\n" + GAME_OVER_SEPARATOR);
@@ -296,7 +332,11 @@ public final class MastermindGame implements
         System.out.println(GAME_OVER_SEPARATOR);
     }
 
-    // needs comments
+    /*
+     * Asks the player if they want to play another game.
+     *
+     * @return true if the player wants to play again, false otherwise.
+     */
     private boolean askPlayAgain()
     {
         System.out.print("\nPlay again? (yes/no): ");
@@ -307,6 +347,10 @@ public final class MastermindGame implements
         return response.equalsIgnoreCase(YES);
     }
 
+    /*
+     * Prints a summary of all previous guesses and their feedback.
+     * Displays the actual feedback for rounds where truth was revealed.
+     */
     private void printGuessSummary()
     {
         System.out.println("\n--- Guess Summary ---");
