@@ -87,6 +87,7 @@ public final class MastermindGame implements
         System.out.println(SEPARATOR_LINE + "\n");
     }
 
+    // needs comments
     private void initializeNewGame()
     {
         rounds     = new ArrayList<>(); 
@@ -96,6 +97,7 @@ public final class MastermindGame implements
         System.out.println("\n" + NEW_GAME_SEPARATOR);
     }
 
+    // needs comments
     private static boolean handleGameIntroduction()
     {
         final String response;
@@ -127,6 +129,7 @@ public final class MastermindGame implements
         return true;
     }
 
+    // needs comments
     private void playGameLoop()
     {
         while(! isGameOver())
@@ -135,6 +138,7 @@ public final class MastermindGame implements
         }
     }
 
+    // needs comments
     private void playRound()
     {
         final int          roundNumber;
@@ -155,12 +159,17 @@ public final class MastermindGame implements
         {
             System.out.println("(Continuing round after Truth Scan...)");
         }
+        else if(guess instanceof GuessSummaryRequest)
+        {
+            printGuessSummary();
+        }
         else
         {
             System.err.println("Unexpected input received, skipping round.");
         }
     }
 
+    // needs comments
     private void processGuess(final PlayerGuessCode guess)
     {
         final Round    thisRound;
@@ -181,6 +190,7 @@ public final class MastermindGame implements
         System.out.println("\nFeedback: " + thisRoundFeedback);
     }
 
+    // needs comments
     private PlayerAction handlePlayerInput()
     {
         while(true)
@@ -205,6 +215,10 @@ public final class MastermindGame implements
             {
                 return input; 
             }
+            else if(input instanceof GuessSummaryRequest)
+            {
+                printGuessSummary();
+            }
             else
             {
                 System.err.println("Input error detected. Please try again or restart.");
@@ -213,6 +227,7 @@ public final class MastermindGame implements
         }
     }
 
+    // needs comments
     private boolean isCorrectGuess(final Round round)
     {
         final Feedback actualFeedback;
@@ -225,6 +240,7 @@ public final class MastermindGame implements
         return isCorrectGuess;
     }
 
+    // needs comments
     private boolean isGameOver()
     {
         if(rounds.isEmpty())
@@ -247,6 +263,7 @@ public final class MastermindGame implements
         return maxRoundsReached;
     }
 
+    // needs comments
     private void endGame()
     {
         System.out.println("\n" + GAME_OVER_SEPARATOR);
@@ -279,6 +296,7 @@ public final class MastermindGame implements
         System.out.println(GAME_OVER_SEPARATOR);
     }
 
+    // needs comments
     private boolean askPlayAgain()
     {
         System.out.print("\nPlay again? (yes/no): ");
@@ -287,5 +305,18 @@ public final class MastermindGame implements
         response = InputHandler.getYesNoResponse();
 
         return response.equalsIgnoreCase(YES);
+    }
+
+    private void printGuessSummary()
+    {
+        System.out.println("\n--- Guess Summary ---");
+        if (rounds.isEmpty()) {
+            System.out.println("No guesses made yet.");
+        } else {
+            for (final Round round : rounds) {
+                System.out.println(round.toString());
+            }
+        }
+        System.out.println("--- End Summary ---");
     }
 }
