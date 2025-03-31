@@ -16,9 +16,9 @@ import java.util.List;
 abstract class Code
 {
     private final List<Integer> digits;
-    static final int MIN_DIGIT = 1;
-    static final int MAX_DIGIT = 6;
-    static final int CODE_LENGTH = 4;
+    static final int            MIN_DIGIT   = 1;
+    static final int            MAX_DIGIT   = 6;
+    static final int            CODE_LENGTH = 4;
 
     /**
      * Constructs a new Code with the specified sequence of digits.
@@ -48,16 +48,16 @@ abstract class Code
      */
     private static void validateDigits(final List<Integer> digits)
     {
-        if (digits == null)
+        if(digits == null)
         {
             throw new IllegalArgumentException("Digits cannot be null");
         }
-        if (digits.isEmpty())
+        if(digits.isEmpty())
         {
             throw new IllegalArgumentException("Digits cannot be empty");
         }
 
-        for(Integer num: digits)
+        for(final Integer num : digits)
         {
             if(num < MIN_DIGIT || num > MAX_DIGIT)
             {
@@ -69,23 +69,28 @@ abstract class Code
     @Override
     public boolean equals(final Object other)
     {
-        if (other == null)
+        final Code otherCode;
+        final boolean codesAreEqual;
+
+        if(other == null)
         {
             throw new NullPointerException("Other cannot be null");
         }
 
-        if (this == other)
+        if(this == other)
         {
             return true;
         }
-        
-        if (!(other instanceof Code))
+
+        if(!(other instanceof Code))
         {
             throw new IllegalArgumentException("Other is not a Code");
         }
 
-        final Code otherCode = (Code)other;
-        return digits.equals(otherCode.digits);
+        otherCode = (Code)other;
+        codesAreEqual = digits.equals(otherCode.digits);
+
+        return codesAreEqual;
     }
 
     @Override
