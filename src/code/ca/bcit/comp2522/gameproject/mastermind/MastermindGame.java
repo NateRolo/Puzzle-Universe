@@ -13,20 +13,22 @@ import ca.bcit.comp2522.gameproject.Playable;
  * </p>
  *
  * @author Nathan O
- * @version 1.0 2025
+ * @version 1.1 2025
  */
 public final class MastermindGame implements
                                   Playable
 {
-    // Game Configuration
-    private static final int          MAX_ROUNDS         = 12;
-    private static final int          CODE_LENGTH        = 4;
-    private static final TruthScanner TRUTH_SCAN_HANDLER = new TruthScanner();
+    private static final int          MAX_ROUNDS    = 12;
+    private static final int          CODE_LENGTH   = 4;
+    private static final TruthScanner TRUTH_SCANNER = new TruthScanner();
+    private static final String       YES           = "yes";
 
-    // Counter Constants
     private static final int INCREMENT = 1;
 
-    // Message Templates
+    private static final String SEPARATOR_LINE      = "----------------------------------------";
+    private static final String GAME_OVER_SEPARATOR = "=========== GAME OVER ============";
+    private static final String NEW_GAME_SEPARATOR  = "+++++++++++ NEW GAME +++++++++++";
+
     private static final String GAME_OVER_MESSAGE = "Game Over! The secret code was: %s";
     private static final String WIN_MESSAGE       = "Congratulations! You won in %d rounds!";
 
@@ -52,21 +54,18 @@ public final class MastermindGame implements
 
                                         Are you ready to start? (yes/no): """;
 
-    private final List<Round> rounds;
-    private final SecretCode  secretCode;
-
+    private List<Round> rounds;
+    private SecretCode  secretCode;
 
     /**
      * Constructs a new MastermindGame.
      */
     public MastermindGame()
     {
-        rounds     = new ArrayList<>();
-        secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
     }
 
     /**
-     * Starts and manages the game session.
+     * Starts and manages the game session, allowing for multiple games.
      */
     @Override
     public void play()
@@ -76,46 +75,58 @@ public final class MastermindGame implements
             return;
         }
 
-        playGameLoop();
-        endGame();
+        do
+        {
+            initializeNewGame();
+            playGameLoop();
+            endGame();
+        } while(askPlayAgain());
+
+        System.out.println("\n" + SEPARATOR_LINE);
+        System.out.println("Returning to main menu...");
+        System.out.println(SEPARATOR_LINE + "\n");
     }
 
-    /*
-     * Handles the game introduction and rules explanation.
-     */
+    private void initializeNewGame()
+    {
+        rounds     = new ArrayList<>(); 
+        secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
+        Round.resetDeceptiveRounds(); 
+        TRUTH_SCANNER.resetTruthScanner();
+        System.out.println("\n" + NEW_GAME_SEPARATOR);
+    }
+
     private static boolean handleGameIntroduction()
     {
         final String response;
         final String ready;
 
+        System.out.println("\n" + SEPARATOR_LINE);
         System.out.println("Welcome to Mastermind!");
-        System.out.println("Have you played this game before? (yes/no):");
+        System.out.println(SEPARATOR_LINE);
+        System.out.print("Have you played this version before? (yes/no): ");
 
         response = InputHandler.getYesNoResponse();
 
-        if(! response.equalsIgnoreCase("yes"))
+        if(! response.equalsIgnoreCase(YES))
         {
             System.out.println(RULES);
             ready = InputHandler.getYesNoResponse();
 
-            if(! ready.equalsIgnoreCase("yes"))
+            if(! ready.equalsIgnoreCase(YES))
             {
-                System.out.println("Maybe next time! Goodbye.");
+                System.out.println("\nMaybe next time! Goodbye.\n");
                 return false;
             }
         }
 
-        System.out.println("\nTry to guess the " +
-                           CODE_LENGTH +
-                           "-digit code. You have " +
-                           MAX_ROUNDS +
-                           " attempts.");
+        System.out.println("\n" + SEPARATOR_LINE);
+        System.out.println("Try to guess the " + CODE_LENGTH + "-digit code.");
+        System.out.println("You have " + MAX_ROUNDS + " attempts.");
+        System.out.println(SEPARATOR_LINE);
         return true;
     }
 
-    /*
-     * Manages the main game loop.
-     */
     private void playGameLoop()
     {
         while(! isGameOver())
@@ -124,62 +135,96 @@ public final class MastermindGame implements
         }
     }
 
-    /*
-     * Plays a single round of the game.
-     */
     private void playRound()
     {
-        final int             roundNumber;
-        final PlayerGuessCode guess;
-        final Feedback        actualFeedback;
-        final Round           round;
-        final Feedback        thisRoundFeedback;
+        final int          roundNumber;
+        final PlayerAction guess;
 
         roundNumber = rounds.size() + INCREMENT;
-        System.out.println("\nRound " + roundNumber);
+        System.out.printf("%n--- Round %d of %d ---%n",
+                          roundNumber,
+                          MAX_ROUNDS);
 
         guess = handlePlayerInput();
 
-        if(guess == null)
+        if(guess instanceof PlayerGuessCode playerGuess)
         {
-            return;
+            processGuess(playerGuess);
         }
-
-        actualFeedback = new Feedback(secretCode,
-                                guess);
-        round    = new Round(rounds.size() + INCREMENT,
-                             guess,
-                             actualFeedback);
-
-        rounds.add(round);
-
-        // Round may provide deceptive feedback based on game rules
-        thisRoundFeedback = round.getFeedback();
-
-        System.out.println(thisRoundFeedback);
+        else if(guess instanceof TruthScanRequest)
+        {
+            System.out.println("(Continuing round after Truth Scan...)");
+        }
+        else
+        {
+            System.err.println("Unexpected input received, skipping round.");
+        }
     }
 
-    /*
-     * Handles player input including truth scan requests.
-     */
-    private PlayerGuessCode handlePlayerInput()
+    private void processGuess(final PlayerGuessCode guess)
     {
-        final PlayerGuessCode input;
+        final Round    thisRound;
+        final Feedback actualFeedback;
+        final Feedback thisRoundFeedback;
+        final int      roundsPlayed;
 
-        input = InputHandler.getPlayerInput();
+        roundsPlayed   = rounds.size() + INCREMENT;
+        actualFeedback = new Feedback(secretCode,
+                                      guess);
+        thisRound      = new Round(roundsPlayed,
+                                   guess,
+                                   actualFeedback);
+        rounds.add(thisRound);
 
-        if(input != null && input.isTruthScanRequest())
-        {
-            TRUTH_SCAN_HANDLER.handleTruthScanRequest(rounds,
-                                                      secretCode);
-            return null;
-        }
-        return input;
+        thisRoundFeedback = thisRound.getFeedback();
+
+        System.out.println("\nFeedback: " + thisRoundFeedback);
     }
 
-    /*
-     * Checks if the game is over (win or max rounds reached).
-     */
+    private PlayerAction handlePlayerInput()
+    {
+        while(true)
+        {
+            final PlayerAction input = InputHandler.getPlayerInput();
+
+            if(input instanceof TruthScanRequest)
+            {
+                System.out.println("\n--- Truth Scan Requested ---");
+                final boolean scanSuccess = TRUTH_SCANNER.handleTruthScanRequest(rounds,
+                                                                                 secretCode);
+                if(scanSuccess)
+                {
+                    System.out.println("--- Truth Scan Complete ---");
+                }
+                else
+                {
+                    System.out.println("--- Truth Scan Failed ---");
+                }                
+            }
+            else if(input instanceof PlayerGuessCode)
+            {
+                return input; 
+            }
+            else
+            {
+                System.err.println("Input error detected. Please try again or restart.");
+                return null; 
+            }
+        }
+    }
+
+    private boolean isCorrectGuess(final Round round)
+    {
+        final Feedback actualFeedback;
+        final boolean isCorrectGuess;
+        
+        actualFeedback = new Feedback(secretCode,
+                                      round.getGuess());
+        isCorrectGuess = actualFeedback.getCorrectPositionCount() == CODE_LENGTH;
+        
+        return isCorrectGuess;
+    }
+
     private boolean isGameOver()
     {
         if(rounds.isEmpty())
@@ -187,40 +232,41 @@ public final class MastermindGame implements
             return false;
         }
 
-        final Round    lastRound;
-        final Feedback lastFeedback;
-        final boolean  gameOver;
+        final Round lastRound;
+        final boolean maxRoundsReached;
 
-        lastRound    = rounds.get(rounds.size() - 1);
-        lastFeedback = lastRound.getFeedback();
+        lastRound = rounds.get(rounds.size() - INCREMENT);
+        
+        if(isCorrectGuess(lastRound))
+        {
+            return true; 
+        }
 
-        gameOver = lastFeedback.getCorrectPositionCount() == CODE_LENGTH ||
-                   rounds.size() >= MAX_ROUNDS;
-                   
-        return gameOver;
+        maxRoundsReached = rounds.size() >= MAX_ROUNDS;
+
+        return maxRoundsReached;
     }
 
-    /*
-     * Handles game end conditions and displays final message.
-     */
     private void endGame()
     {
+        System.out.println("\n" + GAME_OVER_SEPARATOR);
+
         if(rounds.isEmpty())
         {
             System.out.println("Game ended without any guesses.");
+            System.out.println(GAME_OVER_SEPARATOR);
             return;
         }
 
-        final Round    lastRound;
-        final Feedback lastFeedback;
+        final Round lastRound;
+        final int roundsPlayed;
+        
+        lastRound = rounds.get(rounds.size() - INCREMENT);
+        roundsPlayed = rounds.size();
 
-        lastRound    = rounds.get(rounds.size() - INCREMENT);
-        lastFeedback = lastRound.getFeedback();
-
-        if(lastFeedback.getCorrectPositionCount() == CODE_LENGTH)
+        if(isCorrectGuess(lastRound))
         {
-            System.out.println(String.format(WIN_MESSAGE,
-                                             rounds.size()));
+            System.out.println(String.format(WIN_MESSAGE, roundsPlayed));
         }
         else
         {
@@ -230,7 +276,16 @@ public final class MastermindGame implements
 
         System.out.println("Deceptive rounds used: " +
                            Round.getDeceptiveRoundsUsed());
+        System.out.println(GAME_OVER_SEPARATOR);
     }
 
+    private boolean askPlayAgain()
+    {
+        System.out.print("\nPlay again? (yes/no): ");
+        
+        final String response;
+        response = InputHandler.getYesNoResponse();
 
+        return response.equalsIgnoreCase(YES);
+    }
 }
