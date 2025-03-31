@@ -12,24 +12,25 @@ package ca.bcit.comp2522.gameproject.mastermind;
  */
 final class Round
 {
-    private static final int MIN_ROUND_NUMBER = 1;
+    private static final int MIN_ROUND_NUMBER         = 1;
     private static final int DECEPTIVE_ROUNDS_ALLOWED = 3;
     private static final int INITIAL_DECEPTIVE_ROUNDS = 0;
 
-    private final int      roundNumber;
-    private final PlayerGuessCode     guess;
-    private final Feedback trueFeedback;
-    private final Feedback falseFeedback;
-    private final boolean  isDeceptiveRound;
-    
+    private final int             roundNumber;
+    private final PlayerGuessCode guess;
+    private final Feedback        trueFeedback;
+    private final Feedback        falseFeedback;
+    private final boolean         isDeceptiveRound;
+    private boolean               truthRevealed;
+
     private static int deceptiveRoundsUsed;
 
     /**
      * Constructs a new Round with the specified details.
      *
-     * @param roundNumber    the number of this round
-     * @param guess          the player's guess for this round
-     * @param trueFeedback       the feedback given for the guess
+     * @param roundNumber  the number of this round
+     * @param guess        the player's guess for this round
+     * @param trueFeedback the feedback given for the guess
      */
     Round(final int roundNumber,
           final PlayerGuessCode guess,
@@ -39,20 +40,21 @@ final class Round
                           guess,
                           trueFeedback);
 
-        this.roundNumber    = roundNumber;
-        this.guess          = guess;
-        this.trueFeedback   = trueFeedback;
+        this.roundNumber      = roundNumber;
+        this.guess            = guess;
+        this.trueFeedback     = trueFeedback;
         this.isDeceptiveRound = DeceptionEngine.shouldApplyDeception(deceptiveRoundsUsed,
                                                                      DECEPTIVE_ROUNDS_ALLOWED);
         if(this.isDeceptiveRound)
         {
-            this.falseFeedback  = DeceptionEngine.applyDeception(trueFeedback);
+            this.falseFeedback = DeceptionEngine.applyDeception(trueFeedback);
             incrementDeceptiveRounds();
         }
         else
         {
             this.falseFeedback = null;
         }
+        this.truthRevealed = false;
     }
 
     /**
@@ -70,7 +72,7 @@ final class Round
      *
      * @return the Code object representing the guess
      */
-    PlayerGuessCode getGuess()
+    final PlayerGuessCode getGuess()
     {
         return guess;
     }
@@ -80,7 +82,7 @@ final class Round
      *
      * @return the Feedback object
      */
-    Feedback getFeedback()
+    final Feedback getFeedback()
     {
         if(this.isDeceptiveRound)
         {
@@ -94,9 +96,19 @@ final class Round
      *
      * @return true if the feedback was altered, false otherwise
      */
-    boolean isDeceptiveRound()
+    final boolean isDeceptiveRound()
     {
         return isDeceptiveRound;
+    }
+
+    /**
+     * Marks this round as having its truth revealed by a scan.
+     */
+    final void revealTruth()
+    {
+        if (this.isDeceptiveRound) {
+             this.truthRevealed = true;
+        }
     }
 
     static void incrementDeceptiveRounds()
@@ -115,15 +127,18 @@ final class Round
     }
 
     /*
-     * Validates the round data ensuring all required fields are present and valid.
+     * Validates the round data ensuring all required fields are present and
+     * valid.
      *
      * @param roundNumber the round number to validate
-     * @param guess      the guess to validate
-     * @param feedback   the feedback to validate
+     * 
+     * @param guess the guess to validate
+     * 
+     * @param feedback the feedback to validate
      */
     private static void validateRoundData(final int roundNumber,
-                                   final Code guess,
-                                   final Feedback feedback)
+                                          final Code guess,
+                                          final Feedback feedback)
     {
         if(roundNumber < MIN_ROUND_NUMBER)
         {
@@ -139,10 +154,17 @@ final class Round
         }
     }
 
-    @Override
-    public String toString()
+    /**
+     * Provides a formatted string summarizing the round for display.
+     * Shows true feedback if truth has been revealed, otherwise shows
+     * the feedback originally presented to the player (potentially deceptive).
+     *
+     * @return A string summary of the round.
+     */
+    final String getSummaryLine()
     {
         final StringBuilder result;
+        final Feedback      displayFeedback;
 
         result = new StringBuilder();
         result.append("Round ")
@@ -151,15 +173,30 @@ final class Round
               .append(guess)
               .append(", ");
 
-        if(isDeceptiveRound)
+        if (isDeceptiveRound)
         {
+            if (truthRevealed)
+            {
+                // Show true feedback, mark as revealed
+                result.append("Actual Feedback: ").append(trueFeedback).append(" (Truth Revealed)");
+            } else
+            {
+                // Show deceptive feedback, mark as potentially deceptive
+                result.append(falseFeedback).append(" (Deceptive?)");
+            }
+        } else
+        {
+            // Not deceptive, just show true feedback
             result.append(trueFeedback);
-        }
-        else
-        {
-            result.append(falseFeedback);
         }
 
         return result.toString();
+    }
+
+    /* Override toString to use the summary line for general printing */
+    @Override
+    public String toString()
+    {
+        return getSummaryLine();
     }
 }
