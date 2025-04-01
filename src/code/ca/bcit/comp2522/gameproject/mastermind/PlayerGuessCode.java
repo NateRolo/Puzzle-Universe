@@ -17,14 +17,14 @@ public final class PlayerGuessCode extends
                                    Code implements
                                    PlayerAction
 {
-    // Renamed constant for clarity, assuming digits 1-6 are valid
     private static final String VALID_DIGIT_PATTERN = "[1-6]";
-    private static final int CHARACTER_INCREMENT = 1;
+    private static final int    CHARACTER_INCREMENT = 1;
 
-    /**
-     * Private constructor to enforce creation via factory method.
+    /*
+     * Private constructor to enforce the use of the factory method.
+     * Initializes the code sequence for the guess.
      *
-     * @param digits the validated sequence of digits for the guess.
+     * @param digits The validated sequence of digits representing the guess.
      */
     private PlayerGuessCode(final List<Integer> digits)
     {
@@ -52,6 +52,7 @@ public final class PlayerGuessCode extends
         final List<Integer> digits;
         digits = new ArrayList<>(CODE_LENGTH);
 
+        // Iterate through input string to validate and convert characters
         for(int i = 0; i < CODE_LENGTH; i++)
         {
             final char   thisCharacter;
@@ -62,7 +63,8 @@ public final class PlayerGuessCode extends
 
             if(!thisCharacterAsString.matches(VALID_DIGIT_PATTERN))
             {
-                final String message = String.format("Invalid character '%c' at position %d. Only digits 1-6 are allowed.",
+                final String message = String.format("Invalid character '%c' at position %d." +
+                                                     "Only digits 1-6 are allowed.",
                                                      thisCharacter,
                                                      i + CHARACTER_INCREMENT);
                 throw new InvalidGuessException(message);
@@ -72,6 +74,14 @@ public final class PlayerGuessCode extends
         return new PlayerGuessCode(digits);
     }
 
+    /*
+     * Private helper method to validate the basic properties of the input
+     * string.
+     *
+     * @param input The raw input string.
+     * @param codeLength The expected length of the code.
+     * @throws InvalidGuessException If input is null or length is incorrect.
+     */
     private static final void validateInput(final String input) throws InvalidGuessException
     {
         if(input == null)
@@ -90,5 +100,5 @@ public final class PlayerGuessCode extends
         }
     }
 
-    
+
 }
