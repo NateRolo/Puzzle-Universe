@@ -42,10 +42,8 @@ public final class PlayerGuessCode extends
      * @param input      The raw string input from the player.
      * @param codeLength The expected length of the code.
      * @return A new PlayerGuessCode instance.
-     * @throws InvalidGuessException if the input is null, has incorrect length,
-     *                               or contains non-digit characters.
      */
-    public static PlayerGuessCode fromInput(final String input)
+    public static final PlayerGuessCode fromInput(final String input)
     {
         validateInput(input);
 
@@ -80,9 +78,8 @@ public final class PlayerGuessCode extends
      *
      * @param input The raw input string.
      * @param codeLength The expected length of the code.
-     * @throws InvalidGuessException If input is null or length is incorrect.
      */
-    private static final void validateInput(final String input) throws InvalidGuessException
+    private static final void validateInput(final String input)
     {
         if(input == null)
         {
