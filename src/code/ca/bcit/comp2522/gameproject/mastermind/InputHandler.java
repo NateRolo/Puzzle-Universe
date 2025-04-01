@@ -15,35 +15,23 @@ import java.util.Scanner;
  */
 final class InputHandler
 {
-    private static final int MIN_DIGIT        = 1;
-    private static final int MAX_DIGIT        = 6;
+  
     private static final int MIN_ROUND_NUMBER = 1;
 
     private static final Scanner scan = new Scanner(System.in);
 
-    // Message Constants
-    private static final String RETRY_PROMPT        = "Invalid guess, please try again.";
     private static final String TRUTH_SCAN_INPUT    = "t";
     private static final String GUESS_SUMMARY_INPUT = "g";
-
-    // Input Validation
-    private static final String DIGIT_RANGE_ERROR = "Each digit must be between %d and %d";
-    private static final String LENGTH_ERROR      = "Guess must be exactly %d digits";
-
-
-    // Regex Pattern
-    private static final String VALID_DIGITS_PATTERN = "^[1-6]+$";
 
     /**
      * Gets and validates the player's input.
      *
      * @return a PlayerGuessCode object representing either a guess or truth
      *         scan request
-     * @throws InvalidGuessException if the guess input is invalid
      */
-    static PlayerAction getPlayerInput()
+    static final PlayerAction getPlayerInput()
     {
-        if(! scan.hasNextLine())
+        if(!scan.hasNextLine())
         {
             throw new java.util.NoSuchElementException("Input stream ended unexpectedly.");
         }
@@ -62,7 +50,6 @@ final class InputHandler
             return new PlayerAction.GuessSummaryRequest();
         }
 
-
         final PlayerGuessCode guessCode;
         guessCode = PlayerGuessCode.fromInput(input);
 
@@ -75,7 +62,7 @@ final class InputHandler
      * @param currentRound the current round number
      * @return the selected round number
      */
-    static int getRoundNumberForScan(final int currentRound)
+    static final int getRoundNumberForScan(final int currentRound)
     {
         validateCurrentRound(currentRound);
         return getRoundNumberWithValidation(currentRound);
@@ -85,7 +72,7 @@ final class InputHandler
      * Validates the current round number.
      * Ensures the round number is not less than the minimum allowed.
      */
-    private static void validateCurrentRound(final int currentRound)
+    private static final void validateCurrentRound(final int currentRound)
     {
         if(currentRound < MIN_ROUND_NUMBER)
         {
@@ -102,7 +89,7 @@ final class InputHandler
      * 
      * @return the validated round number selected by the user
      */
-    private static int getRoundNumberWithValidation(final int currentRound)
+    private static final int getRoundNumberWithValidation(final int currentRound)
     {
         while(true)
         {
@@ -139,8 +126,8 @@ final class InputHandler
      * @param input the string to validate
      * 
      * @return true if the input contains only digits, false otherwise
-     */
-    private static boolean isValidNumericInput(final String input)
+     */ 
+    private static final boolean isValidNumericInput(final String input)
     {
         return input.matches("\\d+");
     }
@@ -155,7 +142,7 @@ final class InputHandler
      * 
      * @return true if the round number is valid, false otherwise
      */
-    private static boolean isValidRoundNumber(final int roundNumber,
+    private static final boolean isValidRoundNumber(final int roundNumber,
                                               final int currentRound)
     {
         final boolean isValid;
@@ -169,7 +156,7 @@ final class InputHandler
      *
      * @return the user's response (either "yes" or "no")
      */
-    static String getYesNoResponse()
+    static final String getYesNoResponse()
     {
         String response;
         do
