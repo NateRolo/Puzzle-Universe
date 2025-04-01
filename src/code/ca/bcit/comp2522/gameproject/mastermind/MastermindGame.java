@@ -239,7 +239,7 @@ public final class MastermindGame implements
                 continue;
             }
 
-            if(input instanceof TruthScanRequest)
+            if(input instanceof PlayerAction.TruthScanRequest)
             {
                 handleTruthScanAction();
             }
@@ -247,7 +247,7 @@ public final class MastermindGame implements
             {
                 return guess;
             }
-            else if(input instanceof GuessSummaryRequest)
+            else if(input instanceof PlayerAction.GuessSummaryRequest)
             {
                 handleGuessSummaryAction();
             }
