@@ -29,7 +29,7 @@ final class InputHandler
     // Input Validation
     private static final String DIGIT_RANGE_ERROR = "Each digit must be between %d and %d";
     private static final String LENGTH_ERROR      = "Guess must be exactly %d digits";
-    
+
 
     // Regex Pattern
     private static final String VALID_DIGITS_PATTERN = "^[1-6]+$";
@@ -43,7 +43,7 @@ final class InputHandler
      */
     static PlayerAction getPlayerInput()
     {
-        if(!scan.hasNextLine())
+        if(! scan.hasNextLine())
         {
             throw new java.util.NoSuchElementException("Input stream ended unexpectedly.");
         }
@@ -121,31 +121,24 @@ final class InputHandler
             final String input = scan.nextLine()
                                      .trim();
 
-            if(! isValidNumericInput(input))
+            if(!isValidNumericInput(input))
             {
                 System.out.println("Please enter a valid number.");
                 continue;
             }
 
-            try
-            {
-                final int roundNumber = Integer.parseInt(input);
+            final int roundNumber = Integer.parseInt(input);
 
-                if(! isValidRoundNumber(roundNumber,
-                                        currentRound))
-                {
-                    System.out.printf("Please enter a number between %d and %d.%n",
-                                      MIN_ROUND_NUMBER,
-                                      currentRound);
-                    continue;
-                }
-
-                return roundNumber;
-            }
-            catch(NumberFormatException e)
+            if(!isValidRoundNumber(roundNumber,
+                                    currentRound))
             {
-                System.out.println("Please enter a valid number.");
+                System.out.printf("Please enter a number between %d and %d.%n",
+                                  MIN_ROUND_NUMBER,
+                                  currentRound);
+                continue;
             }
+            return roundNumber;
+
         }
     }
 
