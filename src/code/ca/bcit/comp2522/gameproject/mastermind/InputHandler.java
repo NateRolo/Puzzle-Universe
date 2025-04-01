@@ -62,19 +62,11 @@ final class InputHandler
             return new PlayerAction.GuessSummaryRequest();
         }
 
-        try
-        {
-            final PlayerGuessCode guessCode;
-            guessCode = PlayerGuessCode.fromInput(input);
 
-            return guessCode;
-        }
-        catch(InvalidGuessException e)
-        {
-            System.out.println(e.getMessage());
-            System.out.println(RETRY_PROMPT);
-            return null;
-        }
+        final PlayerGuessCode guessCode;
+        guessCode = PlayerGuessCode.fromInput(input);
+
+        return guessCode;
     }
 
     /**
@@ -82,7 +74,6 @@ final class InputHandler
      *
      * @param currentRound the current round number
      * @return the selected round number
-     * @throws InvalidGuessException if input is invalid
      */
     static int getRoundNumberForScan(final int currentRound)
     {
@@ -121,7 +112,7 @@ final class InputHandler
             final String input = scan.nextLine()
                                      .trim();
 
-            if(!isValidNumericInput(input))
+            if(! isValidNumericInput(input))
             {
                 System.out.println("Please enter a valid number.");
                 continue;
@@ -129,7 +120,7 @@ final class InputHandler
 
             final int roundNumber = Integer.parseInt(input);
 
-            if(!isValidRoundNumber(roundNumber,
+            if(! isValidRoundNumber(roundNumber,
                                     currentRound))
             {
                 System.out.printf("Please enter a number between %d and %d.%n",
