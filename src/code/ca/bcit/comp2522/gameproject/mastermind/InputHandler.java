@@ -58,11 +58,11 @@ final class InputHandler
 
         if(input.equalsIgnoreCase(TRUTH_SCAN_INPUT))
         {
-            return new TruthScanRequest();
+            return new PlayerAction.TruthScanRequest();
         }
         else if(input.equalsIgnoreCase(GUESS_SUMMARY_INPUT))
         {
-            return new GuessSummaryRequest();
+            return new PlayerAction.GuessSummaryRequest();
         }
 
         try
