@@ -1,7 +1,5 @@
 package ca.bcit.comp2522.gameproject.mastermind;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 
@@ -17,7 +15,6 @@ import java.util.Scanner;
  */
 final class InputHandler
 {
-    private static final int CODE_LENGTH      = 4;
     private static final int MIN_DIGIT        = 1;
     private static final int MAX_DIGIT        = 6;
     private static final int MIN_ROUND_NUMBER = 1;
@@ -67,12 +64,8 @@ final class InputHandler
 
         try
         {
-            validateGuessFormat(input);
-            final List<Integer>   digits;
             final PlayerGuessCode guessCode;
-
-            digits    = parseGuess(input);
-            guessCode = new PlayerGuessCode(digits);
+            guessCode = PlayerGuessCode.fromInput(input);
 
             return guessCode;
         }
@@ -185,72 +178,6 @@ final class InputHandler
         isValid = roundNumber >= MIN_ROUND_NUMBER &&
                   roundNumber <= currentRound;
         return isValid;
-    }
-
-    /*
-     * Validates the format of the guess input string.
-     * Checks for null/empty, correct length, and valid digit characters.
-     *
-     * @param input The player's guess string.
-     * 
-     * @throws InvalidGuessException If the format is invalid.
-     */
-    private static void validateGuessFormat(final String input)
-    {
-        if(input == null || input.isEmpty())
-        {
-            throw new InvalidGuessException("Guess cannot be empty");
-        }
-
-        if(input.length() != CODE_LENGTH)
-        {
-            throw new InvalidGuessException(String.format(LENGTH_ERROR,
-                                                          CODE_LENGTH));
-        }
-
-        if(! input.matches(VALID_DIGITS_PATTERN))
-        {
-            throw new InvalidGuessException(String.format(DIGIT_RANGE_ERROR,
-                                                          MIN_DIGIT,
-                                                          MAX_DIGIT));
-        }
-    }
-
-    /*
-     * Parses the validated guess string into a list of integers.
-     * Assumes validateGuessFormat has already been called.
-     *
-     * @param input The validated guess string.
-     * 
-     * @return A list of integers representing the guess digits.
-     * 
-     * @throws InvalidGuessException If a character is not a valid digit (should
-     * not happen if pre-validated).
-     */
-    private static List<Integer> parseGuess(final String input)
-    {
-        validateGuessFormat(input);
-
-        final List<Integer> digits;
-
-        digits = new ArrayList<>();
-
-        for(char c : input.toCharArray())
-        {
-            final int digit;
-            digit = Character.getNumericValue(c);
-
-            if(digit < MIN_DIGIT || digit > MAX_DIGIT)
-            {
-                throw new InvalidGuessException(String.format(DIGIT_RANGE_ERROR,
-                                                              MIN_DIGIT,
-                                                              MAX_DIGIT));
-            }
-
-            digits.add(digit);
-        }
-
-        return digits;
     }
 
     /**

@@ -49,11 +49,6 @@ public final class PlayerGuessCode extends
     {
         validateInput(input);
 
-        if(input.length() != CODE_LENGTH)
-        {
-            
-        }
-
         final List<Integer> digits;
         digits = new ArrayList<>(CODE_LENGTH);
 
