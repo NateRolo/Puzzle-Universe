@@ -16,28 +16,32 @@ import java.util.List;
  */
 final class Feedback
 {
-    private static final int RESULT_SIZE = 2;
+    private static final int RESULT_SIZE      = 2;
     private static final int CORRECT_POSITION = 0;
-    private static final int MISPLACED = 1;
+    private static final int MISPLACED        = 1;
 
-    private final int     correctPositionCount;
-    private final int     misplacedCount;
+    private final int correctPositionCount;
+    private final int misplacedCount;
 
     /**
      * Constructs a new Feedback object.
-     *
      */
-    Feedback(final SecretCode secretCode,
-             final PlayerGuessCode guessCode)
+    <S extends Code, G extends Code> Feedback(final S secretCode,
+                                              final G guessCode)
     {
-        validateCodes(secretCode, guessCode);
+        validateCodes(secretCode,
+                      guessCode);
 
-        this.correctPositionCount = evaluateGuess(secretCode, guessCode)[CORRECT_POSITION];
-        this.misplacedCount       = evaluateGuess(secretCode, guessCode)[MISPLACED];
+        final int[] result;
+        result                    = evaluateGuess(secretCode,
+                                                  guessCode);
+        this.correctPositionCount = result[CORRECT_POSITION];
+        this.misplacedCount       = result[MISPLACED];
+
     }
 
-    private static void validateCodes(final SecretCode secretCode,
-                                  final PlayerGuessCode guessCode)
+    private static void validateCodes(final Code secretCode,
+                                      final Code guessCode)
     {
         if(secretCode == null || guessCode == null)
         {
@@ -47,46 +51,51 @@ final class Feedback
         final int secretCodeLength;
         final int guessCodeLength;
 
-        secretCodeLength = secretCode.getDigits().size();
-        guessCodeLength = guessCode.getDigits()
+        secretCodeLength = secretCode.getDigits()
                                      .size();
+        guessCodeLength  = guessCode.getDigits()
+                                    .size();
 
         if(secretCodeLength != Code.CODE_LENGTH ||
            guessCodeLength != Code.CODE_LENGTH)
         {
-            throw new IllegalArgumentException("Codes must be of length " + Code.CODE_LENGTH);
+            throw new IllegalArgumentException("Codes must be of length " +
+                                               Code.CODE_LENGTH);
         }
     }
 
-    private static int[] evaluateGuess(final SecretCode secretCode,
-                                      final PlayerGuessCode guessCode)
+    private static int[] evaluateGuess(final Code secretCode,
+                                       final Code guessCode)
     {
         final List<Integer> secretCodeDigits;
         final List<Integer> guessCodeDigits;
         final List<Integer> secretCopy;
         final List<Integer> guessCopy;
-        final int[] result;
+        final int[]         result;
 
         int correctPosition;
         int misplaced;
 
         correctPosition = 0;
-        misplaced = 0;
+        misplaced       = 0;
 
         secretCodeDigits = secretCode.getDigits();
-        guessCodeDigits = guessCode.getDigits();
+        guessCodeDigits  = guessCode.getDigits();
 
+        // Calculate correct positions
         for(int i = 0; i < Code.CODE_LENGTH; i++)
         {
-            if(secretCodeDigits.get(i).equals(guessCodeDigits.get(i)))
+            if(secretCodeDigits.get(i)
+                               .equals(guessCodeDigits.get(i)))
             {
                 correctPosition++;
             }
         }
 
         secretCopy = new ArrayList<>(secretCodeDigits);
-        guessCopy = new ArrayList<>(guessCodeDigits);
+        guessCopy  = new ArrayList<>(guessCodeDigits);
 
+        // Calculate total matches (including correct position) for misplaced count derivation
         for(int j = 0; j < Code.CODE_LENGTH; j++)
         {
             if(secretCopy.contains(guessCopy.get(j)))
@@ -96,11 +105,12 @@ final class Feedback
             }
         }
 
+        // Adjust misplaced: total matches minus those in the correct position
         misplaced = misplaced - correctPosition;
 
-        result = new int[RESULT_SIZE];
+        result                   = new int[RESULT_SIZE];
         result[CORRECT_POSITION] = correctPosition;
-        result[MISPLACED] = misplaced;
+        result[MISPLACED]        = misplaced;
 
         return result;
     }
