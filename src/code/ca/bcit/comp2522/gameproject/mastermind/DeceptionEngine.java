@@ -16,7 +16,7 @@ final class DeceptionEngine
 {
     private static final Random RANDOM               = new Random();
     private static final double DECEPTION_CHANCE     = 0.3;
-    private static final int    MIN_DECEPTION_ROUNDS = 0;
+    private static final int    DECEPTION_MIN_DIGITS = 0;
     private static final String FALSE_GUESS_DIGITS = "1111";
 
     /**
@@ -34,7 +34,7 @@ final class DeceptionEngine
      * @param deceptiveRoundsAllowed maximum allowed deceptive rounds
      * @return true if deception should be applied, false otherwise
      */
-    static final boolean shouldApplyDeception(final int deceptiveRoundsUsed,
+    static boolean shouldApplyDeception(final int deceptiveRoundsUsed,
                                               final int deceptiveRoundsAllowed)
     {
         validateDeceptionParameters(deceptiveRoundsUsed,
@@ -53,13 +53,14 @@ final class DeceptionEngine
      * @param trueFeedback the original, true feedback
      * @return modified feedback marked as deceptive
      */
-    static final Feedback applyDeception(final Feedback trueFeedback)
+    static Feedback applyDeception(final Feedback trueFeedback)
     {
         if(trueFeedback == null)
         {
             throw new NullPointerException("True feedback cannot be null");
         }
 
+        // Loop to ensure that randomly generated false feedback is not accurate.
         Feedback falseFeedback;
         do
         {
@@ -78,18 +79,18 @@ final class DeceptionEngine
     /*
      * Validates parameters for deception calculation.
      */
-    private static final void validateDeceptionParameters(final int used,
-                                                          final int allowed)
+    private static void validateDeceptionParameters(final int deceptiveRoundsUsed,
+                                                          final int deceptiveRoundsAllowed)
     {
-        if(used < MIN_DECEPTION_ROUNDS)
+        if(deceptiveRoundsUsed < DECEPTION_MIN_DIGITS)
         {
             throw new IllegalArgumentException("Deceptive rounds used cannot be negative");
         }
-        if(allowed < MIN_DECEPTION_ROUNDS)
+        if(deceptiveRoundsAllowed < DECEPTION_MIN_DIGITS)
         {
             throw new IllegalArgumentException("Deceptive rounds allowed cannot be negative");
         }
-        if(used > allowed)
+        if(deceptiveRoundsUsed > deceptiveRoundsAllowed)
         {
             throw new IllegalArgumentException("Used rounds cannot exceed allowed rounds");
         }
