@@ -16,9 +16,11 @@ import java.util.List;
  */
 final class Feedback
 {
-    private static final int RESULT_SIZE      = 2;
-    private static final int CORRECT_POSITION = 0;
-    private static final int MISPLACED        = 1;
+    private static final int RESULT_SIZE               = 2;
+    private static final int CORRECT_POSITION          = 0;
+    private static final int MISPLACED                 = 1;
+    private static final int DEFAULT_CORRECT_POSITIONS = 0;
+    private static final int DEFAULT_MISPLACED         = 0;
 
     private final int correctPositionCount;
     private final int misplacedCount;
@@ -37,9 +39,9 @@ final class Feedback
                                                   guessCode);
         this.correctPositionCount = result[CORRECT_POSITION];
         this.misplacedCount       = result[MISPLACED];
-
     }
 
+    // comments
     private static void validateCodes(final Code secretCode,
                                       final Code guessCode)
     {
@@ -64,6 +66,7 @@ final class Feedback
         }
     }
 
+    // comments
     private static int[] evaluateGuess(final Code secretCode,
                                        final Code guessCode)
     {
@@ -76,8 +79,8 @@ final class Feedback
         int correctPosition;
         int misplaced;
 
-        correctPosition = 0;
-        misplaced       = 0;
+        correctPosition = DEFAULT_CORRECT_POSITIONS;
+        misplaced       = DEFAULT_MISPLACED;
 
         secretCodeDigits = secretCode.getDigits();
         guessCodeDigits  = guessCode.getDigits();
@@ -85,8 +88,13 @@ final class Feedback
         // Calculate correct positions
         for(int i = 0; i < Code.CODE_LENGTH; i++)
         {
-            if(secretCodeDigits.get(i)
-                               .equals(guessCodeDigits.get(i)))
+            final int secretCodeDigitAtThisIndex;
+            final int guessCodeDigitAtThisIndex;
+
+            secretCodeDigitAtThisIndex = secretCodeDigits.get(i);
+            guessCodeDigitAtThisIndex = guessCodeDigits.get(i);
+
+            if(secretCodeDigitAtThisIndex == guessCodeDigitAtThisIndex)
             {
                 correctPosition++;
             }
@@ -120,7 +128,7 @@ final class Feedback
      *
      * @return number of correctly positioned digits
      */
-    final int getCorrectPositionCount()
+    int getCorrectPositionCount()
     {
         return correctPositionCount;
     }
@@ -130,7 +138,7 @@ final class Feedback
      *
      * @return number of misplaced digits
      */
-    final int getMisplacedCount()
+    int getMisplacedCount()
     {
         return misplacedCount;
     }
