@@ -15,7 +15,7 @@ import java.util.Scanner;
  */
 final class InputHandler
 {
-  
+
     private static final int MIN_ROUND_NUMBER = 1;
 
     private static final Scanner scan = new Scanner(System.in);
@@ -93,22 +93,25 @@ final class InputHandler
     {
         while(true)
         {
+            final String input;
+            final int    roundNumber;
+
             System.out.println("Enter round number to scan (1-" +
                                currentRound +
                                "):");
-            final String input = scan.nextLine()
-                                     .trim();
+            input = scan.nextLine()
+                        .trim();
 
-            if(! isValidNumericInput(input))
+            if(!isValidNumericInput(input))
             {
                 System.out.println("Please enter a valid number.");
                 continue;
             }
 
-            final int roundNumber = Integer.parseInt(input);
+            roundNumber = Integer.parseInt(input);
 
-            if(! isValidRoundNumber(roundNumber,
-                                    currentRound))
+            if(!isValidRoundNumber(roundNumber,
+                                   currentRound))
             {
                 System.out.printf("Please enter a number between %d and %d.%n",
                                   MIN_ROUND_NUMBER,
@@ -116,7 +119,6 @@ final class InputHandler
                 continue;
             }
             return roundNumber;
-
         }
     }
 
@@ -126,10 +128,13 @@ final class InputHandler
      * @param input the string to validate
      * 
      * @return true if the input contains only digits, false otherwise
-     */ 
+     */
     private static final boolean isValidNumericInput(final String input)
     {
-        return input.matches("\\d+");
+        final boolean inputIsValid;
+        inputIsValid = input.matches("\\d+");
+
+        return inputIsValid;
     }
 
     /*
@@ -143,7 +148,7 @@ final class InputHandler
      * @return true if the round number is valid, false otherwise
      */
     private static final boolean isValidRoundNumber(final int roundNumber,
-                                              final int currentRound)
+                                                    final int currentRound)
     {
         final boolean isValid;
         isValid = roundNumber >= MIN_ROUND_NUMBER &&
@@ -164,13 +169,13 @@ final class InputHandler
             response = scan.nextLine()
                            .trim()
                            .toLowerCase();
-            if(! response.equalsIgnoreCase("yes") &&
-               ! response.equalsIgnoreCase("no"))
+            if(!response.equalsIgnoreCase("yes") &&
+               !response.equalsIgnoreCase("no"))
             {
                 System.out.println("Please enter either 'yes' or 'no':");
             }
-        } while(! response.equalsIgnoreCase("yes") &&
-                ! response.equalsIgnoreCase("no"));
+        } while(!response.equalsIgnoreCase("yes") &&
+                !response.equalsIgnoreCase("no"));
 
         return response;
     }
