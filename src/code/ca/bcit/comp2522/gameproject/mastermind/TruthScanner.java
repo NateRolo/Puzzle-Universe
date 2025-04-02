@@ -14,12 +14,15 @@ import java.util.List;
  */
 final class TruthScanner
 {
-    private static final int INCREMENT = 1;
+    private static final int ROUND_INCREMENT = 1;
+    private static final int ROUND_MINIMUM = 0;
+    private static final int DEFAULT_ROUND_SCAN_INITIATED = -1;
+    private static final int DEFAULT_ROUND_SCANNED = -1;
     
     // Tracking scan usage for history
     private boolean truthScanUsedThisGame;
     private int     roundScanInitiatedIn = -1; // Round number when the 't' command was issued
-    private int     roundScanned         = -1; // Round number targeted by the scan
+    private int     roundScanned         = -1;
     
     /**
      * Constructs a new TruthScanner.
@@ -27,7 +30,7 @@ final class TruthScanner
      */
     TruthScanner()
     {
-        resetTruthScanner(); // Initialize state using reset method
+        resetTruthScanner(); 
     }
     
     /**
@@ -55,29 +58,31 @@ final class TruthScanner
             return null; // Scan failed (no rounds)
         }
 
-        // Record the round number *when the scan command was initiated*
-        final int currentRoundNumber = rounds.size() + INCREMENT;
+        final int currentRoundNumber;
+        final int targetRoundNumber;
+        final Round selectedRound;
+        final String scanResultDescription;
 
-        // Get the target round number from the user
-        final int targetRoundNumber = InputHandler.getRoundNumberForScan(rounds.size());
+        currentRoundNumber = rounds.size() + ROUND_INCREMENT;
+        targetRoundNumber = InputHandler.getRoundNumberForScan(rounds.size());
 
-        // Check for cancellation or invalid input from InputHandler (optional, assuming it returns <= 0 for cancel)
-        if (targetRoundNumber <= 0)
+        if (targetRoundNumber <= ROUND_MINIMUM)
         {
              System.out.println("Truth Scan cancelled.");
              return null; // Scan cancelled by user
         }
 
-        // Retrieve the selected round (adjusting for 0-based index)
-        final Round selectedRound = rounds.get(targetRoundNumber - INCREMENT);
+        selectedRound = rounds.get(targetRoundNumber - ROUND_INCREMENT);
 
-        // Perform the scan logic
-        final String scanResultDescription;
+        // Perform the scan logic    
         if (selectedRound.isDeceptiveRound())
         {
-            final Feedback trueFeedback = new Feedback(secretCode, selectedRound.getGuess());
+            final Feedback trueFeedback;
+            trueFeedback = new Feedback(secretCode, selectedRound.getGuess());
+
             System.out.println("Revealing true feedback for round " + targetRoundNumber + ":");
             System.out.println(trueFeedback);
+
             selectedRound.revealTruth(); // Mark the round itself as truth revealed
             scanResultDescription = String.format("Used in Round %d, targeting Round %d (Deceptive - Truth Revealed)",
                                                 currentRoundNumber,
@@ -106,32 +111,7 @@ final class TruthScanner
     final void resetTruthScanner()
     {
         this.truthScanUsedThisGame = false;
-        this.roundScanInitiatedIn  = -1;
-        this.roundScanned          = -1;
+        this.roundScanInitiatedIn  = DEFAULT_ROUND_SCAN_INITIATED;
+        this.roundScanned          = DEFAULT_ROUND_SCANNED;
     }
-
-    // Optional: Getters for the scan details if needed elsewhere, though currently only used for the history string
-    /*
-    final boolean isTruthScanUsedThisGame() {
-        return truthScanUsedThisGame;
-    }
-
-    final int getRoundScanInitiatedIn() {
-        return roundScanInitiatedIn;
-    }
-
-    final int getRoundScanned() {
-        return roundScanned;
-    }
-    */
-
-    // The old handleTruthScanRequest method is now effectively replaced by handleTruthScanRequestAndGetInfo
-    // It can be removed or kept as private/deprecated if desired.
-    /*
-    boolean handleTruthScanRequest(final List<Round> rounds,
-                                         final SecretCode secretCode)
-    {
-        // ... old logic ...
-    }
-    */
 } 
