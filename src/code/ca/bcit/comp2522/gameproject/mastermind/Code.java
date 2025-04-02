@@ -15,10 +15,10 @@ import java.util.List;
  */
 abstract class Code
 {
-    private final List<Integer> digits;
     static final int            CODE_LENGTH = 4;
-    static final int            MIN_DIGIT   = 1;
-    static final int            MAX_DIGIT   = 6;
+    static final int            DIGIT_MIN   = 1;
+    static final int            DIGIT_MAX   = 6;
+    private final List<Integer> digits;
 
     /**
      * Constructs a new Code with the specified sequence of digits.
@@ -59,13 +59,18 @@ abstract class Code
 
         for(final Integer num : digits)
         {
-            if(num < MIN_DIGIT || num > MAX_DIGIT)
+            if(num < DIGIT_MIN || num > DIGIT_MAX)
             {
                 throw new IllegalArgumentException("Invalid code digit:" + num);
             }
         }
     }
 
+    /**
+     * Returns code length as an int.
+     * 
+     * @return CODE_LENGTH as an int
+     */
     static final int getCodeLength()
     {
         return CODE_LENGTH;
