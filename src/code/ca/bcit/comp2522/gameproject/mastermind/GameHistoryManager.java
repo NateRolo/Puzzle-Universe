@@ -20,49 +20,46 @@ import java.util.List;
  * @author Nathan O
  * @version 1.0 2025
  */
-public final class GameHistoryManager
+final class GameHistoryManager
 {
-    // Define the structure for storing game history data.
-    // Using a simple inner class as records are disallowed.
-    public static final class GameSessionRecord
+    static final class GameSessionRecord
     {
         private final LocalDateTime timestamp;
-        private final List<String>  roundDetails; // Store rounds as
-                                                  // pre-formatted strings
-        private final String        truthScanInfo; // Store scan info as
-                                                   // pre-formatted string or
-                                                   // null
-        private final String        outcome;       // "Won" or "Lost"
+        private final List<String>  roundDetails;
 
-        public GameSessionRecord(final LocalDateTime timestamp,
+        private final String truthScanInfo;
+
+        private final String outcome;
+
+        GameSessionRecord(final LocalDateTime timestamp,
                                  final List<String> roundDetails,
                                  final String truthScanInfo,
                                  final String outcome)
         {
-            this.timestamp     = timestamp;
-            this.roundDetails  = new ArrayList<>(roundDetails); // Defensive
-                                                                // copy
+            this.timestamp    = timestamp;
+            this.roundDetails = new ArrayList<>(roundDetails);
+
             this.truthScanInfo = truthScanInfo;
             this.outcome       = outcome;
         }
 
-        // Getters
-        public LocalDateTime getTimestamp()
+
+        LocalDateTime getTimestamp()
         {
             return timestamp;
         }
 
-        public List<String> getRoundDetails()
+        List<String> getRoundDetails()
         {
-            return new ArrayList<>(roundDetails); 
+            return new ArrayList<>(roundDetails);
         }
 
-        public String getTruthScanInfo()
+        String getTruthScanInfo()
         {
             return truthScanInfo;
         }
 
-        public String getOutcome()
+        String getOutcome()
         {
             return outcome;
         }
@@ -79,7 +76,7 @@ public final class GameHistoryManager
             roundDetails.forEach(detail -> sb.append("  ")
                                              .append(detail)
                                              .append("\n"));
-            if(truthScanInfo != null && ! truthScanInfo.isEmpty())
+            if(truthScanInfo != null && !truthScanInfo.isEmpty())
             {
                 sb.append("Truth Scan: ")
                   .append(truthScanInfo)
@@ -115,15 +112,16 @@ public final class GameHistoryManager
      */
     public void saveGameHistory(final GameSessionRecord record)
     {
-        final Path path = Paths.get(HISTORY_FILE_PATH);
+        final Path filePath;
+        filePath = Paths.get(HISTORY_FILE_PATH);
 
         try
         {
             // Ensure parent directories exist
-            Files.createDirectories(path.getParent());
+            Files.createDirectories(filePath.getParent());
 
             // Append to the file, creating it if it doesn't exist
-            try(BufferedWriter writer = Files.newBufferedWriter(path,
+            try(BufferedWriter writer = Files.newBufferedWriter(filePath,
                                                                 StandardCharsets.UTF_8,
                                                                 StandardOpenOption.CREATE,
                                                                 StandardOpenOption.APPEND))
@@ -144,8 +142,8 @@ public final class GameHistoryManager
                     writer.newLine();
                 }
                 if(record.getTruthScanInfo() != null &&
-                   ! record.getTruthScanInfo()
-                           .isEmpty())
+                   !record.getTruthScanInfo()
+                          .isEmpty())
                 {
                     writer.write(TRUTH_SCAN_PREFIX + record.getTruthScanInfo());
                     writer.newLine();
@@ -163,7 +161,6 @@ public final class GameHistoryManager
                                HISTORY_FILE_PATH +
                                ": " +
                                e.getMessage());
-            // Consider more robust error handling or logging
         }
     }
 
@@ -173,31 +170,38 @@ public final class GameHistoryManager
      * @return A List of GameSessionRecord objects, or an empty list if the file
      *         doesn't exist or an error occurs.
      */
-    public List<GameSessionRecord> loadGameHistory()
+    final List<GameSessionRecord> loadGameHistory()
     {
-        final Path                    path;
-        final List<GameSessionRecord> history;
+        final Path                    filePath;
+        final List<GameSessionRecord> gameHistory;
 
-        path    = Paths.get(HISTORY_FILE_PATH);
-        history = new ArrayList<>();
+        filePath    = Paths.get(HISTORY_FILE_PATH);
+        gameHistory = new ArrayList<>();
 
-        if(! Files.exists(path))
+        if(!Files.exists(filePath))
         {
             System.out.println("History file not found (" +
                                HISTORY_FILE_PATH +
                                "). No history to display.");
-            return history; // Return empty list if file doesn't exist
+            return gameHistory; // Return empty list if file doesn't exist
         }
 
-        try(BufferedReader reader = Files.newBufferedReader(path,
+        // refactor, overly complicated if-else
+        try(BufferedReader reader = Files.newBufferedReader(filePath,
                                                             StandardCharsets.UTF_8))
         {
             String        line;
-            LocalDateTime currentTimestamp     = null;
-            List<String>  currentRoundDetails  = new ArrayList<>();
-            String        currentTruthScanInfo = null;
-            String        currentOutcome       = null;
-            boolean       inGameRecord         = false;
+            LocalDateTime currentTimestamp;
+            List<String>  currentRoundDetails;
+            String        currentTruthScanInfo;
+            String        currentOutcome;
+            boolean       inGameRecord;
+
+            currentTimestamp     = null;
+            currentRoundDetails  = new ArrayList<>();
+            currentTruthScanInfo = null;
+            currentOutcome       = null;
+            inGameRecord         = false;
 
             while((line = reader.readLine()) != null)
             {
@@ -215,7 +219,7 @@ public final class GameHistoryManager
                 else if(line.equals(GAME_END_MARKER) && inGameRecord)
                 {
                     if(currentTimestamp != null &&
-                       ! currentRoundDetails.isEmpty() &&
+                       !currentRoundDetails.isEmpty() &&
                        currentOutcome != null)
                     {
                         final GameSessionRecord record;
@@ -223,7 +227,7 @@ public final class GameHistoryManager
                                                        currentRoundDetails,
                                                        currentTruthScanInfo,
                                                        currentOutcome);
-                        history.add(record);
+                        gameHistory.add(record);
                     }
                     else
                     {
@@ -246,12 +250,14 @@ public final class GameHistoryManager
                                                line);
                             currentTimestamp = null; // Invalidate record if
                                                      // timestamp is bad
+
                         }
                     }
                     else if(line.startsWith("Round ")) // Simple check for round
                                                        // lines
+
                     {
-                        currentRoundDetails.add(line); // Add the raw line
+                        currentRoundDetails.add(line);
                     }
                     else if(line.startsWith(TRUTH_SCAN_PREFIX))
                     {
@@ -261,8 +267,8 @@ public final class GameHistoryManager
                     {
                         currentOutcome = line.substring(OUTCOME_PREFIX.length());
                         // Simple validation for outcome
-                        if(! "Won".equalsIgnoreCase(currentOutcome) &&
-                           ! "Lost".equalsIgnoreCase(currentOutcome))
+                        if(!"Won".equalsIgnoreCase(currentOutcome) &&
+                           !"Lost".equalsIgnoreCase(currentOutcome))
                         {
                             System.err.println("Warning: Invalid outcome found: " +
                                                currentOutcome);
@@ -270,26 +276,22 @@ public final class GameHistoryManager
                                                    // outcome is bad
                         }
                     }
-                    // Ignore ROUNDS_HEADER and other potential lines within the
-                    // block for now
                 }
-                // Ignore lines outside GAME_START/END markers
             }
             if(inGameRecord)
             {
                 System.err.println("Warning: History file ended unexpectedly within a game record.");
             }
         }
-        catch(final IOException e)
+        catch(final IOException error)
         {
             System.err.println("Error loading game history from " +
                                HISTORY_FILE_PATH +
                                ": " +
-                               e.getMessage());
-            // Consider returning partial history or handling differently
+                               error.getMessage());
         }
 
-        return history;
+        return gameHistory;
     }
 
 
@@ -301,7 +303,7 @@ public final class GameHistoryManager
      *                      Case-insensitive.
      * @return A new list containing only the records matching the filter.
      */
-    public List<GameSessionRecord> filterHistoryByOutcome(final List<GameSessionRecord> history,
+    final List<GameSessionRecord> filterHistoryByOutcome(final List<GameSessionRecord> history,
                                                           final String outcomeFilter)
     {
         final List<GameSessionRecord> filteredHistory;
