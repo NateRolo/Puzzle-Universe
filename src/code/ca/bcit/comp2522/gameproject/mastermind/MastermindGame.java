@@ -1,21 +1,27 @@
 package ca.bcit.comp2522.gameproject.mastermind;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
 import ca.bcit.comp2522.gameproject.Playable;
+import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
 
 /**
  * Main controller for the Mastermind game.
  * <p>
  * This class coordinates all game components and manages the main game loop,
- * including handling player input, tracking rounds, and managing deception.
+ * including handling player input, tracking rounds, managing deception,
+ * and interacting with game history.
  * </p>
  *
  * @author Nathan O
- * @version 1.3 2025
+ * @version 1.4 2025
  */
 public final class MastermindGame implements
                                   Playable
@@ -30,9 +36,12 @@ public final class MastermindGame implements
     private static final String SEPARATOR_LINE      = "----------------------------------------";
     private static final String GAME_OVER_SEPARATOR = "=========== GAME OVER ============";
     private static final String NEW_GAME_SEPARATOR  = "+++++++++++ NEW GAME +++++++++++";
+    private static final String HISTORY_SEPARATOR   = "*********** HISTORY ************";
 
     private static final String GAME_OVER_MESSAGE = "Game Over! The secret code was: %s";
     private static final String WIN_MESSAGE       = "Congratulations! You won in %d rounds!";
+    private static final String WON_OUTCOME       = "Won";
+    private static final String LOST_OUTCOME      = "Lost";
 
     private static final String RULES = """
                                         === MASTERMIND GAME RULES ===
@@ -56,37 +65,214 @@ public final class MastermindGame implements
 
                                         Are you ready to start? (yes/no): """;
 
+    private static final int OPTION_PLAY         = 1;
+    private static final int OPTION_VIEW_HISTORY = 2;
+    private static final int OPTION_EXIT         = 3;
+
+    private static final int HISTORY_OPTION_ALL  = 1;
+    private static final int HISTORY_OPTION_WON  = 2;
+    private static final int HISTORY_OPTION_LOST = 3;
+    private static final int HISTORY_OPTION_BACK = 4;
+
+    private final GameHistoryManager gameHistoryManager;
+    private final Scanner            inputScanner;
+
     private List<Round> rounds;
     private SecretCode  secretCode;
+    private String truthScanInfoForHistory = null;
 
     /**
      * Constructs a new MastermindGame.
      */
     public MastermindGame()
     {
+        this.gameHistoryManager = new GameHistoryManager();
+        this.inputScanner = new Scanner(System.in);
     }
 
     /**
-     * Starts and manages the game session, allowing for multiple games.
+     * Presents the main menu and manages the overall application flow.
      */
     @Override
     public void play()
     {
-        if(!handleGameIntroduction())
-        {
-            return;
-        }
-
+        int choice;
         do
         {
-            initializeNewGame();
-            playGameLoop();
-            endGame();
-        } while(askPlayAgain());
+            choice = showMainMenu();
 
+            switch (choice)
+            {
+                case OPTION_PLAY:
+                    playSingleGameSession();
+                    break;
+                case OPTION_VIEW_HISTORY:
+                    handleViewHistoryMenu();
+                    break;
+                case OPTION_EXIT:
+                    System.out.println("\n" + SEPARATOR_LINE);
+                    System.out.println("Exiting Mastermind. Goodbye!");
+                    System.out.println(SEPARATOR_LINE + "\n");
+                    break;
+                default:
+                    System.err.println("Unexpected main menu choice.");
+                    break;
+            }
+        } while (choice != OPTION_EXIT);
+    }
+
+    /*
+     * Handles playing a complete game session, including intro and saving.
+     */
+    private void playSingleGameSession()
+    {
+         if(!handleGameIntroduction())
+         {
+             return;
+         }
+
+         initializeNewGame();
+         playGameLoop();
+         endGame();
+    }
+
+    /*
+     * Displays the main menu and gets the user's choice.
+     *
+     * @return The valid menu choice (1, 2, or 3).
+     */
+    private int showMainMenu()
+    {
+        int choice = -1;
         System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("Returning to main menu...");
-        System.out.println(SEPARATOR_LINE + "\n");
+        System.out.println("MASTERMIND MAIN MENU");
+        System.out.println(SEPARATOR_LINE);
+        System.out.println(OPTION_PLAY + ". Play Game");
+        System.out.println(OPTION_VIEW_HISTORY + ". View Game History");
+        System.out.println(OPTION_EXIT + ". Exit");
+        System.out.println(SEPARATOR_LINE);
+
+        while (choice < OPTION_PLAY || choice > OPTION_EXIT)
+        {
+            System.out.print("Enter your choice: ");
+            try
+            {
+                choice = inputScanner.nextInt();
+                if (choice < OPTION_PLAY || choice > OPTION_EXIT)
+                {
+                    System.out.println("Invalid choice. Please enter " + OPTION_PLAY + ", " + OPTION_VIEW_HISTORY + ", or " + OPTION_EXIT + ".");
+                }
+            }
+            catch (final InputMismatchException e)
+            {
+                System.out.println("Invalid input. Please enter a number.");
+                inputScanner.next();
+            }
+        }
+        inputScanner.nextLine();
+        return choice;
+    }
+
+    /*
+     * Handles the View History menu and displays selected game records.
+     */
+    private void handleViewHistoryMenu()
+    {
+        int choice;
+        do
+        {
+            choice = showHistorySubMenu();
+            List<GameSessionRecord> history = null;
+
+            switch (choice)
+            {
+                case HISTORY_OPTION_ALL:
+                    System.out.println("\n--- All Game History ---");
+                    history = gameHistoryManager.loadGameHistory();
+                    displayHistory(history);
+                    break;
+                case HISTORY_OPTION_WON:
+                    System.out.println("\n--- Won Games History ---");
+                    history = gameHistoryManager.loadGameHistory();
+                    displayHistory(gameHistoryManager.filterHistoryByOutcome(history, WON_OUTCOME));
+                    break;
+                case HISTORY_OPTION_LOST:
+                    System.out.println("\n--- Lost Games History ---");
+                    history = gameHistoryManager.loadGameHistory();
+                    displayHistory(gameHistoryManager.filterHistoryByOutcome(history, LOST_OUTCOME));
+                    break;
+                case HISTORY_OPTION_BACK:
+                    break;
+                default:
+                    System.err.println("Unexpected history menu choice.");
+                    break;
+            }
+        } while (choice != HISTORY_OPTION_BACK);
+    }
+
+     /*
+     * Displays the history sub-menu and gets the user's choice.
+     *
+     * @return The valid menu choice (1-4).
+     */
+     private int showHistorySubMenu()
+     {
+        int choice = -1;
+        System.out.println("\n" + HISTORY_SEPARATOR);
+        System.out.println("VIEW GAME HISTORY");
+        System.out.println(SEPARATOR_LINE);
+        System.out.println(HISTORY_OPTION_ALL + ". View All History");
+        System.out.println(HISTORY_OPTION_WON + ". View Won Games");
+        System.out.println(HISTORY_OPTION_LOST + ". View Lost Games");
+        System.out.println(HISTORY_OPTION_BACK + ". Back to Main Menu");
+        System.out.println(SEPARATOR_LINE);
+
+        while (choice < HISTORY_OPTION_ALL || choice > HISTORY_OPTION_BACK)
+        {
+            System.out.print("Enter your choice: ");
+            try
+            {
+                choice = inputScanner.nextInt();
+                if (choice < HISTORY_OPTION_ALL || choice > HISTORY_OPTION_BACK)
+                {
+                    System.out.println("Invalid choice. Please enter a number between " + HISTORY_OPTION_ALL + " and " + HISTORY_OPTION_BACK + ".");
+                }
+            }
+            catch (final InputMismatchException e)
+            {
+                System.out.println("Invalid input. Please enter a number.");
+                inputScanner.next();
+            }
+        }
+        inputScanner.nextLine();
+        return choice;
+     }
+
+    /*
+     * Helper method to display a list of game session records.
+     *
+     * @param historyList The list of records to display.
+     */
+    private void displayHistory(final List<GameSessionRecord> historyList)
+    {
+        if (historyList == null || historyList.isEmpty())
+        {
+            System.out.println("No matching game history found.");
+        }
+        else
+        {
+            for (final GameSessionRecord record : historyList)
+            {
+                System.out.println(HISTORY_SEPARATOR);
+                System.out.print(record.toString());
+                System.out.println(HISTORY_SEPARATOR);
+                System.out.println();
+            }
+            System.out.println("End of history view.");
+        }
+        System.out.println(SEPARATOR_LINE);
+        System.out.print("Press Enter to continue...");
+        inputScanner.nextLine();
     }
 
     /*
@@ -99,6 +285,7 @@ public final class MastermindGame implements
         secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
         Round.resetDeceptiveRounds();
         TRUTH_SCANNER.resetTruthScanner();
+        truthScanInfoForHistory = null;
         System.out.println("\n" + NEW_GAME_SEPARATOR);
     }
 
@@ -126,7 +313,7 @@ public final class MastermindGame implements
 
             if(!ready.equalsIgnoreCase(YES))
             {
-                System.out.println("\nMaybe next time! Goodbye.\n");
+                System.out.println("\nMaybe next time! Returning to main menu...\n");
                 return false;
             }
         }
@@ -255,13 +442,13 @@ public final class MastermindGame implements
             {
                 handleTruthScanAction();
             }
-            else if(input instanceof PlayerGuessCode guess)
-            {
-                return guess;
-            }
             else if(input instanceof PlayerAction.GuessSummaryRequest)
             {
                 handleGuessSummaryAction();
+            }
+            else if(input instanceof PlayerGuessCode guess)
+            {
+                return guess;
             }
             else
             {
@@ -282,19 +469,21 @@ public final class MastermindGame implements
     /*
      * Handles the action when a Truth Scan is requested by the player.
      * Invokes the truth scanner and prints appropriate messages.
+     * Updates the truthScanInfoForHistory field if successful.
      */
     private final void handleTruthScanAction()
     {
         System.out.println("\n--- Truth Scan Requested ---");
-        final boolean scanSuccess = TRUTH_SCANNER.handleTruthScanRequest(rounds,
-                                                                         secretCode);
-        if(scanSuccess)
+        final String scanResultInfo = TRUTH_SCANNER.handleTruthScanRequestAndGetInfo(rounds, secretCode);
+
+        if(scanResultInfo != null)
         {
+            this.truthScanInfoForHistory = scanResultInfo;
             System.out.println("--- Truth Scan Complete ---");
         }
         else
         {
-            System.out.println("--- Truth Scan Failed ---");
+            System.out.println("--- Truth Scan Failed or Cancelled ---");
         }
     }
 
@@ -357,51 +546,70 @@ public final class MastermindGame implements
 
     /*
      * Handles the end-of-game sequence.
-     * Displays win/loss message, secret code, and deceptive round count.
+     * Displays win/loss message, secret code, and saves the game history.
      */
     private final void endGame()
     {
         System.out.println("\n" + GAME_OVER_SEPARATOR);
 
+        final String outcome;
+        final LocalDateTime endTime = LocalDateTime.now();
+
         if(rounds.isEmpty())
         {
             System.out.println("Game ended without any guesses.");
-            System.out.println(GAME_OVER_SEPARATOR);
-            return;
-        }
-
-        final Round lastRound;
-        final int   roundsPlayed;
-
-        lastRound    = rounds.get(rounds.size() - INCREMENT);
-        roundsPlayed = rounds.size();
-
-        if(isCorrectGuess(lastRound))
-        {
-            System.out.println(String.format(WIN_MESSAGE,
-                                             roundsPlayed));
+            outcome = LOST_OUTCOME;
         }
         else
         {
-            System.out.println(String.format(GAME_OVER_MESSAGE,
-                                             secretCode));
+            final Round lastRound;
+            final int   roundsPlayed;
+
+            lastRound    = rounds.get(rounds.size() - INCREMENT);
+            roundsPlayed = rounds.size();
+
+            if(isCorrectGuess(lastRound))
+            {
+                System.out.printf(WIN_MESSAGE + "%n", roundsPlayed);
+                outcome = WON_OUTCOME;
+            }
+            else
+            {
+                System.out.printf(GAME_OVER_MESSAGE + "%n", secretCode);
+                outcome = LOST_OUTCOME;
+            }
         }
+
         System.out.println(GAME_OVER_SEPARATOR);
+
+        if (!rounds.isEmpty())
+        {
+            saveCurrentGameToHistory(endTime, outcome);
+        }
     }
 
     /*
-     * Asks the player if they want to play another game.
+     * Helper method to collect game data and save it using GameHistoryManager.
      *
-     * @return true if the player wants to play again, false otherwise.
+     * @param endTime The timestamp when the game ended.
+     * @param outcome The result of the game ("Won" or "Lost").
      */
-    private final boolean askPlayAgain()
+    private void saveCurrentGameToHistory(final LocalDateTime endTime, final String outcome)
     {
-        System.out.print("\nPlay again? (yes/no): ");
+         final List<String> roundDetails = rounds.stream()
+                                                 .map(Round::toString)
+                                                 .collect(Collectors.toList());
 
-        final String response;
-        response = InputHandler.getYesNoResponse();
+         final GameSessionRecord record = new GameSessionRecord(
+             endTime,
+             roundDetails,
+             this.truthScanInfoForHistory,
+             outcome
+         );
 
-        return response.equalsIgnoreCase(YES);
+         System.out.println("Saving game history...");
+         gameHistoryManager.saveGameHistory(record);
+         System.out.println("Game history saved.");
     }
 
     /*
