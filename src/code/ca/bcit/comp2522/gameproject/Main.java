@@ -23,13 +23,13 @@ public class Main
     private static final Playable mastermindGame;
     
 
-    private static final String WORD_GAME_CHOICE   = "w";
-    private static final String NUMBER_GAME_CHOICE   = "n";
-    private static final String MASTERMIND_GAME_CHOICE = "m";
-    private static final String QUIT_CHOICE          = "q";
+    private static final String CHOICE_WORD_GAME   = "w";
+    private static final String CHOICE_NUMBER_GAME   = "n";
+    private static final String CHOICE_MASTERMIND = "m";
+    private static final String CHOICE_QUIT          = "q";
 
-    private static final String INVALID_CHOICE_MESSAGE = "Not a valid option, please select a valid game.";
-    private static final String EXIT_MESSAGE           = "Exiting the game. Goodbye!";
+    private static final String MESSAGE_INVALID_CHOICE = "Not a valid option, please select a valid game.";
+    private static final String MESSAGE_EXIT           = "Exiting the game. Goodbye!";
 
     static
     {
@@ -63,13 +63,13 @@ public class Main
 
             switch(choice)
             {
-                case WORD_GAME_CHOICE -> wordGame.play();
-                case NUMBER_GAME_CHOICE -> numberGame.play();
-                case MASTERMIND_GAME_CHOICE -> mastermindGame.play();
-                case QUIT_CHOICE -> System.out.println(EXIT_MESSAGE);
-                default -> System.out.println(INVALID_CHOICE_MESSAGE);
+                case CHOICE_WORD_GAME -> wordGame.play();
+                case CHOICE_NUMBER_GAME -> numberGame.play();
+                case CHOICE_MASTERMIND -> mastermindGame.play();
+                case CHOICE_QUIT -> System.out.println(MESSAGE_EXIT);
+                default -> System.out.println(MESSAGE_INVALID_CHOICE);
             }
-        } while(! choice.equals(QUIT_CHOICE));
+        } while(! choice.equals(CHOICE_QUIT));
     }
 
     /*
