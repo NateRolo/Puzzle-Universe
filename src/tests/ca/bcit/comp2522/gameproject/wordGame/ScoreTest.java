@@ -41,7 +41,7 @@ class ScoreTest {
         String expected = String.format(
                 "Date and Time: %s\nGames Played: 1\nCorrect First Attempts: 6\nCorrect Second Attempts: 2\nIncorrect Attempts: 1\nScore: 14 points\n",
                 dateTime.format(formatter)
-        );
+                                       );
 
         assertEquals(expected, score.toString(), "The toString format should match the expected format.");
     }
