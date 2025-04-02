@@ -16,6 +16,8 @@ final class Round
     private static final int DECEPTIVE_ROUNDS_ALLOWED = 3;
     private static final int INITIAL_DECEPTIVE_ROUNDS = 0;
 
+    private static int deceptiveRoundsUsed;
+
     private final int             roundNumber;
     private final PlayerGuessCode guess;
     private final Feedback        trueFeedback;
@@ -23,8 +25,7 @@ final class Round
     private final boolean         isDeceptiveRound;
     private boolean               truthRevealed;
 
-    private static int deceptiveRoundsUsed;
-
+   
     /**
      * Constructs a new Round with the specified details.
      *
@@ -72,7 +73,7 @@ final class Round
      *
      * @return the Code object representing the guess
      */
-    final PlayerGuessCode getGuess()
+    PlayerGuessCode getGuess()
     {
         return guess;
     }
@@ -82,7 +83,7 @@ final class Round
      *
      * @return the Feedback object
      */
-    final Feedback getFeedback()
+    Feedback getFeedback()
     {
         if(this.isDeceptiveRound)
         {
@@ -96,7 +97,7 @@ final class Round
      *
      * @return true if the feedback was altered, false otherwise
      */
-    final boolean isDeceptiveRound()
+    boolean isDeceptiveRound()
     {
         return isDeceptiveRound;
     }
@@ -104,10 +105,11 @@ final class Round
     /**
      * Marks this round as having its truth revealed by a scan.
      */
-    final void revealTruth()
+    void revealTruth()
     {
-        if (this.isDeceptiveRound) {
-             this.truthRevealed = true;
+        if(this.isDeceptiveRound)
+        {
+            this.truthRevealed = true;
         }
     }
 
@@ -116,7 +118,7 @@ final class Round
         Round.deceptiveRoundsUsed++;
     }
 
-    public static final int getDeceptiveRoundsUsed()
+    static int getDeceptiveRoundsUsed()
     {
         return Round.deceptiveRoundsUsed;
     }
@@ -161,10 +163,9 @@ final class Round
      *
      * @return A string summary of the round.
      */
-    final String getSummaryLine()
+    String getSummaryLine()
     {
         final StringBuilder result;
-        final Feedback      displayFeedback;
 
         result = new StringBuilder();
         result.append("Round ")
@@ -173,18 +174,22 @@ final class Round
               .append(guess)
               .append(", ");
 
-        if (isDeceptiveRound)
+        if(isDeceptiveRound)
         {
-            if (truthRevealed)
+            if(truthRevealed)
             {
                 // Show true feedback, mark as revealed
-                result.append("Actual Feedback: ").append(trueFeedback).append(" (Truth Revealed)");
-            } else
-            {
-                // Show deceptive feedback, mark as potentially deceptive
-                result.append(falseFeedback).append(" (Deceptive?)");
+                result.append("Actual Feedback: ")
+                      .append(trueFeedback)
+                      .append(" (Truth Revealed)");
             }
-        } else
+            else
+            {
+                // Show deceptive feedback
+                result.append(falseFeedback);                     
+            }
+        }
+        else
         {
             // Not deceptive, just show true feedback
             result.append(trueFeedback);
