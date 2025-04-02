@@ -231,11 +231,23 @@ public final class MastermindGame implements
     {
         while(true)
         {
+            promptForInput();
+
             final PlayerAction input;
-            input = InputHandler.getPlayerInput();
+            try
+            {
+                input = InputHandler.getPlayerInput();
+            }
+            catch (final InvalidGuessException e)
+            {
+                System.err.println(e.getMessage());
+                System.out.println("Please try again. Enter 4 digits (1-6), 't' for truth scan, or 'g' for summary.");
+                continue;
+            }
 
             if(input == null)
             {
+                System.err.println("Received unexpected null input. Please try again.");
                 continue;
             }
 
@@ -256,6 +268,15 @@ public final class MastermindGame implements
                 System.err.println("Input error detected. Please try again or restart.");
             }
         }
+    }
+
+    /*
+     * Prints the prompt for player input.
+     */
+    private static final void promptForInput()
+    {
+        System.out.println(SEPARATOR_LINE);
+        System.out.print("Enter your guess (4 digits, 1-6), 't' for truth scan, or 'g' for guess summary: ");
     }
 
     /*
