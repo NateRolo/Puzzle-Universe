@@ -1,64 +1,9 @@
 === GAME START ===
-Timestamp: 2025-04-03T11:15:42.5138179
+Date and Time: 2025-04-03 13:16:49
 Rounds:
-  Round 1: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 2: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 3: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 4: Guess = [1, 2, 3, 4], Correct positions: 1, Misplaced: 0
-  Round 5: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 0
-  Round 6: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 7: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 8: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 9: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 10: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 11: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-  Round 12: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 1
-Truth Scan: Not Used
-Outcome: Lost
-=== GAME END ===
-
-=== GAME START ===
-Timestamp: 2025-04-03T11:31:12.1725962
-Rounds:
-  Round 1: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 2
-  Round 2: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 2
-  Round 3: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 2
-  Round 4: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 2
-  Round 5: Guess = [1, 2, 3, 4], Correct positions: 2, Misplaced: 0
-  Round 6: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 2
-  Round 7: Guess = [1, 2, 3, 4], Correct positions: 1, Misplaced: 0
-  Round 8: Guess = [1, 2, 4, 2], Correct positions: 1, Misplaced: 0
-  Round 9: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 2
-  Round 10: Guess = [4, 3, 2, 1], Correct positions: 0, Misplaced: 2
-  Round 11: Guess = [4, 3, 2, 1], Correct positions: 0, Misplaced: 2
-  Round 12: Guess = [4, 3, 2, 1], Correct positions: 0, Misplaced: 2
-Truth Scan: Not Used
-Outcome: Lost
-=== GAME END ===
-
-=== GAME START ===
-Timestamp: 2025-04-03T11:33:11.5584311
-Rounds:
-  Round 1: Guess = [1, 2, 3, 4], Correct positions: 1, Misplaced: 0
-  Round 2: Guess = [3, 2, 1, 4], Correct positions: 0, Misplaced: 2
-  Round 3: Guess = [4, 3, 1, 2], Correct positions: 1, Misplaced: 1
-  Round 4: Guess = [4, 3, 1, 2], Correct positions: 1, Misplaced: 0
-  Round 5: Guess = [4, 3, 1, 2], Correct positions: 0, Misplaced: 0
-  Round 6: Guess = [4, 3, 1, 2], Correct positions: 1, Misplaced: 1
-  Round 7: Guess = [4, 3, 1, 2], Correct positions: 1, Misplaced: 1
-  Round 8: Guess = [4, 3, 2, 1], Correct positions: 0, Misplaced: 2
-  Round 9: Guess = [4, 3, 1, 2], Correct positions: 1, Misplaced: 1
-  Round 10: Guess = [4, 3, 1, 2], Correct positions: 1, Misplaced: 1
-  Round 11: Guess = [4, 3, 2, 1], Correct positions: 0, Misplaced: 2
-  Round 12: Guess = [4, 3, 2, 1], Correct positions: 0, Misplaced: 2
-Truth Scan: Not Used
-Outcome: Lost
-=== GAME END ===
-
-=== GAME START ===
-Timestamp: 2025-04-03T11:39:09.0563107
-Rounds:
-  Round 1: Guess = [4, 6, 3, 1], Correct positions: 4, Misplaced: 0
+  Round 1: Guess = [1, 2, 3, 4], Correct positions: 0, Misplaced: 0
+  Round 2: Guess = [1, 2, 3, 4], Correct positions: 1, Misplaced: 0
+  Round 3: Guess = [4, 2, 5, 4], Correct positions: 4, Misplaced: 0
 Truth Scan: Not Used
 Outcome: Won
 === GAME END ===

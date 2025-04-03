@@ -66,7 +66,7 @@ final class TruthScanner
         final String scanResultDescription;
 
         currentRoundNumber = rounds.size() + ROUND_INCREMENT;
-        targetRoundNumber = InputHandler.getRoundNumberForScan(rounds.size());
+        targetRoundNumber = GuessHandler.getRoundNumberForScan(rounds.size());
 
         if (targetRoundNumber <= ROUND_MINIMUM)
         {

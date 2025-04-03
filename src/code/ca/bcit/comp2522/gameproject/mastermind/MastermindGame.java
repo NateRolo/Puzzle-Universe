@@ -2,7 +2,6 @@ package ca.bcit.comp2522.gameproject.mastermind;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
@@ -11,7 +10,8 @@ import java.util.stream.Collectors;
 
 import ca.bcit.comp2522.gameproject.Replayable;
 import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
-
+import ca.bcit.comp2522.gameproject.mastermind.UIHandler.HistoryMenuOption;
+import ca.bcit.comp2522.gameproject.mastermind.UIHandler.MainMenuOption;
 
 /**
  * Main controller for the Mastermind game.
@@ -27,64 +27,25 @@ import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRec
 public final class MastermindGame implements
                                   Replayable
 {
-    private static final int          MAX_ROUNDS          = 12;
-    private static final TruthScanner TRUTH_SCANNER       = new TruthScanner();
-    private static final String       YES                 = "yes";
-    private static final int          DEFAULT_MENU_CHOICE = - 1;
-    private static final int          ROUND_INCREMENT     = 1;
+    private static final int          MAX_ROUNDS    = 12;
+    private static final TruthScanner TRUTH_SCANNER = new TruthScanner();
+    private static final String       YES           = "yes";
 
-    private static final String SEPARATOR_LINE = "----------------------------------------";
+    static final String TRUTH_SCAN_INPUT    = "t";
+    static final String GUESS_SUMMARY_INPUT = "g";
 
-    private static final String GAME_OVER_MESSAGE = "Game Over! The secret code was: %s";
-    private static final String WIN_MESSAGE       = "Congratulations! You won in %d round(s)!";
-    private static final String OUTCOME_WON       = "Won";
-    private static final String OUTCOME_LOST      = "Lost";
+    private static final int ROUND_INCREMENT = 1;
 
-    private static final String RULES = """
-                                        =========== MASTERMIND RULES ===========
-                                        1. The computer will generate a secret code of %d digits (%d-%d).
-                                        2. You have %d attempts to guess the code correctly.
-                                        3. After each guess, you'll receive feedback:
-                                           - Number of digits in the correct position
-                                           - Number of correct digits in the wrong position
-
-                                        ----------SPECIAL MECHANICS-------------
-                                        - Deceptive Rounds: Up to %d rounds may give slightly altered feedback, it's up to you
-                                          to discern whether the feedback is truthful or not.
-                                        - Truth Scan: Once per game, you can reveal the true feedback of a
-                                          previous round. Use this wisely!
-
-                                        -------------HOW TO PLAY----------------
-                                        - Enter a %d-digit guess (digits %d-%d).
-                                        - Enter '%s' to use your Truth Scan.
-                                        - Enter '%s' to view a summary of your previous guesses.
-
-                                        ---------------EXAMPLE------------------
-                                        Secret Code: %s
-                                        Your Guess:  %s
-                                        Feedback: Correct positions: %d, Misplaced: %d
-                                        (%d is correct position, %d is right digit wrong position)
-
-                                        Are you ready to start? (yes/no): """;
-
-    private static final int OPTION_PLAY         = 1;
-    private static final int OPTION_VIEW_HISTORY = 2;
-    private static final int OPTION_EXIT         = 3;
-
-    private static final int HISTORY_OPTION_ALL  = 1;
-    private static final int HISTORY_OPTION_WON  = 2;
-    private static final int HISTORY_OPTION_LOST = 3;
-    private static final int HISTORY_OPTION_BACK = 4;
+    private static final String OUTCOME_WON  = "Won";
+    private static final String OUTCOME_LOST = "Lost";
 
     private final GameHistoryManager gameHistoryManager;
-    private final Scanner            inputScanner;
+    private final UIHandler          uiHandler;
 
     private List<Round> rounds;
     private SecretCode  secretCode;
     private String      truthScanInfoForHistory;
 
-    static final String TRUTH_SCAN_INPUT    = "t";
-    static final String GUESS_SUMMARY_INPUT = "g";
 
     /**
      * Constructs a new MastermindGame.
@@ -92,7 +53,8 @@ public final class MastermindGame implements
     public MastermindGame()
     {
         this.gameHistoryManager = new GameHistoryManager();
-        this.inputScanner       = new Scanner(System.in);
+        final Scanner scanner = new Scanner(System.in);
+        this.uiHandler = new UIHandler(scanner);
     }
 
     /**
@@ -101,23 +63,21 @@ public final class MastermindGame implements
     @Override
     public void play()
     {
-        int choice;
+        MainMenuOption choice;
         do
         {
-            choice = showMainMenu();
+            uiHandler.displayMainMenu();
+            choice = uiHandler.getMainMenuChoice();
 
             switch(choice)
             {
-                case OPTION_PLAY -> playOneGame();
-                case OPTION_VIEW_HISTORY -> handleViewHistoryMenu();
-                case OPTION_EXIT -> {
-                    System.out.println("\n" + SEPARATOR_LINE);
-                    System.out.println("Exiting Mastermind. Goodbye!");
-                    System.out.println(SEPARATOR_LINE + "\n");
-                }
-                default -> System.err.println("Unexpected main menu choice.");
+                case PLAY_GAME -> playOneGame();
+                case VIEW_HISTORY -> handleViewHistoryMenu();
+                case EXIT -> uiHandler.displayExitMessage();
+                default -> uiHandler.displayError("Unexpected main menu choice: " +
+                                                  choice);
             }
-        } while(choice != OPTION_EXIT);
+        } while(choice != MainMenuOption.EXIT);
     }
 
     /**
@@ -137,167 +97,42 @@ public final class MastermindGame implements
     }
 
     /*
-     * Displays the main menu and gets the user's choice.
-     *
-     * @return The valid menu choice (1, 2, or 3).
-     */
-    private int showMainMenu()
-    {
-        int choice = DEFAULT_MENU_CHOICE;
-
-        System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("MASTERMIND MAIN MENU");
-        System.out.println(SEPARATOR_LINE);
-        System.out.println(OPTION_PLAY + ". Play Game");
-        System.out.println(OPTION_VIEW_HISTORY + ". View Game History");
-        System.out.println(OPTION_EXIT + ". Exit");
-        System.out.println(SEPARATOR_LINE);
-
-        while(choice < OPTION_PLAY || choice > OPTION_EXIT)
-        {
-            System.out.print("Enter your choice: ");
-            try
-            {
-                choice = inputScanner.nextInt();
-                if(choice < OPTION_PLAY || choice > OPTION_EXIT)
-                {
-                    System.out.println("Invalid choice. Please enter " +
-                                       OPTION_PLAY +
-                                       ", " +
-                                       OPTION_VIEW_HISTORY +
-                                       ", or " +
-                                       OPTION_EXIT +
-                                       ".");
-                }
-            }
-            catch(final InputMismatchException error)
-            {
-                System.out.println("Invalid input. Please enter a number.");
-                inputScanner.next();
-            }
-        }
-        inputScanner.nextLine();
-        return choice;
-    }
-
-    /*
      * Handles the View History menu and displays selected game records.
      */
     private void handleViewHistoryMenu()
     {
-        int choice;
+        HistoryMenuOption choice;
         do
         {
-            choice = showHistorySubMenu();
+            uiHandler.displayHistorySubMenu();
+            choice = uiHandler.getHistoryMenuChoice();
             List<GameSessionRecord> history;
 
             switch(choice)
             {
-                case HISTORY_OPTION_ALL -> {
-                    System.out.println("\n-------------- All Games ---------------");
+                case VIEW_ALL -> {
                     history = gameHistoryManager.loadGameHistory();
-                    displayHistory(history);
+                    uiHandler.displayHistory(history,
+                                             HistoryMenuOption.VIEW_ALL);
                 }
-                case HISTORY_OPTION_WON -> {
-                    System.out.println("\n-------------- Games Won ---------------");
+                case VIEW_WON -> {
                     history = gameHistoryManager.loadGameHistory();
-                    displayHistory(gameHistoryManager.filterHistoryByOutcome(history,
-                                                                             OUTCOME_WON));
+                    uiHandler.displayHistory(gameHistoryManager.filterHistoryByOutcome(history,
+                                                                                       OUTCOME_WON),
+                                             HistoryMenuOption.VIEW_WON);
                 }
-                case HISTORY_OPTION_LOST -> {
-                    System.out.println("\n-------------- Games Lost ---------------");
+                case VIEW_LOST -> {
                     history = gameHistoryManager.loadGameHistory();
-                    displayHistory(gameHistoryManager.filterHistoryByOutcome(history,
-                                                                             OUTCOME_LOST));
+                    uiHandler.displayHistory(gameHistoryManager.filterHistoryByOutcome(history,
+                                                                                       OUTCOME_LOST),
+                                             HistoryMenuOption.VIEW_LOST);
                 }
-                case HISTORY_OPTION_BACK -> {
+                case BACK_TO_MAIN -> {
                 }
-                default -> System.err.println("Unexpected history menu choice.");
+                default -> uiHandler.displayError("Unexpected history menu choice: " +
+                                                  choice);
             }
-        } while(choice != HISTORY_OPTION_BACK);
-    }
-
-    /*
-     * Displays the history sub-menu and gets the user's choice.
-     *
-     * @return The valid menu choice (1-4).
-     */
-    private int showHistorySubMenu()
-    {
-        int choice = DEFAULT_MENU_CHOICE;
-
-        printHistorySubMenuOptions();
-
-        while(choice < HISTORY_OPTION_ALL || choice > HISTORY_OPTION_BACK)
-        {
-            System.out.print("Enter your choice: ");
-            try
-            {
-                choice = inputScanner.nextInt();
-                if(choice < HISTORY_OPTION_ALL || choice > HISTORY_OPTION_BACK)
-                {
-                    System.out.println("Invalid choice. Please enter a number between " +
-                                       HISTORY_OPTION_ALL +
-                                       " and " +
-                                       HISTORY_OPTION_BACK +
-                                       ".");
-                }
-            }
-            catch(final InputMismatchException e)
-            {
-                System.out.println("Invalid input. Please enter a number.");
-                inputScanner.next();
-            }
-        }
-        inputScanner.nextLine();
-        return choice;
-    }
-
-    /**
-     * Prints the history sub-menu options.
-     */
-    private static void printHistorySubMenuOptions()
-    {
-        System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("VIEW GAME HISTORY");
-        System.out.println(SEPARATOR_LINE);
-        System.out.println(HISTORY_OPTION_ALL + ". View All History");
-        System.out.println(HISTORY_OPTION_WON + ". View Won Games");
-        System.out.println(HISTORY_OPTION_LOST + ". View Lost Games");
-        System.out.println(HISTORY_OPTION_BACK + ". Back to Main Menu");
-        System.out.println(SEPARATOR_LINE);
-    }
-
-    /*
-     * Helper method to display a list of game session records.
-     *
-     * @param historyList The list of records to display.
-     */
-    private void displayHistory(final List<GameSessionRecord> historyList)
-    {
-        validateHistoryList(historyList);
-
-        final StringBuilder historyBuilder;
-        final String        historyOutput;
-
-        historyBuilder = new StringBuilder();
-
-        for(final GameSessionRecord record : historyList)
-        {
-            historyBuilder.append(SEPARATOR_LINE)
-                          .append("\n")
-                          .append(record.toString())
-                          .append(SEPARATOR_LINE)
-                          .append("\n\n");
-        }
-        historyBuilder.append("End of history view.\n");
-
-        historyOutput = historyBuilder.toString();
-        System.out.print(historyOutput);
-
-        System.out.println(SEPARATOR_LINE);
-        System.out.print("Press Enter to continue...");
-        inputScanner.nextLine();
+        } while(choice != HistoryMenuOption.BACK_TO_MAIN);
     }
 
     /*
@@ -320,36 +155,26 @@ public final class MastermindGame implements
      *
      * @return true if the player is ready to start, false otherwise.
      */
-    private static boolean handleGameIntroduction()
+    private boolean handleGameIntroduction()
     {
-        final String response;
-        final String ready;
-
-        System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("Welcome to Mastermind!");
-        System.out.println(SEPARATOR_LINE);
-        System.out.print("Have you played this version before? (yes/no): ");
-
-        response = InputHandler.getYesNoResponse();
+        uiHandler.displayWelcome();
+        uiHandler.promptForPlayedBefore();
+        final String response = GuessHandler.getYesNoResponse();
 
         if(!response.equalsIgnoreCase(YES))
         {
-            printRules();
-            ready = InputHandler.getYesNoResponse();
+            displayFormattedRules();
+            final String ready = GuessHandler.getYesNoResponse();
 
             if(!ready.equalsIgnoreCase(YES))
             {
-                System.out.println("\nMaybe next time! Returning to main menu...\n");
+                uiHandler.displayMessage("\nMaybe next time! Returning to main menu...\n");
                 return false;
             }
         }
 
-        System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("Try to guess the " +
-                           Code.CODE_LENGTH +
-                           "-digit code.");
-        System.out.println("You have " + MAX_ROUNDS + " attempts.");
-        System.out.println(SEPARATOR_LINE);
+        uiHandler.displayInitialInstructions(Code.CODE_LENGTH,
+                                             MAX_ROUNDS);
         return true;
     }
 
@@ -371,9 +196,8 @@ public final class MastermindGame implements
     private void playRound()
     {
         final int roundNumber = rounds.size() + ROUND_INCREMENT;
-        System.out.printf("%nRound %d of %d%n",
-                          roundNumber,
-                          MAX_ROUNDS);
+        uiHandler.displayRoundHeader(roundNumber,
+                                     MAX_ROUNDS);
 
         final PlayerAction action;
         action = handlePlayerInput();
@@ -421,17 +245,17 @@ public final class MastermindGame implements
             rounds.add(thisRound);
 
             displayFeedback = thisRound.getFeedback();
-            System.out.println("\nFeedback: " + displayFeedback);
+            uiHandler.displayFeedback(displayFeedback);
         }
         catch(final CompletionException e)
         {
-            System.err.println("Error during feedback calculation: " +
-                               e.getCause());
+            uiHandler.displayError("Error during feedback calculation: " +
+                                   e.getCause());
         }
         catch(final Exception e)
         {
-            System.err.println("Unexpected error processing guess: " +
-                               e.getMessage());
+            uiHandler.displayError("Unexpected error processing guess: " +
+                                   e.getMessage());
         }
     }
 
@@ -447,23 +271,29 @@ public final class MastermindGame implements
     {
         while(true)
         {
-            promptForInput();
+            uiHandler.promptForGuess(TRUTH_SCAN_INPUT,
+                                     GUESS_SUMMARY_INPUT);
 
             final PlayerAction input;
             try
             {
-                input = InputHandler.getPlayerInput();
+                input = GuessHandler.getPlayerInput();
             }
             catch(final InvalidGuessException e)
             {
-                System.err.println(e.getMessage());
-                System.out.println("Please try again. Enter 4 digits (1-6), 't' for truth scan, or 'g' for summary.");
+                uiHandler.displayError(e.getMessage());
+                uiHandler.displayMessage(String.format("Please try again. Enter %d digits (%d-%d), '%s' for truth scan, or '%s' for summary.",
+                                                       Code.CODE_LENGTH,
+                                                       Code.DIGIT_MIN,
+                                                       Code.DIGIT_MAX,
+                                                       TRUTH_SCAN_INPUT,
+                                                       GUESS_SUMMARY_INPUT));
                 continue;
             }
 
             if(input == null)
             {
-                System.err.println("Received unexpected null input. Please try again.");
+                uiHandler.displayError("Received unexpected null input. Please try again.");
                 continue;
             }
 
@@ -481,18 +311,9 @@ public final class MastermindGame implements
             }
             else
             {
-                System.err.println("Input error detected. Please try again or restart.");
+                uiHandler.displayError("Input error detected. Please try again or restart.");
             }
         }
-    }
-
-    /*
-     * Prints the prompt for player input.
-     */
-    private static void promptForInput()
-    {
-        System.out.println(SEPARATOR_LINE);
-        System.out.print("Enter your guess: ");
     }
 
     /*
@@ -502,18 +323,19 @@ public final class MastermindGame implements
      */
     private void handleTruthScanAction()
     {
-        System.out.println("\n--- Truth Scan Requested ---");
+        uiHandler.displayTruthScanRequested();
         final String scanResultInfo = TRUTH_SCANNER.handleTruthScanRequestAndGetInfo(rounds,
                                                                                      secretCode);
 
         if(scanResultInfo != null)
         {
             this.truthScanInfoForHistory = scanResultInfo;
-            System.out.println("--- Truth Scan Complete ---");
+            uiHandler.displayTruthScanResult(scanResultInfo);
+            uiHandler.displayTruthScanComplete();
         }
         else
         {
-            System.out.println("--- Truth Scan Failed or Cancelled ---");
+            uiHandler.displayTruthScanFailed();
         }
     }
 
@@ -523,7 +345,19 @@ public final class MastermindGame implements
      */
     private void handleGuessSummaryAction()
     {
-        printGuessSummary();
+        uiHandler.displayGuessSummaryHeader();
+        if(rounds.isEmpty())
+        {
+            uiHandler.displayNoGuessesMessage();
+        }
+        else
+        {
+            for(final Round round : rounds)
+            {
+                uiHandler.displayGuessSummaryItem(round.toString());
+            }
+        }
+        uiHandler.displayGuessSummaryFooter();
     }
 
     /*
@@ -580,14 +414,14 @@ public final class MastermindGame implements
      */
     private void endGame()
     {
-        System.out.println("\n" + SEPARATOR_LINE);
+        uiHandler.displayGameOverHeader();
 
         final String        outcome;
         final LocalDateTime endTime = LocalDateTime.now();
 
         if(rounds.isEmpty())
         {
-            System.out.println("Game ended without any guesses.");
+            uiHandler.displayNoGuessesEndMessage();
             outcome = OUTCOME_LOST;
         }
         else
@@ -600,19 +434,17 @@ public final class MastermindGame implements
 
             if(isCorrectGuess(lastRound))
             {
-                System.out.printf(WIN_MESSAGE + "%n",
-                                  roundsPlayed);
+                uiHandler.displayWinMessage(roundsPlayed);
                 outcome = OUTCOME_WON;
             }
             else
             {
-                System.out.printf(GAME_OVER_MESSAGE + "%n",
-                                  secretCode);
+                uiHandler.displayLossMessage(secretCode);
                 outcome = OUTCOME_LOST;
             }
         }
 
-        System.out.println(SEPARATOR_LINE);
+        uiHandler.displaySeparator();
 
         if(!rounds.isEmpty())
         {
@@ -642,67 +474,28 @@ public final class MastermindGame implements
                                              this.truthScanInfoForHistory,
                                              outcome);
 
-        System.out.println("Saving game history...");
+        uiHandler.displaySavingHistory();
         gameHistoryManager.saveGameHistory(record);
-        System.out.println("Game history saved.");
+        uiHandler.displaySaveComplete();
     }
 
     /*
-     * Prints a summary of all previous guesses and their feedback.
-     * Displays the actual feedback for rounds where truth was revealed.
-     */
-    private void printGuessSummary()
-    {
-        System.out.println("\n----------- Guess Summary --------------");
-        if(rounds.isEmpty())
-        {
-            System.out.println("No guesses made yet.");
-        }
-        else
-        {
-            for(final Round round : rounds)
-            {
-                System.out.println(round.toString());
-            }
-        }
-        System.out.println("----------- End Summary --------------");
-    }
-
-    /*
-     * Validates the history list.
-     * 
-     * @param historyList The list of game session records to validate.
-     */
-    private static void validateHistoryList(final List<GameSessionRecord> historyList)
-    {
-        if(historyList == null || historyList.isEmpty())
-        {
-            throw new IllegalArgumentException("History list cannot be null or empty");
-        }
-    }
-
-    /*
-     * Prints the rules of the game. Uses the RULES constant and the Code and Round classes
+     * Prints the rules of the game. Uses the RULES constant and the Code and
+     * Round classes
      * to format the rules string.
      */
-    private static void printRules()
+    private void displayFormattedRules()
     {
-        System.out.printf(RULES,
-                          Code.CODE_LENGTH,
-                          Code.DIGIT_MIN,
-                          Code.DIGIT_MAX,   
-                          MAX_ROUNDS,
-                          Round.DECEPTIVE_ROUNDS_ALLOWED,
-                          Code.CODE_LENGTH,
-                          Code.DIGIT_MIN,
-                          Code.DIGIT_MAX,
-                          TRUTH_SCAN_INPUT,
-                          GUESS_SUMMARY_INPUT,
-                          Code.EXAMPLE_SECRET,
-                          Code.EXAMPLE_GUESS,
-                          Code.EXAMPLE_CORRECT_POSITIONS,
-                          Code.EXAMPLE_MISPLACED,
-                          Code.EXAMPLE_CORRECT_POSITIONS,
-                          Code.EXAMPLE_MISPLACED);
+        uiHandler.displayRules(Code.CODE_LENGTH,
+                               Code.DIGIT_MIN,
+                               Code.DIGIT_MAX,
+                               MAX_ROUNDS,
+                               Round.DECEPTIVE_ROUNDS_ALLOWED,
+                               TRUTH_SCAN_INPUT,
+                               GUESS_SUMMARY_INPUT,
+                               Code.EXAMPLE_SECRET,
+                               Code.EXAMPLE_GUESS,
+                               Code.EXAMPLE_CORRECT_POSITIONS,
+                               Code.EXAMPLE_MISPLACED);
     }
 }
