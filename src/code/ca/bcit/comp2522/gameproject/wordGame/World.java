@@ -65,7 +65,7 @@ final class World
      *
      * @throws IOException if there's an error reading the resource files
      */
-    World() throws IOException
+    World()
     {
         this.countries = new HashMap<>();
         loadCountriesFromAllFiles();

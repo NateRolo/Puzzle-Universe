@@ -8,49 +8,38 @@ import ca.bcit.comp2522.gameproject.Playable;
 /**
  * Launcher for the Word Game that implements the Playable interface.
  * <p>
- * This class manages the game flow, including asking questions, validating answers,
+ * This class manages the game flow, including asking questions, validating
+ * answers,
  * tracking scores, and handling game progression.
  * </p>
  *
  * @author Nathan O
  * @version 1.0 2025
  */
-public final class WordGame implements Playable
+public final class WordGame implements
+                            Playable
 {
-    private static final   int QUESTIONS_PER_GAME    = 10;
-    private static final   int QUESTION_TYPES        = 3;
-    static final int CAPITAL_CITY_QUESTION = 0;
-    static final int COUNTRY_QUESTION      = 1;
-    static final int FACT_QUESTION         = 2;
+    private static final int QUESTIONS_PER_GAME    = 10;
+    private static final int QUESTION_TYPES        = 3;
+    static final int         CAPITAL_CITY_QUESTION = 0;
+    static final int         COUNTRY_QUESTION      = 1;
+    static final int         FACT_QUESTION         = 2;
 
-    private static final Scanner scan;
-    private static final World   world;
+    private static final Scanner scan = new Scanner(System.in);
+    private final World world;
 
-    private final Score           currentScore;
+    private final Score         currentScore;
     private final AnswerChecker answerValidator;
 
-    static
-    {
-        scan = new Scanner(System.in);
-
-        try
-        {
-            world = new World();
-        }
-        catch(final IOException e)
-        {
-            throw new RuntimeException("Failed to initialize world data", e);
-        }
-    }
-
     /**
-     * Constructs a new WordGameLauncher with a fresh score and answer validator.
+     * Constructs a new WordGame, initializing required components including world data.
      */
     public WordGame()
     {
-        currentScore    = new Score();
-        answerValidator = new AnswerChecker(scan,
-                                              currentScore);
+        this.world = new World();
+        this.currentScore    = new Score();
+        this.answerValidator = new AnswerChecker(scan,
+                                                 currentScore);
     }
 
     /**
@@ -84,7 +73,8 @@ public final class WordGame implements Playable
      */
     private void playOneGame()
     {
-        for(int questionsAsked = 1; questionsAsked <= QUESTIONS_PER_GAME; questionsAsked++) 
+        for(int questionsAsked = 1; questionsAsked <=
+                                    QUESTIONS_PER_GAME; questionsAsked++)
         {
             System.out.printf("----------Question %d/10----------\n",
                               questionsAsked);
@@ -121,7 +111,8 @@ public final class WordGame implements Playable
     /*
      * Handles end-of-game operations.
      * <p>
-     * This method displays the high score message and saves the current score to a file.
+     * This method displays the high score message and saves the current score
+     * to a file.
      * </p>
      */
     private void handleGameEnd()
@@ -141,7 +132,8 @@ public final class WordGame implements Playable
     /*
      * Asks a single question and validates the player's answer.
      * <p>
-     * This method selects a random country and question type, creates the appropriate
+     * This method selects a random country and question type, creates the
+     * appropriate
      * question, and processes the player's response.
      * </p>
      */
