@@ -27,7 +27,7 @@ public final class WordGameLauncher implements Playable
     private static final World   world;
 
     private final Score           currentScore;
-    private final AnswerValidator answerValidator;
+    private final AnswerChecker answerValidator;
 
     static
     {
@@ -49,7 +49,7 @@ public final class WordGameLauncher implements Playable
     public WordGameLauncher()
     {
         currentScore    = new Score();
-        answerValidator = new AnswerValidator(scan,
+        answerValidator = new AnswerChecker(scan,
                                               currentScore);
     }
 

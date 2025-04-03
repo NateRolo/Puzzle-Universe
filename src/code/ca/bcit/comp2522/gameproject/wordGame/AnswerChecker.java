@@ -3,7 +3,7 @@ package ca.bcit.comp2522.gameproject.wordgame;
 import java.util.Scanner;
 
 /**
- * Validates user answers in the word game.
+ * Checks user answers in the word game.
  * <p>
  * This class handles the validation of user answers against expected answers,
  * providing two attempts for each question and tracking the score
@@ -13,7 +13,7 @@ import java.util.Scanner;
  * @author Nathan O
  * @version 1.0 2025
  */
-final class AnswerValidator
+final class AnswerChecker
 {
     private final Scanner scanner;
     private final Score   score;
@@ -25,7 +25,7 @@ final class AnswerValidator
      * @param scanner the Scanner object used to read user input
      * @param score   the Score object used to track game statistics
      */
-    AnswerValidator(final Scanner scanner,
+    AnswerChecker(final Scanner scanner,
                     final Score score)
     {
         validateDependencies(scanner,
