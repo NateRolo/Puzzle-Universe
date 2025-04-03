@@ -14,13 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Verifies the creation and validation of player guesses.
  *
  * @author Nathan O
+ * @version 1.0 2025
  */
 public class PlayerGuessCodeTest
 {
     private static final int DEFAULT_EXPECTED_LENGTH = 4;
 
     @Test
-    public void testFromInput_ValidGuess() throws InvalidGuessException
+    public void testFromInputValidGuess()
     {
         final String validInput = "1234";
         final PlayerGuessCode guessCode = PlayerGuessCode.fromInput(validInput);
@@ -35,64 +36,51 @@ public class PlayerGuessCodeTest
                      "Code sequence should match the valid input");
     }
 
-    @Test
-    public void testFromInput_ValidGuessWithHigherDigits() throws InvalidGuessException
-    {
-        // Assuming digits up to 8 are valid based on typical Mastermind rules.
-        final String validInput = "8765";
-        final PlayerGuessCode guessCode = PlayerGuessCode.fromInput(validInput);
-        assertNotNull(guessCode,
-                      "Guess code should not be null for valid input with higher digits");
-        final List<Integer> expectedSequence = Arrays.asList(8,
-                                                             7,
-                                                             6,
-                                                             5);
-        assertEquals(expectedSequence,
-                     guessCode.getDigits(),
-                     "Code sequence should match the valid input: " +
-                                                  validInput);
-    }
 
     @Test
-    public void testFromInput_InvalidLength_TooShort()
+    public void testFromInputInvalidLengthTooShort()
     {
         final String                invalidInput = "123";
         final InvalidGuessException exception    = assertThrows(InvalidGuessException.class,
                                                                 () -> PlayerGuessCode.fromInput(invalidInput),
                                                                 "Should throw InvalidGuessException for input too short");
 
-        assertEquals("Guess must be exactly " +
+        assertEquals("Invalid input length. Expected " +
                      DEFAULT_EXPECTED_LENGTH +
-                     " digits long.",
+                     " digits, but got " +
+                     invalidInput.length() +
+                     ".",
                      exception.getMessage());
     }
 
     @Test
-    public void testFromInput_InvalidLength_TooLong()
+    public void testFromInputInvalidLengthTooLong()
     {
         final String                invalidInput = "12345";
         final InvalidGuessException exception    = assertThrows(InvalidGuessException.class,
                                                                 () -> PlayerGuessCode.fromInput(invalidInput),
                                                                 "Should throw InvalidGuessException for input too long");
-        assertEquals("Guess must be exactly " +
+        assertEquals("Invalid input length. Expected " +
                      DEFAULT_EXPECTED_LENGTH +
-                     " digits long.",
+                     " digits, but got " +
+                      invalidInput.length() +
+                      ".",
                      exception.getMessage());
     }
 
     @Test
-    public void testFromInput_InvalidCharacters_NonNumeric()
+    public void testFromInputInvalidCharactersNonNumeric()
     {
         final String                invalidInput = "12a4";
         final InvalidGuessException exception    = assertThrows(InvalidGuessException.class,
                                                                 () -> PlayerGuessCode.fromInput(invalidInput),
                                                                 "Should throw InvalidGuessException for non-numeric characters");
-        assertEquals("Guess must contain only digits.",
+        assertEquals("Invalid character 'a' at position 3.Only digits 1-6 are allowed.",
                      exception.getMessage());
     }
 
     @Test
-    public void testFromInput_InvalidCharacters_ZeroDigit()
+    public void testFromInputZeroDigit()
     {
         // Assuming valid digits are usually 1-N
         final String                invalidInput = "1204";
@@ -100,24 +88,24 @@ public class PlayerGuessCodeTest
                                                                 () -> PlayerGuessCode.fromInput(invalidInput),
                                                                 "Should throw InvalidGuessException for digit zero (if invalid)");
         // Adjust message based on actual validation rule
-        assertEquals("Digits must be between 1 and 8.",
+        assertEquals("Invalid character '0' at position 3.Only digits 1-6 are allowed.",
                      exception.getMessage());
     }
 
     @Test
-    public void testFromInput_InvalidCharacters_DigitTooHigh()
+    public void testFromInputDigitTooHigh()
     {
         // Assuming valid digits are 1-8
         final String invalidInput = "1294";
         final InvalidGuessException exception = assertThrows(InvalidGuessException.class,
                                                              () -> PlayerGuessCode.fromInput(invalidInput),
                                                              "Should throw InvalidGuessException for digit too high (e.g., 9)");
-        assertEquals("Digits must be between 1 and 8.",
+        assertEquals("Invalid character '9' at position 3.Only digits 1-6 are allowed.",
                      exception.getMessage());
     }
 
     @Test
-    public void testgetDigits()
+    public void testGetDigits()
     {
         final String validInput = "5566";
         final PlayerGuessCode guessCode        = PlayerGuessCode.fromInput(validInput);
@@ -132,30 +120,26 @@ public class PlayerGuessCodeTest
     }
 
     @Test
-    public void testFromInput_EmptyString()
+    public void testFromInputEmptyString()
     {
         final String                invalidInput = "";
         final InvalidGuessException exception    = assertThrows(InvalidGuessException.class,
                                                                 () -> PlayerGuessCode.fromInput(invalidInput),
                                                                 "Should throw InvalidGuessException for empty string");
-        // Check message - likely length validation fails first
-        assertEquals("Guess must be exactly " +
-                     DEFAULT_EXPECTED_LENGTH +
-                     " digits long.",
+        assertEquals("Invalid input length. Expected 4 digits, " +
+                     "but got 0.",
                      exception.getMessage());
     }
 
     @Test
-    public void testFromInput_NullInput()
+    public void testNullInput()
     {
-        final NullPointerException exception = assertThrows(NullPointerException.class, // Or
-                                                                                        // InvalidGuessException
-                                                                                        // depending
-                                                                                        // on
-                                                                                        // implementation
+        final InvalidGuessException exception1 = assertThrows(InvalidGuessException.class,
                                                             () -> PlayerGuessCode.fromInput(null),
                                                             "Should throw an exception for null input");
-        // No message check needed usually for NPE, or adjust if
-        // InvalidGuessException is thrown
+
+        
+
     }
+
 }
