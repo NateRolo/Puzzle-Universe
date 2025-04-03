@@ -15,7 +15,7 @@ import ca.bcit.comp2522.gameproject.Playable;
  * @author Nathan O
  * @version 1.0 2025
  */
-public final class WordGameLauncher implements Playable
+public final class WordGame implements Playable
 {
     private static final   int QUESTIONS_PER_GAME    = 10;
     private static final   int QUESTION_TYPES        = 3;
@@ -46,7 +46,7 @@ public final class WordGameLauncher implements Playable
     /**
      * Constructs a new WordGameLauncher with a fresh score and answer validator.
      */
-    public WordGameLauncher()
+    public WordGame()
     {
         currentScore    = new Score();
         answerValidator = new AnswerChecker(scan,

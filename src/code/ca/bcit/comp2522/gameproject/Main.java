@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import ca.bcit.comp2522.gameproject.mastermind.MastermindGame;
 import ca.bcit.comp2522.gameproject.numbergame.NumberGameGUI;
-import ca.bcit.comp2522.gameproject.wordgame.WordGameLauncher;
+import ca.bcit.comp2522.gameproject.wordgame.WordGame;
 
 /**
  * Main class for the game project.
@@ -34,7 +34,7 @@ public class Main
     static
     {
         scan       = new Scanner(System.in);
-        wordGame   = new WordGameLauncher();
+        wordGame   = new WordGame();
         numberGame   = new NumberGameGUI();
         mastermindGame = new MastermindGame();
     }

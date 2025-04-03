@@ -31,9 +31,9 @@ final class QuestionFactory
 
         return switch(questionType)
         {
-            case WordGameLauncher.CAPITAL_CITY_QUESTION -> new CapitalCityQuestion(country);
-            case WordGameLauncher.COUNTRY_QUESTION -> new CountryQuestion(country);
-            case WordGameLauncher.FACT_QUESTION -> new FactQuestion(country);
+            case WordGame.CAPITAL_CITY_QUESTION -> new CapitalCityQuestion(country);
+            case WordGame.COUNTRY_QUESTION -> new CountryQuestion(country);
+            case WordGame.FACT_QUESTION -> new FactQuestion(country);
             default -> throw new IllegalArgumentException("Invalid question type");
         };
     }

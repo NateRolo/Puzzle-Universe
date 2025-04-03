@@ -8,7 +8,7 @@ package ca.bcit.comp2522.gameproject.numbergame;
  * @author Nathan O
  * @version 1.1 2025
  */
-class NumberGameLogic extends
+final class NumberGameLogic extends
                       AbstractGame implements
                       NumberGameInterface
 {
@@ -24,7 +24,6 @@ class NumberGameLogic extends
     NumberGameLogic()
     {
         super();
-
         initializeGame();
     }
 
