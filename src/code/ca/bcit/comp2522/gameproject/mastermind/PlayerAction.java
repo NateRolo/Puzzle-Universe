@@ -15,7 +15,7 @@ interface PlayerAction
      * previously played round to reveal its actual feedback, potentially
      * bypassing deception.
      */
-    final class TruthScanRequest implements PlayerAction
+    static final class TruthScanRequest implements PlayerAction
     {
         /**
          * Constructs a TruthScanRequest.
@@ -27,8 +27,11 @@ interface PlayerAction
      * Represents a player's request to view a summary of all guesses
      * made so far in the current game, along with their feedback.
      */
-    final class GuessSummaryRequest implements PlayerAction
+    static final class GuessSummaryRequest implements PlayerAction
     {
-        // Implicit default constructor
+        /**
+         * Constructs a GuessSummaryRequest.
+         */
+        public GuessSummaryRequest(){}
     }
 }

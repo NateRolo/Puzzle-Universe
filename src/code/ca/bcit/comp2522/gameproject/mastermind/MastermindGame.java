@@ -52,14 +52,19 @@ public final class MastermindGame implements Replayable
                                            - Number of correct digits in the wrong position
 
                                         SPECIAL MECHANICS:
-                                        * Deceptive Rounds: Up to 3 rounds may give slightly altered feedback, its up to you
-                                        to discern whether the feedback is truthful or not.
+                                        * Deceptive Rounds: Up to 3 rounds may give slightly altered feedback, it's up to you
+                                          to discern whether the feedback is truthful or not.
                                         * Truth Scan: Once per game, you can reveal the true feedback of a
                                           previous round. Use this wisely!
 
+                                        HOW TO PLAY:
+                                        - Enter a 4-digit guess (digits 1-6).
+                                        - Enter 't' to use your Truth Scan.
+                                        - Enter 'g' to view a summary of your previous guesses.
+
                                         EXAMPLE:
                                         Secret Code: 1234
-                                        Your Guess: 1356
+                                        Your Guess:  1356
                                         Feedback: Correct positions: 1, Misplaced: 1
                                         (1 is correct position, 3 is right digit wrong position)
 
@@ -79,7 +84,7 @@ public final class MastermindGame implements Replayable
 
     private List<Round> rounds;
     private SecretCode  secretCode;
-    private String      truthScanInfoForHistory = null;
+    private String      truthScanInfoForHistory;
 
     /**
      * Constructs a new MastermindGame.
@@ -248,7 +253,9 @@ public final class MastermindGame implements Replayable
         return choice;
     }
 
-    // comments
+    /**
+     * Prints the history sub-menu options.
+     */
     private static void printHistorySubMenuOptions()
     {
         System.out.println("\n" + HISTORY_SEPARATOR);
@@ -298,7 +305,7 @@ public final class MastermindGame implements Replayable
         secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
         Round.resetDeceptiveRounds();
         TRUTH_SCANNER.resetTruthScanner();
-        truthScanInfoForHistory = null;
+        truthScanInfoForHistory = "Not Used";
         System.out.println("\n" + NEW_GAME_SEPARATOR);
     }
 
@@ -477,7 +484,7 @@ public final class MastermindGame implements Replayable
     private static void promptForInput()
     {
         System.out.println(SEPARATOR_LINE);
-        System.out.print("Enter your guess (4 digits, 1-6), 't' for truth scan, or 'g' for guess summary: ");
+        System.out.print("Enter your guess: ");
     }
 
     /*
