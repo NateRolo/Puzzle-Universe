@@ -28,9 +28,23 @@ final class Score
     private static final int DEFAULT_CORRECT_SECOND_GUESSES = 0;
     private static final int DEFAULT_INCORRECT_TWO_TIMES    = 0;
     private static final int DEFAULT_SCORE                  = 0;
+    private static final double DEFAULT_AVERAGE            = 0.0;
+
+    private static final int GAMES_PLAYED_MIN               = 0;
+    private static final int GUESS_COUNT_MIN               = 0;
 
     private static final int CORRECT_FIRST_GUESS_SCORE  = 2;
     private static final int CORRECT_SECOND_GUESS_SCORE = 1;
+
+    // Constants for parsing score files
+    private static final String DATE_TIME_PREFIX        = "Date and Time:";
+    private static final int    LINE_PARSE_SPLIT_LIMIT  = 2;
+    private static final int    PARSED_VALUE_INDEX      = 1;
+    private static final int    START_INDEX             = 0;
+    private static final int    GAMES_PLAYED_OFFSET     = 1;
+    private static final int    CORRECT_FIRST_OFFSET    = 2;
+    private static final int    CORRECT_SECOND_OFFSET   = 3;
+    private static final int    INCORRECT_OFFSET        = 4;
 
     private int numGamesPlayed;
     private int numCorrectFirstAttempt;
@@ -43,11 +57,15 @@ final class Score
     /**
      * Constructs a Score object with specific values.
      *
-     * @param dateTime the date and time when the score was recorded
-     * @param gamesPlayed the number of games played
-     * @param numCorrectFirstGuess the number of correct answers on first attempt
-     * @param numCorrectSecondGuess the number of correct answers on second attempt
-     * @param twoIncorrectAttempts the number of questions with two incorrect attempts
+     * @param dateTime              the date and time when the score was
+     *                              recorded
+     * @param gamesPlayed           the number of games played
+     * @param numCorrectFirstGuess  the number of correct answers on first
+     *                              attempt
+     * @param numCorrectSecondGuess the number of correct answers on second
+     *                              attempt
+     * @param twoIncorrectAttempts  the number of questions with two incorrect
+     *                              attempts
      */
     Score(final LocalDateTime dateTime,
           final int gamesPlayed,
@@ -91,7 +109,7 @@ final class Score
      *
      * @return the date and time played
      */
-    final String getCurrentTime()
+    String getCurrentTime()
     {
         return formattedDateTime;
     }
@@ -101,7 +119,7 @@ final class Score
      *
      * @return number of games played
      */
-    final int getNumGamesPlayed()
+    int getNumGamesPlayed()
     {
         return numGamesPlayed;
     }
@@ -111,7 +129,7 @@ final class Score
      *
      * @return number of correct first attempts
      */
-    final int getNumCorrectFirstAttempt()
+    int getNumCorrectFirstAttempt()
     {
         return numCorrectFirstAttempt;
     }
@@ -121,7 +139,7 @@ final class Score
      *
      * @return number of correct second attempts
      */
-    final int getNumCorrectSecondAttempt()
+    int getNumCorrectSecondAttempt()
     {
         return numCorrectSecondAttempt;
     }
@@ -131,7 +149,7 @@ final class Score
      *
      * @return number of incorrect attempts after two tries
      */
-    final int getNumIncorrectTwoAttempts()
+    int getNumIncorrectTwoAttempts()
     {
         return numIncorrectTwoAttempts;
     }
@@ -141,7 +159,7 @@ final class Score
      *
      * @return the current score
      */
-    final int getScore()
+    int getScore()
     {
         return score;
     }
@@ -149,7 +167,7 @@ final class Score
     /**
      * Increments the number of games played.
      */
-    final void incrementNumGamesPlayed()
+    void incrementNumGamesPlayed()
     {
         this.numGamesPlayed++;
     }
@@ -158,7 +176,7 @@ final class Score
      * Increments the number of correct first attempt and adds
      * 2 points to score.
      */
-    final void incrementNumCorrectFirstAttempt()
+    void incrementNumCorrectFirstAttempt()
     {
         this.numCorrectFirstAttempt++;
         this.score += CORRECT_FIRST_GUESS_SCORE;
@@ -168,7 +186,7 @@ final class Score
      * Increments the number of correct second attempts and adds
      * 1 point to score.
      */
-    final void incrementNumCorrectSecondAttempt()
+    void incrementNumCorrectSecondAttempt()
     {
         this.numCorrectSecondAttempt++;
         this.score += CORRECT_SECOND_GUESS_SCORE;
@@ -177,7 +195,7 @@ final class Score
     /**
      * Increments the number of incorrect attempts after two tries.
      */
-    final void incrementNumIncorrectTwoAttempts()
+    void incrementNumIncorrectTwoAttempts()
     {
         this.numIncorrectTwoAttempts++;
     }
@@ -197,8 +215,10 @@ final class Score
 
         scoreAsList.add("Date and Time: " + score.formattedDateTime);
         scoreAsList.add("Games Played: " + score.numGamesPlayed);
-        scoreAsList.add("Correct First Attempts: " + score.numCorrectFirstAttempt);
-        scoreAsList.add("Correct Second Attempts: " + score.numCorrectSecondAttempt);
+        scoreAsList.add("Correct First Attempts: " +
+                        score.numCorrectFirstAttempt);
+        scoreAsList.add("Correct Second Attempts: " +
+                        score.numCorrectSecondAttempt);
         scoreAsList.add("Incorrect Attempts: " + score.numIncorrectTwoAttempts);
         scoreAsList.add("Score: " + score.score + " points");
 
@@ -206,31 +226,10 @@ final class Score
     }
 
     /**
-     * Returns a string representation of this Score object.
-     *
-     * @return a string containing all score information
-     */
-    @Override
-    public String toString()
-    {
-        final StringBuilder builder;
-        final List<String>  list = formatScore(this);
-
-        builder = new StringBuilder();
-        for(String str : list)
-        {
-            builder.append(str)
-                   .append("\n");
-        }
-
-        return builder.toString();
-    }
-
-    /**
      * Appends a Score object to a file.
      *
      * @param score the Score object to append
-     * @param file the path to the file
+     * @param file  the path to the file
      * @throws IOException if there is an error writing to the file
      */
     static void appendScoreToFile(final Score score,
@@ -249,7 +248,7 @@ final class Score
     /**
      * Prints the score information to the console.
      */
-    final void printScore()
+    void printScore()
     {
         formatScore(this).forEach(System.out::println);
     }
@@ -267,34 +266,35 @@ final class Score
 
         final List<String> scoresLines;
         final List<Score>  scores;
+
         scoresLines = FileManager.readLinesFromResource(filePath);
 
-        if(scoresLines.isEmpty())
-        {
-            scores = new ArrayList<>();
-            return scores;
-        }
+        validateList(scoresLines);
 
-        scores = IntStream.range(0,
+        scores = IntStream.range(START_INDEX,
                                  scoresLines.size())
-                          .filter(i -> scoresLines.get(i)
-                                                  .startsWith("Date and Time:"))
-                          .mapToObj(i -> new Score(LocalDateTime.parse(scoresLines.get(i)
+                          .filter(startIndex -> scoresLines.get(startIndex)
+                                                  .startsWith(DATE_TIME_PREFIX))
+                          .mapToObj(startIndex -> new Score(LocalDateTime.parse(scoresLines.get(startIndex)
                                                                                   .split(": ",
-                                                                                         2)[1],
+                                                                                         LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX],
                                                                        formatter),
-                                                   Integer.parseInt(scoresLines.get(i + 1)
+                                                   Integer.parseInt(scoresLines.get(startIndex +
+                                                                                    GAMES_PLAYED_OFFSET)
                                                                                .split(": ",
-                                                                                      2)[1]),
-                                                   Integer.parseInt(scoresLines.get(i + 2)
+                                                                                      LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                   Integer.parseInt(scoresLines.get(startIndex +
+                                                                                    CORRECT_FIRST_OFFSET)
                                                                                .split(": ",
-                                                                                      2)[1]),
-                                                   Integer.parseInt(scoresLines.get(i + 3)
+                                                                                      LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                   Integer.parseInt(scoresLines.get(startIndex +
+                                                                                    CORRECT_SECOND_OFFSET)
                                                                                .split(": ",
-                                                                                      2)[1]),
-                                                   Integer.parseInt(scoresLines.get(i + 4)
+                                                                                      LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                   Integer.parseInt(scoresLines.get(startIndex +
+                                                                                    INCORRECT_OFFSET)
                                                                                .split(": ",
-                                                                                      2)[1])))
+                                                                                      LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX])))
                           .toList();
         return scores;
     }
@@ -318,7 +318,7 @@ final class Score
         allScores      = readScoresFromFile("score.txt");
         currentAverage = calculateAverageScore(currentScore);
         highestScore   = null;
-        highestAverage = 0.0;
+        highestAverage = DEFAULT_AVERAGE;
 
         for(Score score : allScores)
         {
@@ -357,6 +357,7 @@ final class Score
      * Calculates the average score per game.
      *
      * @param score the Score object to calculate the average for
+     * 
      * @return the average score per game
      */
     private static double calculateAverageScore(final Score score)
@@ -368,6 +369,32 @@ final class Score
             return DEFAULT_SCORE;
         }
         return (double)score.score / score.numGamesPlayed;
+    }
+
+    /**
+     * Returns a string representation of this Score object.
+     *
+     * @return a string containing all score information
+     */
+    @Override
+    public String toString()
+    {
+        final StringBuilder builder;
+        final List<String>  scoreAsList;
+        final String        scoreAsString;
+
+        scoreAsList = formatScore(this);
+
+        builder = new StringBuilder();
+        for(final String scoreLine : scoreAsList)
+        {
+            builder.append(scoreLine)
+                   .append("\n");
+        }
+
+        scoreAsString = builder.toString();
+
+        return scoreAsString;
     }
 
     /*
@@ -394,7 +421,7 @@ final class Score
      */
     private static void validateGamesPlayed(final int gamesPlayed)
     {
-        if(gamesPlayed < 0)
+        if(gamesPlayed < GAMES_PLAYED_MIN)
         {
             throw new IllegalArgumentException("Games played cannot be negative");
         }
@@ -404,14 +431,16 @@ final class Score
      * Validates that a guess count is not negative.
      *
      * @param count the count to validate
+     * 
      * @param guessType the type of guess for error messaging
      */
     private static void validateGuessCount(final int count,
                                            final String guessType)
     {
-        if(count < 0)
+        if(count < GUESS_COUNT_MIN)
         {
-            throw new IllegalArgumentException(guessType + " cannot be negative");
+            throw new IllegalArgumentException(guessType +
+                                               " cannot be negative");
         }
     }
 
@@ -443,6 +472,19 @@ final class Score
         if(Files.notExists(Paths.get(filePath)))
         {
             throw new IllegalArgumentException("File path does not exist");
+        }
+    }
+
+    /**
+     * Validates that a list is not null or empty.
+     *
+     * @param list the list to validate
+     */
+    private static void validateList(final List<String> list)
+    {
+        if(list == null || list.isEmpty())
+        {
+            throw new IllegalArgumentException("List cannot be null or empty");
         }
     }
 
