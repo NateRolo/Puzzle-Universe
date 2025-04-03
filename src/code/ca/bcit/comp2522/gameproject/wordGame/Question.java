@@ -40,20 +40,6 @@ abstract class Question
     }
 
     /**
-     * Validates that the country parameter is not null.
-     *
-     * @param country the Country object to validate
-     * @throws NullPointerException if country is null
-     */
-    private static void validateCountry(final Country country)
-    {
-        if(country == null)
-        {
-            throw new NullPointerException("Country cannot be null");
-        }
-    }
-
-    /**
      * Gets the prompt for this question.
      *
      * @return the question prompt as a String
@@ -84,4 +70,18 @@ abstract class Question
      * @return a String containing the expected answer
      */
     abstract String getExpectedAnswer();
+
+    /**
+     * Validates that the country parameter is not null.
+     *
+     * @param country the Country object to validate
+     * @throws NullPointerException if country is null
+     */
+    private static void validateCountry(final Country country)
+    {
+        if(country == null)
+        {
+            throw new NullPointerException("Country cannot be null");
+        }
+    }
 }
