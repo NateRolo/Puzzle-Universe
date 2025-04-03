@@ -48,7 +48,7 @@ final class Country
      *
      * @return name as String
      */
-    String getName()
+    String getCountryName()
     {
         return name;
     }

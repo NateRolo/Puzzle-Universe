@@ -175,7 +175,7 @@ final class World
     {
         validateCountry(country);
 
-        this.countries.put(country.getName(),
+        this.countries.put(country.getCountryName(),
                            country);
     }
 

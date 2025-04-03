@@ -66,7 +66,7 @@ class FactQuestion extends
     String getExpectedAnswer()
     {
         final String countryName;
-        countryName = country.getName();
+        countryName = country.getCountryName();
 
         return countryName;
     }

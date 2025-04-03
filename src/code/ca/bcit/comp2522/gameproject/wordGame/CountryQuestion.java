@@ -36,7 +36,7 @@ class CountryQuestion extends
         final String        promptString;
 
         promptBuilder = new StringBuilder();
-        countryName   = country.getName();
+        countryName   = country.getCountryName();
 
         promptBuilder.append("What is the capital of ")
                      .append(countryName)

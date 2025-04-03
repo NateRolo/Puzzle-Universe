@@ -42,7 +42,7 @@ final class CapitalCityQuestion extends
                      .append(" is the capital of what country?");
 
         promptString = promptBuilder.toString();
-        
+
         return promptString;
     }
 
@@ -55,7 +55,7 @@ final class CapitalCityQuestion extends
     String getExpectedAnswer()
     {
         final String countryName;
-        countryName = country.getName();
+        countryName = country.getCountryName();
 
         return countryName;
     }
