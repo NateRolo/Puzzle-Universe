@@ -24,7 +24,7 @@ import java.util.List;
  * @author Nathan O
  * @version 1.0 2025
  */
-class FileManager
+final class FileManager
 {
     /**
      * Reads lines from a resource file.
@@ -83,26 +83,26 @@ class FileManager
      * </p>
      *
      * @param formattedScore list of strings to write to the file
-     * @param file           path to the file where data should be written
+     * @param filePath           path to the file where data should be written
      * @throws FileNotFoundException if the file path is invalid
      */
     static void writeToResource(final List<String> formattedScore,
-                                final String file) throws FileNotFoundException
+                                final String filePath) throws FileNotFoundException
     {
         validateFormattedScore(formattedScore);
-        validateFilePath(file);
+        validateFilePath(filePath);
 
         try
         {
             final Path scorePath;
-            scorePath = Paths.get(file);
+            scorePath = Paths.get(filePath);
 
             Files.write(scorePath,
                         formattedScore,
                         StandardOpenOption.CREATE,
                         StandardOpenOption.APPEND);
         }
-        catch(IOException error)
+        catch(final IOException error)
         {
             error.printStackTrace();
         }
@@ -126,9 +126,9 @@ class FileManager
      *
      * @param file the file path to validate
      */
-    private static void validateFilePath(final String file) throws FileNotFoundException
+    private static void validateFilePath(final String filePath) throws FileNotFoundException
     {
-        if(file == null || file.isBlank() || Files.notExists(Paths.get(file)))
+        if(filePath == null || filePath.isBlank() || Files.notExists(Paths.get(filePath)))
         {
             throw new FileNotFoundException("Invalid file path");
         }
