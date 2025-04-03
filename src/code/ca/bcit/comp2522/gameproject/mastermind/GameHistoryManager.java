@@ -177,9 +177,13 @@ final class GameHistoryManager
          */
         private boolean isValidForRecord()
         {
-            return this.timestamp != null &&
-                   !this.roundDetails.isEmpty() &&
-                   this.outcome != null;
+            final boolean isValid;
+
+            isValid = this.timestamp != null &&
+                      !this.roundDetails.isEmpty() &&
+                      this.outcome != null;
+
+            return isValid;
         }
     }
 
@@ -396,22 +400,19 @@ final class GameHistoryManager
     {
         if(state.isValidForRecord())
         {
-            final GameSessionRecord record = new GameSessionRecord(state.timestamp,
-                                                                   new ArrayList<>(state.roundDetails), // Create
-                                                                                                        // a
-                                                                                                        // copy
-                                                                                                        // of
-                                                                                                        // the
-                                                                                                        // list
-                                                                   state.truthScanInfo,
-                                                                   state.outcome);
+            final GameSessionRecord record;
+            final List<String> roundDetails;
+
+            roundDetails = new ArrayList<>(state.roundDetails);
+            record = new GameSessionRecord(state.timestamp,
+                                          roundDetails,
+                                          state.truthScanInfo,
+                                          state.outcome);
             gameHistory.add(record);
         }
         else
         {
             System.err.println("Warning: Incomplete game record found in history file. Skipping.");
-            // Log more details about the incomplete state if needed for
-            // debugging
         }
     }
 
@@ -429,6 +430,7 @@ final class GameHistoryManager
         final List<GameSessionRecord> filteredHistory;
 
         filteredHistory = new ArrayList<>();
+        
         for(final GameSessionRecord record : history)
         {
             if(record.getOutcome()
