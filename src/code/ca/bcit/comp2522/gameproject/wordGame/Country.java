@@ -11,7 +11,6 @@ package ca.bcit.comp2522.gameproject.wordgame;
  * @author Nathan O
  * @version 1.0 2025
  */
-
 final class Country
 {
     private final String name;
@@ -49,7 +48,7 @@ final class Country
      *
      * @return name as String
      */
-    public final String getName()
+    String getName()
     {
         return name;
     }
@@ -59,7 +58,7 @@ final class Country
      *
      * @return capital city name as String
      */
-    public final String getCapitalCityName()
+    String getCapitalCityName()
     {
         return capitalCityName;
     }
@@ -69,7 +68,7 @@ final class Country
      *
      * @return copy of facts array
      */
-    public final String[] getFacts()
+    String[] getFacts()
     {
         return facts.clone();
     }
