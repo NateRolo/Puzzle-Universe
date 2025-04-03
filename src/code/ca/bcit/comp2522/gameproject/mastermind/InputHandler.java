@@ -29,7 +29,7 @@ final class InputHandler
      * @return a PlayerGuessCode object representing either a guess or truth
      *         scan request
      */
-    static final PlayerAction getPlayerInput()
+    static PlayerAction getPlayerInput()
     {
         if(!scan.hasNextLine())
         {
@@ -62,22 +62,10 @@ final class InputHandler
      * @param currentRound the current round number
      * @return the selected round number
      */
-    static final int getRoundNumberForScan(final int currentRound)
+    static int getRoundNumberForScan(final int currentRound)
     {
         validateCurrentRound(currentRound);
         return getRoundNumberWithValidation(currentRound);
-    }
-
-    /*
-     * Validates the current round number.
-     * Ensures the round number is not less than the minimum allowed.
-     */
-    private static final void validateCurrentRound(final int currentRound)
-    {
-        if(currentRound < MIN_ROUND_NUMBER)
-        {
-            throw new IllegalArgumentException("Current round must be positive");
-        }
     }
 
     /*
@@ -89,7 +77,7 @@ final class InputHandler
      * 
      * @return the validated round number selected by the user
      */
-    private static final int getRoundNumberWithValidation(final int currentRound)
+    private static int getRoundNumberWithValidation(final int currentRound)
     {
         while(true)
         {
@@ -129,7 +117,7 @@ final class InputHandler
      * 
      * @return true if the input contains only digits, false otherwise
      */
-    private static final boolean isValidNumericInput(final String input)
+    private static boolean isValidNumericInput(final String input)
     {
         final boolean inputIsValid;
         inputIsValid = input.matches("\\d+");
@@ -147,7 +135,7 @@ final class InputHandler
      * 
      * @return true if the round number is valid, false otherwise
      */
-    private static final boolean isValidRoundNumber(final int roundNumber,
+    private static boolean isValidRoundNumber(final int roundNumber,
                                                     final int currentRound)
     {
         final boolean isValid;
@@ -161,7 +149,7 @@ final class InputHandler
      *
      * @return the user's response (either "yes" or "no")
      */
-    static final String getYesNoResponse()
+    static String getYesNoResponse()
     {
         String response;
         do
@@ -178,5 +166,17 @@ final class InputHandler
                 !response.equalsIgnoreCase("no"));
 
         return response;
+    }
+
+    /*
+     * Validates the current round number.
+     * Ensures the round number is not less than the minimum allowed.
+     */
+    private static final void validateCurrentRound(final int currentRound)
+    {
+        if(currentRound < MIN_ROUND_NUMBER)
+        {
+            throw new IllegalArgumentException("Current round must be positive");
+        }
     }
 }
