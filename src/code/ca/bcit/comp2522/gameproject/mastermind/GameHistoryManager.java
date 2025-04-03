@@ -50,7 +50,6 @@ final class GameHistoryManager
         {
             this.timestamp    = timestamp;
             this.roundDetails = new ArrayList<>(roundDetails);
-
             this.truthScanInfo = truthScanInfo;
             this.outcome       = outcome;
         }
@@ -355,9 +354,6 @@ final class GameHistoryManager
     private void processRecordLine(final String line,
                                    final ParsingState state)
     {
-        validateLine(line);
-        validateState(state);
-
         if(line.startsWith(TIMESTAMP_PREFIX))
         {
             try
@@ -400,7 +396,6 @@ final class GameHistoryManager
                 state.outcome = null;
             }
         }
-
     }
 
     /*
@@ -457,48 +452,6 @@ final class GameHistoryManager
             }
         }
         return filteredHistory;
-    }
-
-    /**
-     * Validates the line.
-     * 
-     * @param line The line to validate.
-     */
-    private static void validateLine(final String line)
-    {
-        if(line == null || line.isEmpty())
-        {
-            throw new IllegalArgumentException("Line cannot be null or empty");
-        }
-    }
-
-    /**
-     * Validates the parsing state.
-     * 
-     * @param state The parsing state to validate.
-     */
-    private static void validateState(final ParsingState state)
-    {
-        if(state == null)
-        {
-            throw new IllegalArgumentException("State cannot be null");
-        }
-        if(state.timestamp == null)
-        {
-            throw new IllegalArgumentException("Timestamp cannot be null");
-        }
-        if(state.roundDetails == null || state.roundDetails.isEmpty())
-        {
-            throw new IllegalArgumentException("Round details cannot be null or empty");
-        }
-        if(state.truthScanInfo == null || state.truthScanInfo.isEmpty())
-        {
-            throw new IllegalArgumentException("Truth scan info cannot be null or empty");
-        }
-        if(state.outcome == null || state.outcome.isEmpty())
-        {
-            throw new IllegalArgumentException("Outcome cannot be null or empty");
-        }
     }
 
     /**
