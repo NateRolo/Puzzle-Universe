@@ -272,7 +272,7 @@ final class Score
 
         if(scoresLines.isEmpty())
         {
-            scores = new ArrayList<Score>();
+            scores = new ArrayList<>();
             return scores;
         }
 
@@ -413,31 +413,6 @@ final class Score
         if(count < 0)
         {
             throw new IllegalArgumentException(guessType + " cannot be negative");
-        }
-    }
-
-    /*
-     * Validates that the total number of guesses matches the expected number based on games played.
-     *
-     * @param gamesPlayed the number of games played
-     * @param firstGuesses the number of correct first guesses
-     * @param secondGuesses the number of correct second guesses
-     * @param incorrectAttempts the number of incorrect attempts
-     */
-    private static void validateGuessesMatchGamesPlayed(final int gamesPlayed,
-                                                        final int firstGuesses,
-                                                        final int secondGuesses,
-                                                        final int incorrectAttempts)
-    {
-        final int totalQuestions    = firstGuesses + secondGuesses + incorrectAttempts;
-        final int expectedQuestions = gamesPlayed * QUESTIONS_PER_GAME;
-
-        if(totalQuestions != expectedQuestions)
-        {
-            throw new IllegalArgumentException(String.format("Total questions (%d) does not match expected questions (%d) for %d games",
-                                                             totalQuestions,
-                                                             expectedQuestions,
-                                                             gamesPlayed));
         }
     }
 
