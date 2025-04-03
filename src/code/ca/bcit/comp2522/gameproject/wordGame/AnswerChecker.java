@@ -26,7 +26,7 @@ final class AnswerChecker
      * @param score   the Score object used to track game statistics
      */
     AnswerChecker(final Scanner scanner,
-                    final Score score)
+                  final Score score)
     {
         validateDependencies(scanner,
                              score);

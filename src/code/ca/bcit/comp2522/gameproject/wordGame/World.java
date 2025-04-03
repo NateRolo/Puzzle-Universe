@@ -69,8 +69,6 @@ final class World
 
     /**
      * Constructs a new World object and loads countries from resource files.
-     *
-     * @throws IOException if there's an error reading the resource files
      */
     World()
     {

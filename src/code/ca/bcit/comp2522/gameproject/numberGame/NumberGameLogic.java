@@ -1,5 +1,7 @@
 package ca.bcit.comp2522.gameproject.numbergame;
 
+import java.util.Random;
+
 /**
  * Implements the core logic and state management for the 20-Number Challenge
  * game.
@@ -9,24 +11,26 @@ package ca.bcit.comp2522.gameproject.numbergame;
  * @author Nathan O
  * @version 1.2 2025
  */
-final class NumberGameLogic extends
-                            AbstractGame
+final class NumberGameLogic extends BoardGame
 
 {
-    private static final int UPPER_BOUND_SENTINEL = AbstractGame.MAX_RANDOM_NUMBER +
+    private static final int         BOARD_SIZE        = 20;
+    private static final int RANGE_OFFSET      = 1;
+    private static final int UPPER_BOUND_SENTINEL = BoardGame.MAX_RANDOM_NUMBER +
                                                     1;
     private static final int NO_GAMES_PLAYED      = 0;
     private static final int POSITION_INCREMENT   = 1;
 
-    private int successfulPlacementsThisGame;
-
+    private       int    successfulPlacementsThisGame;
+    private final Random random;
     /**
      * Constructs a new NumberGameLogic instance.
      */
     NumberGameLogic()
     {
-        super();
+        super(BOARD_SIZE);
         initializeGame();
+        this.random          = new Random();
     }
 
     /**
@@ -34,7 +38,7 @@ final class NumberGameLogic extends
      *
      * @return The number of placements made in this game.
      */
-    public final int getSuccessfulPlacementsThisGame()
+    public int getSuccessfulPlacementsThisGame()
     {
         return this.successfulPlacementsThisGame;
     }
@@ -129,7 +133,7 @@ final class NumberGameLogic extends
      */
     private boolean canPlaceCurrentNumber()
     {
-        if(this.currentNumber == AbstractGame.INITIAL_VALUE)
+        if(this.currentNumber == BoardGame.INITIAL_VALUE)
         {
             return true;
         }
@@ -192,7 +196,7 @@ final class NumberGameLogic extends
      * Called by startNewGame and constructor.
      */
     @Override
-    public void initializeGame()
+    void initializeGame()
     {
         super.initializeGame();
         this.successfulPlacementsThisGame = INITIAL_VALUE;
@@ -203,8 +207,7 @@ final class NumberGameLogic extends
      * Starts a new game.
      * Records game played, resets state, generates the first number.
      */
-    @Override
-    public final void startNewGame()
+    void startNewGame()
     {
         this.gamesPlayed++;
 
@@ -217,28 +220,13 @@ final class NumberGameLogic extends
     }
 
     /**
-     * Places the current number at the specified position.
-     * Primarily for interface compliance; prefer placeNumberOnBoard for clearer
-     * feedback.
-     *
-     * @param position The 0-based index where the number should be placed.
-     */
-    @Override
-    public void placeNumber(final int position)
-    {
-        placeNumberOnBoard(position);
-    }
-
-
-    /**
      * Checks if the game is over (win or loss condition met).
      * A game is over if the board is full (win) or if the current
      * number cannot be placed anywhere (loss).
      *
      * @return true if the game has concluded, false otherwise.
      */
-    @Override
-    public boolean isGameOver()
+    boolean isGameOver()
     {
         if(isGameWon())
         {
@@ -270,8 +258,7 @@ final class NumberGameLogic extends
      * - Total successful number placements across all games
      * - Average number of placements per game (if at least one game has been completed)
      */
-    @Override
-    public void showScore()
+    void showScore()
     {
         System.out.println("--- [Logic] Game Statistics ---");
         System.out.printf("Games Played: %d%n",
@@ -305,8 +292,7 @@ final class NumberGameLogic extends
      *
      * @return the current number.
      */
-    @Override
-    public int getNextNumber()
+    int getNextNumber()
     {
         return this.currentNumber;
     }
@@ -319,8 +305,7 @@ final class NumberGameLogic extends
      * @param position The 0-based index to check.
      * @return true if the placement is valid, false otherwise.
      */
-    @Override
-    public boolean isValidPlacement(final int position)
+    private boolean isValidPlacement(final int position)
     {
         final int leftNeighborValue;
         final int rightNeighborValue;
@@ -352,11 +337,30 @@ final class NumberGameLogic extends
         return true;
     }
 
-   
-
+    /**
+     * Returns a copy of the current game board.
+     *
+     * @return A copy of the board array.
+     */
     @Override
-    final int[] getBoard()
+    int[] getBoard()
     {
         return super.getBoard();
+    }
+
+    /**
+     * Generates a random number within the defined range [MIN, MAX].
+     *
+     * @return a random integer between MIN_RANDOM_NUMBER and MAX_RANDOM_NUMBER
+     */
+    private int generateNumber()
+    {
+        final int range;
+        final int randomIntInRange;
+
+        range            = MAX_RANDOM_NUMBER - MIN_RANDOM_NUMBER + RANGE_OFFSET;
+        randomIntInRange = this.random.nextInt(range) + MIN_RANDOM_NUMBER;
+
+        return randomIntInRange;
     }
 }

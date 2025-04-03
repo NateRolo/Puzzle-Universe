@@ -3,7 +3,7 @@ package ca.bcit.comp2522.gameproject.wordgame;
 import java.io.IOException;
 import java.util.Scanner;
 
-import ca.bcit.comp2522.gameproject.Playable;
+import ca.bcit.comp2522.gameproject.Replayable;
 
 /**
  * Launcher for the Word Game that implements the Playable interface.
@@ -17,7 +17,7 @@ import ca.bcit.comp2522.gameproject.Playable;
  * @version 1.0 2025
  */
 public final class WordGame implements
-                            Playable
+                            Replayable
 {
     private static final int QUESTIONS_PER_GAME    = 10;
     private static final int QUESTION_TYPES        = 3;
@@ -29,7 +29,7 @@ public final class WordGame implements
     private final World world;
 
     private final Score         currentScore;
-    private final AnswerChecker answerValidator;
+    private final AnswerChecker answerChecker;
 
     /**
      * Constructs a new WordGame, initializing required components including world data.
@@ -38,8 +38,8 @@ public final class WordGame implements
     {
         this.world = new World();
         this.currentScore    = new Score();
-        this.answerValidator = new AnswerChecker(scan,
-                                                 currentScore);
+        this.answerChecker = new AnswerChecker(scan,
+                                               currentScore);
     }
 
     /**
@@ -71,7 +71,8 @@ public final class WordGame implements
      * number of questions.
      * </p>
      */
-    private void playOneGame()
+    @Override
+    public void playOneGame()
     {
         for(int questionsAsked = 1; questionsAsked <=
                                     QUESTIONS_PER_GAME; questionsAsked++)
@@ -149,6 +150,6 @@ public final class WordGame implements
                                                        questionStyle);
 
         System.out.println(question.getPrompt());
-        answerValidator.validateAnswer(question.getExpectedAnswer());
+        answerChecker.validateAnswer(question.getExpectedAnswer());
     }
 }
