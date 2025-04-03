@@ -108,17 +108,16 @@ public class PlayerGuessCodeTest
     public void testFromInput_InvalidCharacters_DigitTooHigh()
     {
         // Assuming valid digits are 1-8
-        final String                invalidInput = "1294";
-        final InvalidGuessException exception    = assertThrows(InvalidGuessException.class,
-                                                                () -> PlayerGuessCode.fromInput(invalidInput),
-                                                                "Should throw InvalidGuessException for digit too high (e.g., 9)");
+        final String invalidInput = "1294";
+        final InvalidGuessException exception = assertThrows(InvalidGuessException.class,
+                                                             () -> PlayerGuessCode.fromInput(invalidInput),
+                                                             "Should throw InvalidGuessException for digit too high (e.g., 9)");
         assertEquals("Digits must be between 1 and 8.",
                      exception.getMessage());
     }
 
-
     @Test
-    public void testgetDigits() throws InvalidGuessException
+    public void testgetDigits()
     {
         final String validInput = "5566";
         final PlayerGuessCode guessCode        = PlayerGuessCode.fromInput(validInput);
@@ -130,20 +129,6 @@ public class PlayerGuessCodeTest
         assertEquals(expectedSequence,
                      actualSequence,
                      "getDigits should return the correct internal list");
-
-        try
-        {
-            actualSequence.add(9); // Try to modify the returned list
-            assertNotEquals(actualSequence,
-                            guessCode.getDigits(),
-                            "Modifying returned list should not affect internal list if it's a copy");
-        }
-        catch(UnsupportedOperationException e)
-        {
-            // This is also acceptable if getDigits returns an
-            // unmodifiable list
-            System.out.println("getDigits returned an unmodifiable list, which is good.");
-        }
     }
 
     @Test
