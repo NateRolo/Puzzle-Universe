@@ -48,6 +48,7 @@ final class FileManager
         final Path              path;
 
         path = Paths.get(filePath);
+
         if(Files.exists(path))
         {
             return Files.readAllLines(path);
@@ -56,10 +57,7 @@ final class FileManager
         lines       = new ArrayList<>();
         inputStream = FileManager.class.getResourceAsStream(filePath);
 
-        if(inputStream == null)
-        {
-            throw new IOException("Resource not found: " + filePath);
-        }
+        validateInputStream(inputStream);
 
         inputStreamReader = new InputStreamReader(inputStream,
                                                   StandardCharsets.UTF_8);
@@ -68,10 +66,15 @@ final class FileManager
         try(inputStream; bufferedReader)
         {
             String line;
+
             while((line = bufferedReader.readLine()) != null)
             {
                 lines.add(line);
             }
+        }
+        catch(final IOException error)
+        {
+            error.printStackTrace();
         }
         return lines;
     }
@@ -83,7 +86,7 @@ final class FileManager
      * </p>
      *
      * @param formattedScore list of strings to write to the file
-     * @param filePath           path to the file where data should be written
+     * @param filePath       path to the file where data should be written
      * @throws FileNotFoundException if the file path is invalid
      */
     static void writeToResource(final List<String> formattedScore,
@@ -128,9 +131,24 @@ final class FileManager
      */
     private static void validateFilePath(final String filePath) throws FileNotFoundException
     {
-        if(filePath == null || filePath.isBlank() || Files.notExists(Paths.get(filePath)))
+        if(filePath == null ||
+           filePath.isBlank() ||
+           Files.notExists(Paths.get(filePath)))
         {
             throw new FileNotFoundException("Invalid file path");
+        }
+    }
+
+    /**
+     * Validates that the input stream is not null.
+     *
+     * @param inputStream the input stream to validate
+     */
+    private static void validateInputStream(final InputStream inputStream)
+    {
+        if(inputStream == null)
+        {
+            throw new IllegalArgumentException("Input stream cannot be null");
         }
     }
 }
