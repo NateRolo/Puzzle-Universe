@@ -3,7 +3,7 @@ package ca.bcit.comp2522.gameproject;
 import java.util.Scanner;
 
 import ca.bcit.comp2522.gameproject.mastermind.MastermindGame;
-import ca.bcit.comp2522.gameproject.numbergame.NumberGameGUI;
+import ca.bcit.comp2522.gameproject.numbergame.NumberGame;
 import ca.bcit.comp2522.gameproject.wordgame.WordGame;
 
 /**
@@ -37,7 +37,7 @@ public final class Main
     {
         scan           = new Scanner(System.in);
         wordGame       = new WordGame();
-        numberGame     = new NumberGameGUI();
+        numberGame     = new NumberGame();
         mastermindGame = new MastermindGame();
     }
 
