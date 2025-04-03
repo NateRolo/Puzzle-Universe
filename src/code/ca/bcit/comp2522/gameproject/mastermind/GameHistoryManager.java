@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Manages saving and loading Mastermind game history to a file.
@@ -199,6 +200,8 @@ final class GameHistoryManager
      */
     void saveGameHistory(final GameSessionRecord record)
     {
+        validateRecord(record);
+        
         final Path filePath;
         filePath = Paths.get(HISTORY_FILE_PATH);
 
@@ -213,28 +216,39 @@ final class GameHistoryManager
                                                                       StandardOpenOption.CREATE,
                                                                       StandardOpenOption.APPEND))
             {
+                final String dateTimeString;
+                final String roundDetailsString;
+                final String truthScanString;
+                final String outcomeString;
+
+                dateTimeString = record.getTimestamp()
+                                        .format(TIMESTAMP_FORMATTER);
+                roundDetailsString = record.getRoundDetails()
+                                          .stream()
+                                          .map(detail -> "  " + detail)
+                                          .collect(Collectors.joining("\n"));               
+                truthScanString = record.getTruthScanInfo();
+                outcomeString = record.getOutcome();
+            
                 writer.write(GAME_START_MARKER);
                 writer.newLine();
-                writer.write(TIMESTAMP_PREFIX +
-                             record.getTimestamp()
-                                   .format(TIMESTAMP_FORMATTER));
+
+                writer.write(TIMESTAMP_PREFIX + dateTimeString);
                 writer.newLine();
+
                 writer.write(ROUNDS_HEADER);
                 writer.newLine();
-                for(final String roundDetail : record.getRoundDetails())
+                
+                writer.write(roundDetailsString);
+                writer.newLine();
+
+                if(truthScanString != null && !truthScanString.isEmpty())
                 {
-                    // indent for readability
-                    writer.write("  " + roundDetail);
+                    writer.write(TRUTH_SCAN_PREFIX + truthScanString);
                     writer.newLine();
                 }
-                if(record.getTruthScanInfo() != null &&
-                   !record.getTruthScanInfo()
-                          .isEmpty())
-                {
-                    writer.write(TRUTH_SCAN_PREFIX + record.getTruthScanInfo());
-                    writer.newLine();
-                }
-                writer.write(OUTCOME_PREFIX + record.getOutcome());
+
+                writer.write(OUTCOME_PREFIX + outcomeString);
                 writer.newLine();
                 writer.write(GAME_END_MARKER);
                 writer.newLine();
@@ -482,6 +496,35 @@ final class GameHistoryManager
             throw new IllegalArgumentException("Truth scan info cannot be null or empty");
         }
         if(state.outcome == null || state.outcome.isEmpty())
+        {
+            throw new IllegalArgumentException("Outcome cannot be null or empty");
+        }
+    }
+
+    /**
+     * Validates the game session record.
+     * 
+     * @param record The game session record to validate.
+     */
+    private static void validateRecord(final GameSessionRecord record)
+    {
+        if(record == null)
+        {
+            throw new IllegalArgumentException("Record cannot be null");
+        }
+        if(record.getTimestamp() == null)
+        {
+            throw new IllegalArgumentException("Timestamp cannot be null");
+        }
+        if(record.getRoundDetails() == null || record.getRoundDetails().isEmpty())
+        {
+            throw new IllegalArgumentException("Round details cannot be null or empty");
+        }
+        if(record.getTruthScanInfo() == null)
+        {
+            throw new IllegalArgumentException("Truth scan info cannot be null");
+        }
+        if(record.getOutcome() == null || record.getOutcome().isEmpty())
         {
             throw new IllegalArgumentException("Outcome cannot be null or empty");
         }
