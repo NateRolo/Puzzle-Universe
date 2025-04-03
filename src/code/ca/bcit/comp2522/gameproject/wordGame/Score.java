@@ -55,17 +55,24 @@ final class Score
     final String formattedDateTime;
 
     /**
-     * Constructs a Score object with specific values.
+     * Constructs a Score object with specific values for game performance tracking.
+     * <p>
+     * This constructor initializes a Score object with detailed statistics about a player's
+     * performance in the word game. It calculates the
+     * total score based on the weighted values of correct guesses.
+     * </p>
+     * <p>
+     * The score is calculated as follows:
+     * - Each correct first attempt is worth {@value #CORRECT_FIRST_GUESS_SCORE} points
+     * - Each correct second attempt is worth {@value #CORRECT_SECOND_GUESS_SCORE} point
+     * - Incorrect attempts do not contribute to the score but are tracked for statistics
+     * </p>
      *
-     * @param dateTime              the date and time when the score was
-     *                              recorded
+     * @param dateTime              the date and time when the score was recorded
      * @param gamesPlayed           the number of games played
-     * @param numCorrectFirstGuess  the number of correct answers on first
-     *                              attempt
-     * @param numCorrectSecondGuess the number of correct answers on second
-     *                              attempt
-     * @param twoIncorrectAttempts  the number of questions with two incorrect
-     *                              attempts
+     * @param numCorrectFirstGuess  the number of correct answers on first attempt
+     * @param numCorrectSecondGuess the number of correct answers on second attempt
+     * @param twoIncorrectAttempts  the number of questions with two incorrect attempts
      */
     Score(final LocalDateTime dateTime,
           final int gamesPlayed,
@@ -93,7 +100,11 @@ final class Score
     }
 
     /**
-     * Constructs a new Score object with default values.
+     * Constructs a new Score object to track performance for a new game session.
+     * <p>
+     * This constructor delegates to the main constructor, providing default values
+     * and the current {@link LocalDateTime}.
+     * </p>
      */
     Score()
     {
@@ -201,10 +212,18 @@ final class Score
     }
 
     /**
-     * Formats a Score object into a list of strings.
+     * Formats a Score object into a list of strings for display or storage.
+     * <p>
+     * This method converts all the score statistics (date/time, games played,
+     * correct attempts, incorrect attempts, and total score) into a formatted
+     * list of strings. Each string represents one line of score information
+     * with appropriate labels.
+     * </p>
      *
-     * @param score the Score object to format
-     * @return a List of strings representing the formatted score
+     * @param score the Score object to format, must not be null
+     * @return a List of strings representing the formatted score information,
+     *         with each element containing one aspect of the score data
+     * @throws IllegalArgumentException if the score parameter is null
      */
     private static List<String> formatScore(final Score score)
     {
@@ -255,10 +274,16 @@ final class Score
 
     /**
      * Reads scores from a file and returns them as a list of Score objects.
+     * <p>
+     * This method parses the file content line by line, looking for score entries
+     * that start with the date/time prefix. For each score entry found, it extracts
+     * the date/time, games played, correct first attempts, correct second attempts,
+     * and incorrect attempts, then creates a new Score object with these values.
+     * </p>
      *
-     * @param filePath the path to the file containing scores
-     * @return a List of Score objects read from the file
-     * @throws IOException if there is an error reading from the file
+     * @param filePath the path to the file containing scores to be read
+     * @return a List of Score objects constructed from the file data
+     * @throws IOException if there is an error reading from the file or if the file format is invalid.
      */
     static List<Score> readScoresFromFile(final String filePath) throws IOException
     {
@@ -300,10 +325,16 @@ final class Score
     }
 
     /**
-     * Displays a message comparing the current score with the highest score.
+     * Displays a message comparing the current score with the highest score from previous games.
+     * <p>
+     * This method reads all scores from the score file, calculates the average score per game
+     * for each record, and determines if the current score is a new high score. It then displays
+     * an appropriate congratulatory message if the player achieved a new high score, or informs
+     * them of the existing high score if they did not.
+     * </p>
      *
-     * @param currentScore the Score object to compare
-     * @throws IOException if there is an error reading from the score file
+     * @param currentScore the Score object to compare against historical high scores
+     * @throws IOException if there is an error reading from the score file or if the file cannot be accessed
      */
     static void displayHighScoreMessage(final Score currentScore) throws IOException
     {
