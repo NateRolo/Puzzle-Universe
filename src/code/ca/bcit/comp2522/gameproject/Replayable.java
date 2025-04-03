@@ -1,6 +1,6 @@
 package ca.bcit.comp2522.gameproject;
 
-public interface Roundable extends Playable
+public interface Replayable extends Playable
 {
-    void playOneRound();
+    void playOneGame();
 }

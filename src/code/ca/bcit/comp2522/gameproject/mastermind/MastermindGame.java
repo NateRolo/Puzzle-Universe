@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
-import ca.bcit.comp2522.gameproject.Playable;
+import ca.bcit.comp2522.gameproject.Replayable;
 import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
 
 
@@ -24,8 +24,7 @@ import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRec
  * @author Nathan O
  * @version 1.4 2025
  */
-public final class MastermindGame implements
-                                  Playable
+public final class MastermindGame implements Replayable
 {
     private static final int          MAX_ROUNDS          = 12;
     private static final int          CODE_LENGTH         = 4;
@@ -104,7 +103,7 @@ public final class MastermindGame implements
 
             switch(choice)
             {
-                case OPTION_PLAY -> playSingleGameSession();
+                case OPTION_PLAY -> playOneGame();
                 case OPTION_VIEW_HISTORY -> handleViewHistoryMenu();
                 case OPTION_EXIT -> {
                     System.out.println("\n" + SEPARATOR_LINE);
@@ -116,10 +115,11 @@ public final class MastermindGame implements
         } while(choice != OPTION_EXIT);
     }
 
-    /*
+    /**
      * Handles playing a complete game session, including intro and saving.
      */
-    private final void playSingleGameSession()
+    @Override
+    public void playOneGame()
     {
         if(!handleGameIntroduction())
         {
@@ -136,7 +136,7 @@ public final class MastermindGame implements
      *
      * @return The valid menu choice (1, 2, or 3).
      */
-    private final int showMainMenu()
+    private int showMainMenu()
     {
         int choice = DEFAULT_MENU_CHOICE;
 
@@ -178,7 +178,7 @@ public final class MastermindGame implements
     /*
      * Handles the View History menu and displays selected game records.
      */
-    private final void handleViewHistoryMenu()
+    private void handleViewHistoryMenu()
     {
         int choice;
         do
@@ -217,7 +217,7 @@ public final class MastermindGame implements
      *
      * @return The valid menu choice (1-4).
      */
-    private final int showHistorySubMenu()
+    private int showHistorySubMenu()
     {
         int choice = DEFAULT_MENU_CHOICE;
 
@@ -249,7 +249,7 @@ public final class MastermindGame implements
     }
 
     // comments
-    private static final void printHistorySubMenuOptions()
+    private static void printHistorySubMenuOptions()
     {
         System.out.println("\n" + HISTORY_SEPARATOR);
         System.out.println("VIEW GAME HISTORY");
@@ -266,7 +266,7 @@ public final class MastermindGame implements
      *
      * @param historyList The list of records to display.
      */
-    private final void displayHistory(final List<GameSessionRecord> historyList)
+    private void displayHistory(final List<GameSessionRecord> historyList)
     {
         if(historyList == null || historyList.isEmpty())
         {
@@ -292,7 +292,7 @@ public final class MastermindGame implements
      * Initializes the state for a new game.
      * Resets rounds, generates a new secret code, and resets counters.
      */
-    private final void initializeNewGame()
+    private void initializeNewGame()
     {
         rounds     = new ArrayList<>();
         secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
@@ -307,7 +307,7 @@ public final class MastermindGame implements
      *
      * @return true if the player is ready to start, false otherwise.
      */
-    private static final boolean handleGameIntroduction()
+    private static boolean handleGameIntroduction()
     {
         final String response;
         final String ready;
@@ -341,7 +341,7 @@ public final class MastermindGame implements
     /*
      * Manages the main loop of the game, playing rounds until the game is over.
      */
-    private final void playGameLoop()
+    private void playGameLoop()
     {
         while(!isGameOver())
         {
@@ -353,7 +353,7 @@ public final class MastermindGame implements
      * Plays a single round of the game.
      * Handles player input (guess, scan, summary) and processes the guess.
      */
-    private final void playRound()
+    private void playRound()
     {
         final int roundNumber = rounds.size() + ROUND_INCREMENT;
         System.out.printf("%n--- Round %d of %d ---%n",
@@ -428,7 +428,7 @@ public final class MastermindGame implements
      * @return The PlayerAction representing the player's choice (only
      * PlayerGuessCode exits loop).
      */
-    private final PlayerAction handlePlayerInput()
+    private PlayerAction handlePlayerInput()
     {
         while(true)
         {
@@ -474,7 +474,7 @@ public final class MastermindGame implements
     /*
      * Prints the prompt for player input.
      */
-    private static final void promptForInput()
+    private static void promptForInput()
     {
         System.out.println(SEPARATOR_LINE);
         System.out.print("Enter your guess (4 digits, 1-6), 't' for truth scan, or 'g' for guess summary: ");
@@ -485,7 +485,7 @@ public final class MastermindGame implements
      * Invokes the truth scanner and prints appropriate messages.
      * Updates the truthScanInfoForHistory field if successful.
      */
-    private final void handleTruthScanAction()
+    private void handleTruthScanAction()
     {
         System.out.println("\n--- Truth Scan Requested ---");
         final String scanResultInfo = TRUTH_SCANNER.handleTruthScanRequestAndGetInfo(rounds,
@@ -506,7 +506,7 @@ public final class MastermindGame implements
      * Handles the action when a Guess Summary is requested by the player.
      * Calls the method to print the summary.
      */
-    private final void handleGuessSummaryAction()
+    private void handleGuessSummaryAction()
     {
         printGuessSummary();
     }
@@ -515,10 +515,9 @@ public final class MastermindGame implements
      * Checks if the guess in a given round matches the secret code.
      *
      * @param round The round to check.
-     * 
      * @return true if the guess is correct, false otherwise.
      */
-    private final boolean isCorrectGuess(final Round round)
+    private boolean isCorrectGuess(final Round round)
     {
         final Feedback actualFeedback;
         final boolean  isCorrectGuess;
@@ -537,7 +536,7 @@ public final class MastermindGame implements
      *
      * @return true if the game is over, false otherwise.
      */
-    private final boolean isGameOver()
+    private boolean isGameOver()
     {
         if(rounds.isEmpty())
         {
@@ -563,7 +562,7 @@ public final class MastermindGame implements
      * Handles the end-of-game sequence.
      * Displays win/loss message, secret code, and saves the game history.
      */
-    private final void endGame()
+    private void endGame()
     {
         System.out.println("\n" + GAME_OVER_SEPARATOR);
 
@@ -610,10 +609,9 @@ public final class MastermindGame implements
      * Helper method to collect game data and save it using GameHistoryManager.
      *
      * @param endTime The timestamp when the game ended.
-     * 
      * @param outcome The result of the game ("Won" or "Lost").
      */
-    private final void saveCurrentGameToHistory(final LocalDateTime endTime,
+    private void saveCurrentGameToHistory(final LocalDateTime endTime,
                                           final String outcome)
     {
         final List<String>      roundDetails;
@@ -636,7 +634,7 @@ public final class MastermindGame implements
      * Prints a summary of all previous guesses and their feedback.
      * Displays the actual feedback for rounds where truth was revealed.
      */
-    private final void printGuessSummary()
+    private void printGuessSummary()
     {
         System.out.println("\n--- Guess Summary ---");
         if(rounds.isEmpty())

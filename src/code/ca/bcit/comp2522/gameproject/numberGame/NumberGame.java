@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import ca.bcit.comp2522.gameproject.Playable;
+import ca.bcit.comp2522.gameproject.Replayable;
 
 /**
  * Provides the Graphical User Interface (GUI) for the 20-Number Challenge game.
@@ -24,7 +24,7 @@ import ca.bcit.comp2522.gameproject.Playable;
  * @version 1.1 2025
  */
 public final class NumberGame implements
-                           Playable
+                           Replayable
 {
     private static final int    GRID_ROWS         = 4;
     private static final int    GRID_COLS         = 5;
@@ -94,7 +94,7 @@ public final class NumberGame implements
      * This includes creating the main frame, status label, grid panel with buttons,
      * setting layouts, and adding necessary event listeners.
      */
-    private final void createGUI()
+    private void createGUI()
     {
         final JPanel gridPanel;
 
@@ -145,7 +145,8 @@ public final class NumberGame implements
     /*
      * Starts a new game by resetting the logic and updating the GUI.
      */
-    private void startNewGame()
+    @Override
+    public void playOneGame()
     {
         gameLogic.startNewGame();
         updateGUIState();
@@ -274,7 +275,7 @@ public final class NumberGame implements
 
         if(choice == JOptionPane.YES_OPTION)
         {
-            startNewGame();
+            playOneGame();
         }
         else
         {
@@ -299,7 +300,7 @@ public final class NumberGame implements
                                                JOptionPane.INFORMATION_MESSAGE);
         if(choice == JOptionPane.YES_OPTION)
         {
-            startNewGame();
+            playOneGame();
         }
         else
         {
@@ -334,7 +335,7 @@ public final class NumberGame implements
 
         if(choice == JOptionPane.YES_OPTION)
         {
-            startNewGame();
+            playOneGame();
         }
         else
         {

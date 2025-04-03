@@ -25,10 +25,14 @@ public final class Main
     private static final Playable numberGame;
     private static final Playable mastermindGame;
 
-    private static final String CHOICE_WORD_GAME   = "w";
-    private static final String CHOICE_NUMBER_GAME = "n";
-    private static final String CHOICE_MASTERMIND  = "m";
-    private static final String CHOICE_QUIT        = "q";
+    private static final String CHOICE_WORD_GAME   = "W";
+    private static final String CHOICE_NUMBER_GAME = "N";
+    private static final String CHOICE_MASTERMIND  = "M";
+    private static final String CHOICE_QUIT        = "Q";
+
+    private static final String MENU_WORD_GAME = " to play the Word Game\n";
+    private static final String MENU_NUMBER_GAME = " to play the Number Game\n";
+    private static final String MENU_MASTERMIND = " to play Mastermind - Deception\n";
 
     private static final String MESSAGE_INVALID_CHOICE = "Not a valid option, please select a valid game.";
     private static final String MESSAGE_EXIT           = "Exiting the game. Goodbye!";
@@ -59,9 +63,9 @@ public final class Main
 
         do
         {
-            printGameMenu();
+            showMenu();
             choice = scan.next()
-                         .toLowerCase();
+                         .toUpperCase();
 
             switch(choice)
             {
@@ -77,14 +81,29 @@ public final class Main
     /*
      * Prints the game menu to the console.
      */
-    private static void printGameMenu()
+    private static void showMenu()
     {
-        System.out.println("""
-                           Press W to play the Word game.
-                           Press N to play the Number game.
-                           Press M to play Mastermind - Deception.
-                           Press Q to quit.
-                           """);
+        final StringBuilder menuBuilder;
+        final String menu;
+
+        menuBuilder = new StringBuilder();
+
+        menuBuilder.append("Press ")
+                   .append(CHOICE_WORD_GAME)
+                    .append(MENU_WORD_GAME)
+                    .append("Press ")
+                    .append(CHOICE_NUMBER_GAME)
+                    .append(MENU_NUMBER_GAME)
+                    .append("Press ")
+                    .append(CHOICE_MASTERMIND)
+                    .append(MENU_MASTERMIND)
+                    .append("Press ")
+                    .append(CHOICE_QUIT)
+                    .append(" to quit");
+
+        menu = menuBuilder.toString();
+
+        System.out.println(menu);
     }
 
     /*
@@ -92,9 +111,7 @@ public final class Main
      */
     private static void printWelcomeMessage()
     {
-        System.out.println("""
-                           Welcome to Nathan's Game Corner!
-                           Choose one of the games below to start playing.
-                           """);
+        System.out.println("Welcome to Nathan's Game Corner!\n" +
+                           "Choose one of the games below to start playing.");
     }
 }

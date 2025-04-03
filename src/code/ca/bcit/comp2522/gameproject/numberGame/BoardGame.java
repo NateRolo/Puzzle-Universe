@@ -11,10 +11,9 @@ import java.util.Random;
  * @author Nathan O
  * @version 1.1 2025
  */
-abstract class AbstractGame implements BoardGamable
+abstract class BoardGame
 {
-    private static final int RANGE_OFFSET      = 1;
-    static final int         BOARD_SIZE        = 20;
+    static final int BOARD_SIZE_MIN = 0;
     static final int         MAX_RANDOM_NUMBER = 1000;
     static final int         MIN_RANDOM_NUMBER = 1;
     static final int         EMPTY_CELL        = 0;
@@ -22,7 +21,7 @@ abstract class AbstractGame implements BoardGamable
 
     static final int INVALID_NUMBER_SENTINEL = - 1;
 
-    private final Random random;
+
     private boolean      gameWon;
 
     int[] board;
@@ -32,32 +31,18 @@ abstract class AbstractGame implements BoardGamable
     int   gamesPlayed;
 
     /**
-     * Constructs an AbstractGame. Initializes game statistics and the random
+     * Constructs an BoardGame. Initializes game statistics and the random
      * number generator.
      */
-    AbstractGame()
+    BoardGame(final int boardSize)
     {
-        this.board           = new int[BOARD_SIZE];
-        this.random          = new Random();
+        validateBoardSize(boardSize);
+
+        this.board           = new int[boardSize];
         this.gamesPlayed     = INITIAL_VALUE;
         this.gamesWon        = INITIAL_VALUE;
         this.totalPlacements = INITIAL_VALUE;
         this.gameWon         = false;
-    }
-
-    /**
-     * Checks if the game is complete.
-     * The game is considered complete when either the player has won
-     * or the maximum number of placement attempts has been reached.
-     *
-     * @return true if the game is complete, false otherwise
-     */
-    boolean isGameComplete()
-    {
-        final boolean gameComplete;
-        gameComplete = this.gameWon || this.gamesPlayed >= this.totalPlacements;
-
-        return gameComplete;
     }
 
     /**
@@ -81,22 +66,6 @@ abstract class AbstractGame implements BoardGamable
     }
 
     /**
-     * Generates a random number within the defined range [MIN, MAX].
-     *
-     * @return a random integer between MIN_RANDOM_NUMBER and MAX_RANDOM_NUMBER
-     */
-    int generateNumber()
-    {
-        final int range;
-        final int randomIntInRange;
-
-        range            = MAX_RANDOM_NUMBER - MIN_RANDOM_NUMBER + RANGE_OFFSET;
-        randomIntInRange = this.random.nextInt(range) + MIN_RANDOM_NUMBER;
-
-        return randomIntInRange;
-    }
-
-    /**
      * Checks if the game board is completely filled (all cells occupied).
      *
      * @return true if no empty cells (EMPTY_CELL) remain, false otherwise
@@ -114,41 +83,13 @@ abstract class AbstractGame implements BoardGamable
     }
 
     /**
-     * Validates that numbers placed on the board are in strictly ascending
-     * sequence, ignoring empty cells.
-     *
-     * @return true if the sequence of placed numbers is valid, false otherwise
-     */
-    boolean isValidSequence()
-    {
-        int lastNumber;
-        lastNumber = INVALID_NUMBER_SENTINEL;
-
-        for(final int cellValue : this.board)
-        {
-            if(cellValue != EMPTY_CELL)
-            {
-
-                if(lastNumber != INVALID_NUMBER_SENTINEL &&
-                   cellValue <= lastNumber)
-                {
-                    return false;
-                }
-                lastNumber = cellValue;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Returns a copy of the current game board.
      * Used by subclasses or controllers to get the state without
      * modifying the original array directly.
      *
      * @return A copy of the board array.
      */
-    @Override
-    public int[] getBoard()
+    int[] getBoard()
     {
         final int[] boardCopy;
         boardCopy = Arrays.copyOf(this.board,
@@ -161,11 +102,23 @@ abstract class AbstractGame implements BoardGamable
      * Initializes the game state for a new round.
      * Resets the game won status and clears the board.
      */
-    @Override
-    public void initializeGame()
+    void initializeGame()
     {
         this.gameWon = false;
         Arrays.fill(this.board,
                     EMPTY_CELL);
+    }
+
+    /**
+     * Validates the boardSize for the BoardGame constructor.
+     *
+     * @param boardSize the number of cells on the board
+     */
+    private static void validateBoardSize(final int boardSize)
+    {
+        if(boardSize < BOARD_SIZE_MIN)
+        {
+            throw new IllegalArgumentException("Board size cannot be less than: " + BOARD_SIZE_MIN);
+        }
     }
 }
