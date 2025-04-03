@@ -18,6 +18,13 @@ abstract class Code
     static final int            CODE_LENGTH = 4;
     static final int            DIGIT_MIN   = 1;
     static final int            DIGIT_MAX   = 6;
+
+    // Example values for the game rules.
+    static final String EXAMPLE_GUESS = "1356";
+    static final String EXAMPLE_SECRET = "1234";
+    static final int EXAMPLE_CORRECT_POSITIONS = 1;
+    static final int EXAMPLE_MISPLACED = 1;
+
     private final List<Integer> digits;
 
     /**

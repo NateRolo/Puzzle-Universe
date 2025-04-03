@@ -13,8 +13,9 @@ package ca.bcit.comp2522.gameproject.mastermind;
 final class Round
 {
     private static final int MIN_ROUND_NUMBER         = 1;
-    private static final int DECEPTIVE_ROUNDS_ALLOWED = 3;
     private static final int INITIAL_DECEPTIVE_ROUNDS = 0;
+    
+    static final int DECEPTIVE_ROUNDS_ALLOWED = 3;
 
     private static int deceptiveRoundsUsed;
 

@@ -52,7 +52,13 @@ public final class WordGame implements
     @Override
     public void play()
     {
-        System.out.println("Starting Word Game...");
+        System.out.println("""
+                           ----------------------------------------
+                           WORLD TRIVIA GAME
+                           ----------------------------------------
+                           Test your knowledge about countries,
+                           capitals, and facts.
+                           """);
 
         do
         {

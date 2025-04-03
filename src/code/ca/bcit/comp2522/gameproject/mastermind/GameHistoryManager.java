@@ -134,13 +134,12 @@ final class GameHistoryManager
                                                     "mastermind_history.txt";
     private static final String GAME_START_MARKER = "=== GAME START ===";
     private static final String GAME_END_MARKER   = "=== GAME END ===";
-    private static final String TIMESTAMP_PREFIX  = "Timestamp: ";
+    private static final String TIMESTAMP_PREFIX  = "Date and Time: ";
     private static final String ROUNDS_HEADER     = "Rounds:";
     private static final String TRUTH_SCAN_PREFIX = "Truth Scan: ";
     private static final String OUTCOME_PREFIX    = "Outcome: ";
 
-    // Use the standard ISO format which handles 'T' separator and fractional seconds
-    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+    private final static DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Represents the transient state while parsing a single game session record

@@ -20,9 +20,6 @@ final class InputHandler
 
     private static final Scanner scan = new Scanner(System.in);
 
-    private static final String TRUTH_SCAN_INPUT    = "t";
-    private static final String GUESS_SUMMARY_INPUT = "g";
-
     /**
      * Gets and validates the player's input.
      *
@@ -41,11 +38,11 @@ final class InputHandler
                     .trim()
                     .toUpperCase();
 
-        if(input.equalsIgnoreCase(TRUTH_SCAN_INPUT))
+        if(input.equalsIgnoreCase(MastermindGame.TRUTH_SCAN_INPUT))
         {
             return new PlayerAction.TruthScanRequest();
         }
-        else if(input.equalsIgnoreCase(GUESS_SUMMARY_INPUT))
+        else if(input.equalsIgnoreCase(MastermindGame.GUESS_SUMMARY_INPUT))
         {
             return new PlayerAction.GuessSummaryRequest();
         }

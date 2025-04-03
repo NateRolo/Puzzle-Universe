@@ -90,7 +90,7 @@ final class PlayerGuessCode extends
             final String message;
 
             message = String.format("Invalid input length. Expected %d digits, but got %d.",
-                                    CODE_LENGTH,
+                                    Code.getCodeLength(),
                                     input.length());
             throw new InvalidGuessException(message);
         }

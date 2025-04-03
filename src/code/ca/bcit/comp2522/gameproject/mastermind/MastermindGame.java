@@ -24,16 +24,16 @@ import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRec
  * @author Nathan O
  * @version 1.4 2025
  */
-public final class MastermindGame implements Replayable
+public final class MastermindGame implements
+                                  Replayable
 {
     private static final int          MAX_ROUNDS          = 12;
-    private static final int          CODE_LENGTH         = 4;
     private static final TruthScanner TRUTH_SCANNER       = new TruthScanner();
     private static final String       YES                 = "yes";
     private static final int          DEFAULT_MENU_CHOICE = - 1;
     private static final int          ROUND_INCREMENT     = 1;
 
-    private static final String SEPARATOR_LINE      = "----------------------------------------";
+    private static final String SEPARATOR_LINE = "----------------------------------------";
 
     private static final String GAME_OVER_MESSAGE = "Game Over! The secret code was: %s";
     private static final String WIN_MESSAGE       = "Congratulations! You won in %d round(s)!";
@@ -42,28 +42,28 @@ public final class MastermindGame implements Replayable
 
     private static final String RULES = """
                                         =========== MASTERMIND RULES ===========
-                                        1. The computer will generate a secret code of 4 digits (1-6).
-                                        2. You have 12 attempts to guess the code correctly.
+                                        1. The computer will generate a secret code of %d digits (%d-%d).
+                                        2. You have %d attempts to guess the code correctly.
                                         3. After each guess, you'll receive feedback:
                                            - Number of digits in the correct position
                                            - Number of correct digits in the wrong position
-                                        
+
                                         ----------SPECIAL MECHANICS-------------
-                                        - Deceptive Rounds: Up to 3 rounds may give slightly altered feedback, it's up to you
+                                        - Deceptive Rounds: Up to %d rounds may give slightly altered feedback, it's up to you
                                           to discern whether the feedback is truthful or not.
                                         - Truth Scan: Once per game, you can reveal the true feedback of a
                                           previous round. Use this wisely!
-                                        
+
                                         -------------HOW TO PLAY----------------
-                                        - Enter a 4-digit guess (digits 1-6).
-                                        - Enter 't' to use your Truth Scan.
-                                        - Enter 'g' to view a summary of your previous guesses.
+                                        - Enter a %d-digit guess (digits %d-%d).
+                                        - Enter '%s' to use your Truth Scan.
+                                        - Enter '%s' to view a summary of your previous guesses.
 
                                         ---------------EXAMPLE------------------
-                                        Secret Code: 1234
-                                        Your Guess:  1356
-                                        Feedback: Correct positions: 1, Misplaced: 1
-                                        (1 is correct position, 3 is right digit wrong position)
+                                        Secret Code: %s
+                                        Your Guess:  %s
+                                        Feedback: Correct positions: %d, Misplaced: %d
+                                        (%d is correct position, %d is right digit wrong position)
 
                                         Are you ready to start? (yes/no): """;
 
@@ -82,6 +82,9 @@ public final class MastermindGame implements Replayable
     private List<Round> rounds;
     private SecretCode  secretCode;
     private String      truthScanInfoForHistory;
+
+    static final String TRUTH_SCAN_INPUT    = "t";
+    static final String GUESS_SUMMARY_INPUT = "g";
 
     /**
      * Constructs a new MastermindGame.
@@ -190,7 +193,7 @@ public final class MastermindGame implements Replayable
 
             switch(choice)
             {
-                case HISTORY_OPTION_ALL -> {                                            
+                case HISTORY_OPTION_ALL -> {
                     System.out.println("\n-------------- All Games ---------------");
                     history = gameHistoryManager.loadGameHistory();
                     displayHistory(history);
@@ -272,21 +275,26 @@ public final class MastermindGame implements Replayable
      */
     private void displayHistory(final List<GameSessionRecord> historyList)
     {
-        if(historyList == null || historyList.isEmpty())
+        validateHistoryList(historyList);
+
+        final StringBuilder historyBuilder;
+        final String        historyOutput;
+
+        historyBuilder = new StringBuilder();
+
+        for(final GameSessionRecord record : historyList)
         {
-            System.out.println("No matching game history found.");
+            historyBuilder.append(SEPARATOR_LINE)
+                          .append("\n")
+                          .append(record.toString())
+                          .append(SEPARATOR_LINE)
+                          .append("\n\n");
         }
-        else
-        {
-            for(final GameSessionRecord record : historyList)
-            {
-                System.out.println(SEPARATOR_LINE);
-                System.out.print(record.toString());
-                System.out.println(SEPARATOR_LINE);
-                System.out.println();
-            }
-            System.out.println("End of history view.");
-        }
+        historyBuilder.append("End of history view.\n");
+
+        historyOutput = historyBuilder.toString();
+        System.out.print(historyOutput);
+
         System.out.println(SEPARATOR_LINE);
         System.out.print("Press Enter to continue...");
         inputScanner.nextLine();
@@ -299,7 +307,7 @@ public final class MastermindGame implements Replayable
     private void initializeNewGame()
     {
         rounds     = new ArrayList<>();
-        secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
+        secretCode = SecretCode.generateRandomCode(Code.CODE_LENGTH);
 
         System.out.println(secretCode); // code reveal for testing
         Round.resetDeceptiveRounds();
@@ -326,7 +334,7 @@ public final class MastermindGame implements Replayable
 
         if(!response.equalsIgnoreCase(YES))
         {
-            System.out.println(RULES);
+            printRules();
             ready = InputHandler.getYesNoResponse();
 
             if(!ready.equalsIgnoreCase(YES))
@@ -337,7 +345,9 @@ public final class MastermindGame implements Replayable
         }
 
         System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("Try to guess the " + CODE_LENGTH + "-digit code.");
+        System.out.println("Try to guess the " +
+                           Code.CODE_LENGTH +
+                           "-digit code.");
         System.out.println("You have " + MAX_ROUNDS + " attempts.");
         System.out.println(SEPARATOR_LINE);
         return true;
@@ -520,6 +530,7 @@ public final class MastermindGame implements Replayable
      * Checks if the guess in a given round matches the secret code.
      *
      * @param round The round to check.
+     * 
      * @return true if the guess is correct, false otherwise.
      */
     private boolean isCorrectGuess(final Round round)
@@ -530,7 +541,7 @@ public final class MastermindGame implements Replayable
         actualFeedback = new Feedback(secretCode,
                                       round.getGuess());
         isCorrectGuess = actualFeedback.getCorrectPositionCount() ==
-                         CODE_LENGTH;
+                         Code.CODE_LENGTH;
 
         return isCorrectGuess;
     }
@@ -614,6 +625,7 @@ public final class MastermindGame implements Replayable
      * Helper method to collect game data and save it using GameHistoryManager.
      *
      * @param endTime The timestamp when the game ended.
+     * 
      * @param outcome The result of the game ("Won" or "Lost").
      */
     private void saveCurrentGameToHistory(final LocalDateTime endTime,
@@ -641,7 +653,7 @@ public final class MastermindGame implements Replayable
      */
     private void printGuessSummary()
     {
-        System.out.println("\n--- Guess Summary ---");
+        System.out.println("\n----------- Guess Summary --------------");
         if(rounds.isEmpty())
         {
             System.out.println("No guesses made yet.");
@@ -653,6 +665,44 @@ public final class MastermindGame implements Replayable
                 System.out.println(round.toString());
             }
         }
-        System.out.println("--- End Summary ---");
+        System.out.println("----------- End Summary --------------");
+    }
+
+    /*
+     * Validates the history list.
+     * 
+     * @param historyList The list of game session records to validate.
+     */
+    private static void validateHistoryList(final List<GameSessionRecord> historyList)
+    {
+        if(historyList == null || historyList.isEmpty())
+        {
+            throw new IllegalArgumentException("History list cannot be null or empty");
+        }
+    }
+
+    /*
+     * Prints the rules of the game. Uses the RULES constant and the Code and Round classes
+     * to format the rules string.
+     */
+    private static void printRules()
+    {
+        System.out.printf(RULES,
+                          Code.CODE_LENGTH,
+                          Code.DIGIT_MIN,
+                          Code.DIGIT_MAX,   
+                          MAX_ROUNDS,
+                          Round.DECEPTIVE_ROUNDS_ALLOWED,
+                          Code.CODE_LENGTH,
+                          Code.DIGIT_MIN,
+                          Code.DIGIT_MAX,
+                          TRUTH_SCAN_INPUT,
+                          GUESS_SUMMARY_INPUT,
+                          Code.EXAMPLE_SECRET,
+                          Code.EXAMPLE_GUESS,
+                          Code.EXAMPLE_CORRECT_POSITIONS,
+                          Code.EXAMPLE_MISPLACED,
+                          Code.EXAMPLE_CORRECT_POSITIONS,
+                          Code.EXAMPLE_MISPLACED);
     }
 }
