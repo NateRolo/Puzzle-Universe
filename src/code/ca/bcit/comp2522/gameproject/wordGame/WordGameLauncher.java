@@ -37,7 +37,7 @@ public final class WordGameLauncher implements Playable
         {
             world = new World();
         }
-        catch(IOException e)
+        catch(final IOException e)
         {
             throw new RuntimeException("Failed to initialize world data", e);
         }
@@ -132,7 +132,7 @@ public final class WordGameLauncher implements Playable
             Score.appendScoreToFile(currentScore,
                                     "score.txt");
         }
-        catch(IOException e)
+        catch(final IOException e)
         {
             e.printStackTrace();
         }
