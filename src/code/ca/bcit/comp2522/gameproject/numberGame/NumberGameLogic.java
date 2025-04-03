@@ -30,32 +30,44 @@ final class NumberGameLogic extends
     }
 
     /**
-     * Initializes or resets the game state for a new round.
-     * Called by startNewGame and constructor.
+     * Gets the number of successful placements in the current game round.
+     *
+     * @return The number of placements made in this game.
      */
-    @Override
-    public void initializeGame()
+    public final int getSuccessfulPlacementsThisGame()
     {
-        super.initializeGame();
-        this.successfulPlacementsThisGame = INITIAL_VALUE;
-        this.currentNumber                = INITIAL_VALUE;
+        return this.successfulPlacementsThisGame;
     }
 
     /**
-     * Starts a new game.
-     * Records game played, resets state, generates the first number.
+     * Gets the total number of games played during the session.
+     *
+     * @return the number of games played
      */
-    @Override
-    public final void startNewGame()
+    public int getGamesPlayed()
     {
-        this.gamesPlayed++;
+        return this.gamesPlayed;
+    }
 
-        initializeGame();
+    /**
+     * Gets the total number of games won by the player during the session.
+     *
+     * @return the number of games won
+     */
+    public int getGamesWon()
+    {
+        return this.gamesWon;
+    }
 
-        this.currentNumber = generateNumber();
-        System.out.printf("[Logic] New Game Started (#%d). First number: %d%n",
-                          this.gamesPlayed,
-                          this.currentNumber);
+    /**
+     * Gets the total number of guesses (placements) made by the player across
+     * all games.
+     *
+     * @return the total number of placements
+     */
+    public int getTotalPlacements()
+    {
+        return this.totalPlacements;
     }
 
     /**
@@ -109,6 +121,57 @@ final class NumberGameLogic extends
                               position);
             return false;
         }
+    }
+
+    /*
+     * Checks if the current number can be placed in any valid empty slot.
+     * Helper method for determining loss condition.
+     * Returns true if there is at least one valid position, false otherwise.
+     */
+    private boolean canPlaceCurrentNumber()
+    {
+        if(this.currentNumber == AbstractGame.INITIAL_VALUE)
+        {
+            return true;
+        }
+
+        for(int i = 0; i < BOARD_SIZE; i++)
+        {
+            if(isValidPlacement(i))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Initializes or resets the game state for a new round.
+     * Called by startNewGame and constructor.
+     */
+    @Override
+    public void initializeGame()
+    {
+        super.initializeGame();
+        this.successfulPlacementsThisGame = INITIAL_VALUE;
+        this.currentNumber                = INITIAL_VALUE;
+    }
+
+    /**
+     * Starts a new game.
+     * Records game played, resets state, generates the first number.
+     */
+    @Override
+    public final void startNewGame()
+    {
+        this.gamesPlayed++;
+
+        initializeGame();
+
+        this.currentNumber = generateNumber();
+        System.out.printf("[Logic] New Game Started (#%d). First number: %d%n",
+                          this.gamesPlayed,
+                          this.currentNumber);
     }
 
     /**
@@ -260,71 +323,6 @@ final class NumberGameLogic extends
 
         return true;
     }
-
-    /*
-     * Checks if the current number can be placed in any valid empty slot.
-     * Helper method for determining loss condition.
-     * Returns true if there is at least one valid position, false otherwise.
-     */
-    private final boolean canPlaceCurrentNumber()
-    {
-
-        if(this.currentNumber == AbstractGame.INITIAL_VALUE)
-        {
-
-            return true;
-        }
-
-        for(int i = 0; i < BOARD_SIZE; i++)
-        {
-            if(isValidPlacement(i))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Gets the number of successful placements in the current game round.
-     *
-     * @return The number of placements made in this game.
-     */
-    public final int getSuccessfulPlacementsThisGame()
-    {
-        return this.successfulPlacementsThisGame;
-    }
-
-    /**
-     * Gets the total number of games played during the session.
-     *
-     * @return the number of games played
-     */
-    public int getGamesPlayed()
-    {
-        return this.gamesPlayed;
-    }
-
-    /**
-     * Gets the total number of games won by the player during the session.
-     *
-     * @return the number of games won
-     */
-    public int getGamesWon()
-    {
-        return this.gamesWon;
-    }
-
-    /**
-     * Gets the total number of guesses (placements) made by the player across all games.
-     *
-     * @return the total number of placements
-     */
-    public int getTotalPlacements()
-    {
-        return this.totalPlacements;
-    }
-
 
     @Override
     final int[] getBoard()
