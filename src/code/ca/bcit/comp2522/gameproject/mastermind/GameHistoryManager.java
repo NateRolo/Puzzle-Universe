@@ -107,20 +107,21 @@ final class GameHistoryManager
         {
             final StringBuilder sb;
             sb = new StringBuilder();
-            sb.append("Timestamp: ")
-              .append(timestamp.format(DateTimeFormatter.ISO_DATE_TIME))
+            sb.append(TIMESTAMP_PREFIX)
+              .append(timestamp.format(TIMESTAMP_FORMATTER))
               .append("\n");
-            sb.append("Rounds:\n");
+            sb.append(ROUNDS_HEADER)
+              .append("\n");
             roundDetails.forEach(detail -> sb.append("  ")
                                              .append(detail)
                                              .append("\n"));
             if(truthScanInfo != null && !truthScanInfo.isEmpty())
             {
-                sb.append("Truth Scan: ")
+                sb.append(TRUTH_SCAN_PREFIX)
                   .append(truthScanInfo)
                   .append("\n");
             }
-            sb.append("Outcome: ")
+            sb.append(OUTCOME_PREFIX)
               .append(outcome)
               .append("\n");
             return sb.toString();
