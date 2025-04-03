@@ -2,6 +2,7 @@ package ca.bcit.comp2522.gameproject.wordgame;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -245,23 +246,35 @@ final class Score
     }
 
     /**
-     * Appends a Score object to a file.
+     * Appends a Score object to a file in the resources directory.
+     * <p>
+     * This method takes a Score object and converts it to a formatted list of strings
+     * using the formatScore method, then writes these strings to the specified file.
+     * The file is located in the "src/res" directory. If the file doesn't exist,
+     * it will be created; if it exists, the score will be appended to it.
+     * </p>
      *
-     * @param score the Score object to append
-     * @param file  the path to the file
+     * @param score the Score object to append, must not be null
+     * @param file  the name of the file within the resources directory
      * @throws IOException if there is an error writing to the file
      */
     static void appendScoreToFile(final Score score,
                                   final String file) throws IOException
     {
-        validateScore(score);
-        validateFilePath(file);
-
+        final Path filePath;
+        final String filePathString;
         final List<String> scoreAsList;
+
+        filePath = Paths.get("src", "res", file);
+        filePathString = filePath.toString();
+
+        validateScore(score);
+        validateFilePath(filePathString);
+        
         scoreAsList = formatScore(score);
 
         FileManager.writeToResource(scoreAsList,
-                                    file);
+                                    filePathString);
     }
 
     /**
@@ -501,7 +514,7 @@ final class Score
 
         if(Files.notExists(Paths.get(filePath)))
         {
-            throw new IllegalArgumentException("File path does not exist");
+            throw new IllegalArgumentException("File path does not exist: " + filePath);
         }
     }
 

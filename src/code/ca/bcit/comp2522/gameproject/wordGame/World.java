@@ -3,6 +3,7 @@ package ca.bcit.comp2522.gameproject.wordgame;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,11 @@ final class World
 {
     private final Map<String, Country> countries;
 
+    // Directory constants
+    private static final String DIRECTORY_SRC       = "src";
+    private static final String DIRECTORY_RES       = "res";
+    private static final String DIRECTORY_COUNTRIES = "countries";
+
     private static final String COUNTRY_CAPITAL_SEPARATOR = ":";
     private static final int    FACTS_PER_COUNTRY         = 3;
     private static final int    LINES_TO_SKIP_AFTER_FACTS = 3;
@@ -35,30 +41,31 @@ final class World
     private static final int SECOND_FACT_INDEX = 1;
     private static final int THIRD_FACT_INDEX  = 2;
 
-    private static final String[] RESOURCE_FILES = {"src/res/countries/a.txt",
-                                                    "src/res/countries/b.txt",
-                                                    "src/res/countries/c.txt",
-                                                    "src/res/countries/d.txt",
-                                                    "src/res/countries/e.txt",
-                                                    "src/res/countries/f.txt",
-                                                    "src/res/countries/g.txt",
-                                                    "src/res/countries/h.txt",
-                                                    "src/res/countries/i.txt",
-                                                    "src/res/countries/j.txt",
-                                                    "src/res/countries/k.txt",
-                                                    "src/res/countries/l.txt",
-                                                    "src/res/countries/m.txt",
-                                                    "src/res/countries/n.txt",
-                                                    "src/res/countries/o.txt",
-                                                    "src/res/countries/p.txt",
-                                                    "src/res/countries/q.txt",
-                                                    "src/res/countries/r.txt",
-                                                    "src/res/countries/s.txt",
-                                                    "src/res/countries/t.txt",
-                                                    "src/res/countries/u.txt",
-                                                    "src/res/countries/v.txt",
-                                                    "src/res/countries/y.txt",
-                                                    "src/res/countries/z.txt"};
+    // Update RESOURCE_FILES to contain only filenames
+    private static final String[] RESOURCE_FILES = {"a.txt",
+                                                    "b.txt",
+                                                    "c.txt",
+                                                    "d.txt",
+                                                    "e.txt",
+                                                    "f.txt",
+                                                    "g.txt",
+                                                    "h.txt",
+                                                    "i.txt",
+                                                    "j.txt",
+                                                    "k.txt",
+                                                    "l.txt",
+                                                    "m.txt",
+                                                    "n.txt",
+                                                    "o.txt",
+                                                    "p.txt",
+                                                    "q.txt",
+                                                    "r.txt",
+                                                    "s.txt",
+                                                    "t.txt",
+                                                    "u.txt",
+                                                    "v.txt",
+                                                    "y.txt",
+                                                    "z.txt"};
 
     /**
      * Constructs a new World object and loads countries from resource files.
@@ -68,38 +75,56 @@ final class World
     World()
     {
         this.countries = new HashMap<>();
-        loadCountriesFromAllFiles();
+        try
+        {
+            loadCountriesFromAllFiles();
+        }
+        catch(final IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Loads countries from all resource files defined in RESOURCE_FILES.
-     * Iterates through each file path and calls loadCountriesFromFile for each one.
+     * Iterates through each file path and calls loadCountriesFromFile for each
+     * one.
+     * 
+     * @throws FileNotFoundException if there's an error reading the resource files
      */
-    private void loadCountriesFromAllFiles()
+    private void loadCountriesFromAllFiles() throws FileNotFoundException
     {
         for(final String file : RESOURCE_FILES)
         {
-            loadCountriesFromFile(file);
+            final Path filePath;
+            filePath = Paths.get(DIRECTORY_SRC,
+                                 DIRECTORY_RES,
+                                 DIRECTORY_COUNTRIES,
+                                 file);
+
+            validateFilePath(filePath);
+            loadCountriesFromFile(filePath);
         }
     }
 
     /**
      * Loads countries from a single resource file.
-     * Validates the file path, reads lines from the resource, and processes them.
+     * Validates the file path, reads lines from the resource, and processes
+     * them.
      * 
      * @param filePath the path to the resource file to load
      */
-    private void loadCountriesFromFile(final String filePath)
+    private void loadCountriesFromFile(final Path filePath)
     {
         try
         {
-            validatePath(filePath);
+            validateFilePath(filePath);
             final List<String> lines;
 
-            lines = FileManager.readLinesFromResource(filePath);
+            lines = FileManager.readLinesFromResource(filePath.toString());
             processFileLines(lines);
         }
-        catch(IOException e)
+        catch(final IOException e)
         {
             e.printStackTrace();
         }
@@ -113,18 +138,17 @@ final class World
      */
     private void processFileLines(final List<String> lines)
     {
-        String   countryName; 
-        String   capitalName; 
-        String[] facts;       
+        String   countryName;
+        String   capitalName;
+        String[] facts;
 
         // Iterate through each line in the file
         for(int lineIndex = 0; lineIndex < lines.size(); lineIndex++)
         {
-           
-            final String  line;    
-            final Country country; 
 
-            
+            final String  line;
+            final Country country;
+
             line = lines.get(lineIndex);
             if(line.isEmpty())
             {
@@ -137,18 +161,22 @@ final class World
 
                 // Split the line into country name and capital city
                 parts       = line.split(COUNTRY_CAPITAL_SEPARATOR);
-                countryName = parts[COUNTRY_NAME_INDEX].trim();  
-                capitalName = parts[CAPITAL_NAME_INDEX].trim();  
-                facts       = new String[FACTS_PER_COUNTRY];     
+                countryName = parts[COUNTRY_NAME_INDEX].trim();
+                capitalName = parts[CAPITAL_NAME_INDEX].trim();
+                facts       = new String[FACTS_PER_COUNTRY];
 
                 // Extract the three facts that follow the country/capital line
-                for(int factIndex = 0; factIndex < FACTS_PER_COUNTRY; factIndex++)
+                for(int factIndex = 0; factIndex <
+                                       FACTS_PER_COUNTRY; factIndex++)
                 {
-                    // Calculate the line index for each fact and check if it's within bounds
+                    // Calculate the line index for each fact and check if it's
+                    // within bounds
                     if(lineIndex + factIndex + FIRST_FACT_OFFSET < lines.size())
                     {
                         // Extract and trim the fact from the appropriate line
-                        facts[factIndex] = lines.get(lineIndex + factIndex + FIRST_FACT_OFFSET)
+                        facts[factIndex] = lines.get(lineIndex +
+                                                     factIndex +
+                                                     FIRST_FACT_OFFSET)
                                                 .trim();
                     }
                 }
@@ -156,9 +184,9 @@ final class World
                 // Create a new Country object with the extracted data
                 country = new Country(countryName,
                                       capitalName,
-                                      facts[FIRST_FACT_INDEX],    
-                                      facts[SECOND_FACT_INDEX],   
-                                      facts[THIRD_FACT_INDEX]);   
+                                      facts[FIRST_FACT_INDEX],
+                                      facts[SECOND_FACT_INDEX],
+                                      facts[THIRD_FACT_INDEX]);
                 addCountry(country);
                 lineIndex += LINES_TO_SKIP_AFTER_FACTS;
             }
@@ -239,18 +267,19 @@ final class World
      * Validates that a file path is not null, blank, and exists.
      * 
      * @param filePath the file path to validate
+     * 
      * @throws IOException if the path does not exist
      */
-    private static void validatePath(final String filePath) throws IOException
+    private static void validateFilePath(final Path filePath) throws FileNotFoundException
     {
-        if(filePath == null || filePath.isBlank())
+        if(filePath == null)
         {
-            throw new IllegalArgumentException("Path can't be null or blank.");
+            throw new IllegalArgumentException("Path can't be null.");
         }
 
-        if(Files.notExists(Paths.get(filePath)))
+        if(Files.notExists(filePath))
         {
-            throw new FileNotFoundException("Path does not exist.");
+            throw new FileNotFoundException("Path does not exist: " + filePath);
         }
     }
 
@@ -268,7 +297,8 @@ final class World
     }
 
     /*
-     * Validates that a country name is not null, blank, and exists in the world.
+     * Validates that a country name is not null, blank, and exists in the
+     * world.
      * 
      * @param countryName the name of the country to validate
      */
@@ -279,9 +309,10 @@ final class World
             throw new IllegalArgumentException("Country name can't be null or blank");
         }
 
-        if(! hasCountry(countryName))
+        if(!hasCountry(countryName))
         {
-            throw new NullPointerException("Country doesn't exist: " + countryName);
+            throw new NullPointerException("Country doesn't exist: " +
+                                           countryName);
         }
     }
 }
