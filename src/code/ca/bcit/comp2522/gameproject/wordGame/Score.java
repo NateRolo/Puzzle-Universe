@@ -28,7 +28,6 @@ final class Score
     private static final int DEFAULT_CORRECT_SECOND_GUESSES = 0;
     private static final int DEFAULT_INCORRECT_TWO_TIMES    = 0;
     private static final int DEFAULT_SCORE                  = 0;
-    private static final int QUESTIONS_PER_GAME             = 10;
 
     private static final int CORRECT_FIRST_GUESS_SCORE  = 2;
     private static final int CORRECT_SECOND_GUESS_SCORE = 1;
