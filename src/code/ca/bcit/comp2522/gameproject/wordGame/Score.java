@@ -206,7 +206,7 @@ final class Score
      * @param score the Score object to format
      * @return a List of strings representing the formatted score
      */
-    private static List<String> formatScore(Score score)
+    private static List<String> formatScore(final Score score)
     {
         validateScore(score);
 
@@ -320,7 +320,7 @@ final class Score
         highestScore   = null;
         highestAverage = DEFAULT_AVERAGE;
 
-        for(Score score : allScores)
+        for(final Score score : allScores)
         {
             final double average = calculateAverageScore(score);
             if(average > highestAverage)
@@ -393,7 +393,6 @@ final class Score
         }
 
         scoreAsString = builder.toString();
-
         return scoreAsString;
     }
 
