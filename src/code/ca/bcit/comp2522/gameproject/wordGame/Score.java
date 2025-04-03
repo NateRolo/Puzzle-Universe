@@ -23,28 +23,28 @@ final class Score
 {
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private static final int DEFAULT_GAMES_PLAYED           = 0;
-    private static final int DEFAULT_CORRECT_FIRST_GUESSES  = 0;
-    private static final int DEFAULT_CORRECT_SECOND_GUESSES = 0;
-    private static final int DEFAULT_INCORRECT_TWO_TIMES    = 0;
-    private static final int DEFAULT_SCORE                  = 0;
-    private static final double DEFAULT_AVERAGE            = 0.0;
+    private static final int    DEFAULT_GAMES_PLAYED           = 0;
+    private static final int    DEFAULT_CORRECT_FIRST_GUESSES  = 0;
+    private static final int    DEFAULT_CORRECT_SECOND_GUESSES = 0;
+    private static final int    DEFAULT_INCORRECT_TWO_TIMES    = 0;
+    private static final int    DEFAULT_SCORE                  = 0;
+    private static final double DEFAULT_AVERAGE                = 0.0;
 
-    private static final int GAMES_PLAYED_MIN               = 0;
-    private static final int GUESS_COUNT_MIN               = 0;
+    private static final int GAMES_PLAYED_MIN = 0;
+    private static final int GUESS_COUNT_MIN  = 0;
 
     private static final int CORRECT_FIRST_GUESS_SCORE  = 2;
     private static final int CORRECT_SECOND_GUESS_SCORE = 1;
 
     // Constants for parsing score files
-    private static final String DATE_TIME_PREFIX        = "Date and Time:";
-    private static final int    LINE_PARSE_SPLIT_LIMIT  = 2;
-    private static final int    PARSED_VALUE_INDEX      = 1;
-    private static final int    START_INDEX             = 0;
-    private static final int    GAMES_PLAYED_OFFSET     = 1;
-    private static final int    CORRECT_FIRST_OFFSET    = 2;
-    private static final int    CORRECT_SECOND_OFFSET   = 3;
-    private static final int    INCORRECT_OFFSET        = 4;
+    private static final String DATE_TIME_PREFIX       = "Date and Time:";
+    private static final int    LINE_PARSE_SPLIT_LIMIT = 2;
+    private static final int    PARSED_VALUE_INDEX     = 1;
+    private static final int    START_INDEX            = 0;
+    private static final int    GAMES_PLAYED_OFFSET    = 1;
+    private static final int    CORRECT_FIRST_OFFSET   = 2;
+    private static final int    CORRECT_SECOND_OFFSET  = 3;
+    private static final int    INCORRECT_OFFSET       = 4;
 
     private int numGamesPlayed;
     private int numCorrectFirstAttempt;
@@ -274,27 +274,27 @@ final class Score
         scores = IntStream.range(START_INDEX,
                                  scoresLines.size())
                           .filter(startIndex -> scoresLines.get(startIndex)
-                                                  .startsWith(DATE_TIME_PREFIX))
+                                                           .startsWith(DATE_TIME_PREFIX))
                           .mapToObj(startIndex -> new Score(LocalDateTime.parse(scoresLines.get(startIndex)
-                                                                                  .split(": ",
-                                                                                         LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX],
-                                                                       formatter),
-                                                   Integer.parseInt(scoresLines.get(startIndex +
-                                                                                    GAMES_PLAYED_OFFSET)
-                                                                               .split(": ",
-                                                                                      LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
-                                                   Integer.parseInt(scoresLines.get(startIndex +
-                                                                                    CORRECT_FIRST_OFFSET)
-                                                                               .split(": ",
-                                                                                      LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
-                                                   Integer.parseInt(scoresLines.get(startIndex +
-                                                                                    CORRECT_SECOND_OFFSET)
-                                                                               .split(": ",
-                                                                                      LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
-                                                   Integer.parseInt(scoresLines.get(startIndex +
-                                                                                    INCORRECT_OFFSET)
-                                                                               .split(": ",
-                                                                                      LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX])))
+                                                                                           .split(": ",
+                                                                                                  LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX],
+                                                                                formatter),
+                                                            Integer.parseInt(scoresLines.get(startIndex +
+                                                                                             GAMES_PLAYED_OFFSET)
+                                                                                        .split(": ",
+                                                                                               LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                            Integer.parseInt(scoresLines.get(startIndex +
+                                                                                             CORRECT_FIRST_OFFSET)
+                                                                                        .split(": ",
+                                                                                               LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                            Integer.parseInt(scoresLines.get(startIndex +
+                                                                                             CORRECT_SECOND_OFFSET)
+                                                                                        .split(": ",
+                                                                                               LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                            Integer.parseInt(scoresLines.get(startIndex +
+                                                                                             INCORRECT_OFFSET)
+                                                                                        .split(": ",
+                                                                                               LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX])))
                           .toList();
         return scores;
     }
