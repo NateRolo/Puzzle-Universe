@@ -20,7 +20,7 @@ final class TruthScanner
     private static final int DEFAULT_ROUND_SCANNED = -1;
     
     // Tracking scan usage for history
-    private int     roundScanInitiatedIn = DEFAULT_ROUND_SCAN_INITIATED; // Round number when the 't' command was issued
+    private int     roundScanInitiatedIn = DEFAULT_ROUND_SCAN_INITIATED;
     private int     roundScanned = DEFAULT_ROUND_SCANNED;
     private boolean truthScanUsedThisGame;
     
