@@ -48,14 +48,16 @@ final class TruthScanner
     {
         if (truthScanUsedThisGame)
         {
+            // Scan already used
             System.out.println("You have already used your truth scan this game!");
-            return null; // Scan failed (already used)
+            return null;
         }
         
         if (rounds.isEmpty())
         {
+            // No previous rounds to scan
             System.out.println("No previous rounds to scan!");
-            return null; // Scan failed (no rounds)
+            return null;
         }
 
         final int currentRoundNumber;
@@ -69,7 +71,7 @@ final class TruthScanner
         if (targetRoundNumber <= ROUND_MINIMUM)
         {
              System.out.println("Truth Scan cancelled.");
-             return null; // Scan cancelled by user
+             return null;
         }
 
         selectedRound = rounds.get(targetRoundNumber - ROUND_INCREMENT);
@@ -83,7 +85,8 @@ final class TruthScanner
             System.out.println("Revealing true feedback for round " + targetRoundNumber + ":");
             System.out.println(trueFeedback);
 
-            selectedRound.revealTruth(); // Mark the round itself as truth revealed
+            // Reveal the truth
+            selectedRound.revealTruth(); 
             scanResultDescription = String.format("Used in Round %d, targeting Round %d (Deceptive - Truth Revealed)",
                                                 currentRoundNumber,
                                                 targetRoundNumber);
@@ -102,7 +105,7 @@ final class TruthScanner
         this.roundScanInitiatedIn  = currentRoundNumber;
         this.roundScanned          = targetRoundNumber;
 
-        return scanResultDescription; // Return the formatted info string
+        return scanResultDescription; 
     }
     
     /**
