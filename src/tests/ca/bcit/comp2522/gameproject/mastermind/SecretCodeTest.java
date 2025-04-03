@@ -18,7 +18,6 @@ public class SecretCodeTest
     public void testSecretCodeLength()
     {
         final int tooShortLength = 3;
-        final int tooLongLength  = 7;
         final int validLength    = 4;
 
         // Test length too short
