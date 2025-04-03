@@ -42,26 +42,39 @@ abstract class Code
     }
 
     /**
-     * Validates that the provided digits are not null or empty.
+     * Validates the provided list of digits for nullity, emptiness, correct
+     * size,
+     * and valid digit range. Also checks for null elements within the list.
      *
-     * @param digits the digits to validate
+     * @param digits the list of digits to validate
      */
     private static final void validateDigits(final List<Integer> digits)
     {
         if(digits == null)
         {
-            throw new IllegalArgumentException("Digits cannot be null");
-        }
-        if(digits.isEmpty())
-        {
-            throw new IllegalArgumentException("Digits cannot be empty");
+            throw new IllegalArgumentException("Digits list cannot be null");
         }
 
+        if(digits.size() != CODE_LENGTH)
+        {
+            throw new IllegalArgumentException(String.format("Digits list must contain exactly %d digits, but found %d.",
+                                                             CODE_LENGTH,
+                                                             digits.size()));
+        }
+
+        // Check individual digit validity and null elements
         for(final Integer num : digits)
         {
+            if(num == null)
+            {
+                throw new IllegalArgumentException("Digits list cannot contain null elements.");
+            }
             if(num < DIGIT_MIN || num > DIGIT_MAX)
             {
-                throw new IllegalArgumentException("Invalid code digit:" + num);
+                throw new IllegalArgumentException(String.format("Invalid code digit: %d. Must be between %d and %d.",
+                                                                 num,
+                                                                 DIGIT_MIN,
+                                                                 DIGIT_MAX));
             }
         }
     }
@@ -79,7 +92,7 @@ abstract class Code
     @Override
     public boolean equals(final Object other)
     {
-        final Code otherCode;
+        final Code    otherCode;
         final boolean codesAreEqual;
 
         if(other == null)
@@ -97,7 +110,7 @@ abstract class Code
             throw new IllegalArgumentException("Other is not a Code");
         }
 
-        otherCode = (Code)other;
+        otherCode     = (Code)other;
         codesAreEqual = digits.equals(otherCode.digits);
 
         return codesAreEqual;
