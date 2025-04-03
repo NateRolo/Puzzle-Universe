@@ -13,7 +13,7 @@ import java.util.List;
  * @author Nathan O
  * @version 1.1 2025
  */
-public final class PlayerGuessCode extends
+final class PlayerGuessCode extends
                                    Code implements
                                    PlayerAction
 {
@@ -40,10 +40,9 @@ public final class PlayerGuessCode extends
      * </p>
      *
      * @param input      The raw string input from the player.
-     * @param codeLength The expected length of the code.
      * @return A new PlayerGuessCode instance.
      */
-    public static final PlayerGuessCode fromInput(final String input)
+    static PlayerGuessCode fromInput(final String input)
     {
         validateInput(input);
 
@@ -79,7 +78,7 @@ public final class PlayerGuessCode extends
      * @param input The raw input string.
      * @param codeLength The expected length of the code.
      */
-    private static final void validateInput(final String input)
+    private static void validateInput(final String input)
     {
         if(input == null)
         {

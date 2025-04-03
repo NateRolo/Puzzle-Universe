@@ -1,7 +1,5 @@
 package ca.bcit.comp2522.gameproject.mastermind;
 
-import ca.bcit.comp2522.gameproject.Playable;
-import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -10,6 +8,9 @@ import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
+
+import ca.bcit.comp2522.gameproject.Playable;
+import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
 
 
 /**
