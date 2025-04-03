@@ -33,7 +33,8 @@ abstract class AbstractGame implements
     int   gamesPlayed;
 
     /**
-     * Constructs an AbstractGame. Initializes game statistics and the random number generator.
+     * Constructs an AbstractGame. Initializes game statistics and the random
+     * number generator.
      */
     AbstractGame()
     {
@@ -43,18 +44,6 @@ abstract class AbstractGame implements
         this.gamesWon        = INITIAL_VALUE;
         this.totalPlacements = INITIAL_VALUE;
         this.gameWon         = false;
-    }
-
-    /**
-     * Initializes the game state for a new round.
-     * Resets the game won status and clears the board.
-     */
-    @Override
-    public void initializeGame()
-    {
-        this.gameWon = false;
-        Arrays.fill(this.board,
-                    EMPTY_CELL);
     }
 
     /**
@@ -141,7 +130,8 @@ abstract class AbstractGame implements
             if(cellValue != EMPTY_CELL)
             {
 
-                if(lastNumber != INVALID_NUMBER_SENTINEL && cellValue <= lastNumber)
+                if(lastNumber != INVALID_NUMBER_SENTINEL &&
+                   cellValue <= lastNumber)
                 {
                     return false;
                 }
@@ -165,5 +155,17 @@ abstract class AbstractGame implements
                                   this.board.length);
 
         return boardCopy;
+    }
+
+    /**
+     * Initializes the game state for a new round.
+     * Resets the game won status and clears the board.
+     */
+    @Override
+    public void initializeGame()
+    {
+        this.gameWon = false;
+        Arrays.fill(this.board,
+                    EMPTY_CELL);
     }
 }

@@ -7,7 +7,7 @@ package ca.bcit.comp2522.gameproject.numbergame;
  * and win/loss conditions, independent of the user interface.
  *
  * @author Nathan O
- * @version 1.1 2025
+ * @version 1.2 2025
  */
 final class NumberGameLogic extends
                             AbstractGame
@@ -96,8 +96,7 @@ final class NumberGameLogic extends
                               position,
                               this.successfulPlacementsThisGame,
                               this.totalPlacements);
-
-
+                              
             if(isBoardFull())
             {
                 setGameWon(true);
@@ -143,6 +142,49 @@ final class NumberGameLogic extends
             }
         }
         return false;
+    }
+
+    /*
+     * Finds the value of the nearest non-empty cell to the left of the given
+     * position.
+     * Returns INVALID_NUMBER_SENTINEL if no non-empty cell is found to the
+     * left.
+     *
+     * @param position The 0-based index from where to search leftwards.
+     * 
+     * @return The value of the left neighbor or INVALID_NUMBER_SENTINEL.
+     */
+    private int findLeftNeighborValue(final int position)
+    {
+        for(int i = position - POSITION_INCREMENT; i >= EMPTY_CELL; i--)
+        {
+            if(this.board[i] != EMPTY_CELL)
+            {
+                return this.board[i]; // Found left neighbor
+            }
+        }
+        return INVALID_NUMBER_SENTINEL; // No left neighbor found
+    }
+
+    /*
+     * Finds the value of the nearest non-empty cell to the right of the given
+     * position.
+     * Returns UPPER_BOUND_SENTINEL if no non-empty cell is found to the right.
+     *
+     * @param position The 0-based index from where to search rightwards.
+     * 
+     * @return The value of the right neighbor or UPPER_BOUND_SENTINEL.
+     */
+    private int findRightNeighborValue(final int position)
+    {
+        for(int i = position + POSITION_INCREMENT; i < BOARD_SIZE; i++)
+        {
+            if(this.board[i] != EMPTY_CELL)
+            {
+                return this.board[i];
+            }
+        }
+        return UPPER_BOUND_SENTINEL;
     }
 
     /**
@@ -221,6 +263,12 @@ final class NumberGameLogic extends
 
     /**
      * Displays the current score statistics to the console.
+     * 
+     * The statistics include:
+     * - Total number of games played
+     * - Number of games won and lost
+     * - Total successful number placements across all games
+     * - Average number of placements per game (if at least one game has been completed)
      */
     @Override
     public void showScore()
@@ -237,11 +285,10 @@ final class NumberGameLogic extends
         System.out.printf("Total Successful Placements (all games): %d%n",
                           this.totalPlacements);
 
-
         if(this.gamesPlayed > NO_GAMES_PLAYED)
         {
-
-            final double avgPlacements = (double)this.totalPlacements /
+            final double avgPlacements;
+            avgPlacements = (double)this.totalPlacements /
                                          this.gamesPlayed;
             System.out.printf("Average Placements per Game: %.2f%n",
                               avgPlacements);
@@ -275,54 +322,37 @@ final class NumberGameLogic extends
     @Override
     public boolean isValidPlacement(final int position)
     {
+        final int leftNeighborValue;
+        final int rightNeighborValue;
+
+        // 1. Check basic position validity
         if(position < EMPTY_CELL || position >= BOARD_SIZE)
         {
             return false;
         }
-
         if(this.board[position] != EMPTY_CELL)
         {
             return false;
         }
 
-        int leftValue;
-
-        leftValue = INVALID_NUMBER_SENTINEL;
-
-        for(int i = position - POSITION_INCREMENT; i >= EMPTY_CELL; i--)
-        {
-            if(this.board[i] != EMPTY_CELL)
-            {
-                leftValue = this.board[i];
-                break;
-            }
-        }
-
-        if(this.currentNumber <= leftValue)
+        // 2. Check relative to left neighbor
+        leftNeighborValue = findLeftNeighborValue(position);
+        if(this.currentNumber <= leftNeighborValue)
         {
             return false;
         }
 
-
-        int rightValue = UPPER_BOUND_SENTINEL;
-
-        for(int i = position + POSITION_INCREMENT; i < BOARD_SIZE; i++)
-        {
-            if(this.board[i] != EMPTY_CELL)
-            {
-                rightValue = this.board[i];
-                break;
-            }
-        }
-
-        if(this.currentNumber >= rightValue)
+        // 3. Check relative to right neighbor
+        rightNeighborValue = findRightNeighborValue(position);
+        if(this.currentNumber >= rightNeighborValue)
         {
             return false;
         }
-
 
         return true;
     }
+
+   
 
     @Override
     final int[] getBoard()

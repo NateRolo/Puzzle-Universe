@@ -9,14 +9,16 @@ import ca.bcit.comp2522.gameproject.wordgame.WordGame;
 /**
  * Main class for the game project.
  * <p>
- * This class provides a simple text-based menu that allows the user to choose from different games.
- * The menu runs in an infinite loop until the user chooses to quit by pressing 'Q' or 'q'.
+ * This class provides a simple text-based menu that allows the user to choose
+ * from different games.
+ * The menu runs in an infinite loop until the user chooses to quit by pressing
+ * 'Q' or 'q'.
  * </p>
  *
  * @author Nathan O
  * @version 1.0 2025
  */
-public class Main
+public final class Main
 {
     private static final Scanner  scan;
     private static final Playable wordGame;
@@ -24,18 +26,18 @@ public class Main
     private static final Playable mastermindGame;
 
     private static final String CHOICE_WORD_GAME   = "w";
-    private static final String CHOICE_NUMBER_GAME   = "n";
-    private static final String CHOICE_MASTERMIND = "m";
-    private static final String CHOICE_QUIT          = "q";
+    private static final String CHOICE_NUMBER_GAME = "n";
+    private static final String CHOICE_MASTERMIND  = "m";
+    private static final String CHOICE_QUIT        = "q";
 
     private static final String MESSAGE_INVALID_CHOICE = "Not a valid option, please select a valid game.";
     private static final String MESSAGE_EXIT           = "Exiting the game. Goodbye!";
 
     static
     {
-        scan       = new Scanner(System.in);
-        wordGame   = new WordGame();
-        numberGame   = new NumberGameGUI();
+        scan           = new Scanner(System.in);
+        wordGame       = new WordGame();
+        numberGame     = new NumberGameGUI();
         mastermindGame = new MastermindGame();
     }
 
@@ -69,7 +71,7 @@ public class Main
                 case CHOICE_QUIT -> System.out.println(MESSAGE_EXIT);
                 default -> System.out.println(MESSAGE_INVALID_CHOICE);
             }
-        } while(! choice.equals(CHOICE_QUIT));
+        } while(!choice.equals(CHOICE_QUIT));
     }
 
     /*

@@ -23,7 +23,7 @@ import ca.bcit.comp2522.gameproject.Playable;
  * @author Nathan O
  * @version 1.1 2025
  */
-public class NumberGameGUI implements
+public final class NumberGameGUI implements
                            Playable
 {
     private static final int    GRID_ROWS         = 4;
@@ -145,7 +145,7 @@ public class NumberGameGUI implements
     /*
      * Starts a new game by resetting the logic and updating the GUI.
      */
-    private final void startNewGame()
+    private void startNewGame()
     {
         gameLogic.startNewGame();
         updateGUIState();
@@ -162,7 +162,7 @@ public class NumberGameGUI implements
      *
      * @param position The 0-based index of the clicked button.
      */
-    private final void handleButtonClick(final int position)
+    private void handleButtonClick(final int position)
     {
         final int     numberToPlace;
         final boolean placementSuccess;
@@ -209,7 +209,7 @@ public class NumberGameGUI implements
      * Updates the GUI elements (buttons, status label) to reflect the current
      * game state obtained from NumberGameLogic.
      */
-    private final void updateGUIState()
+    private void updateGUIState()
     {
         final int[]   currentBoard;
         final boolean gameOver;
@@ -257,7 +257,7 @@ public class NumberGameGUI implements
      * Shows an initial welcome message with instructions.
      * Offers "Try Again" (start game) and "Quit" options.
      */
-    private final void showWelcomeMessage()
+    private void showWelcomeMessage()
     {
         final String[] options;
         final int      choice;
@@ -285,7 +285,7 @@ public class NumberGameGUI implements
     /*
      * Handles the display and actions for the game win condition.
      */
-    private final void handleGameWon()
+    private void handleGameWon()
     {
         final int choice;
 
@@ -312,7 +312,7 @@ public class NumberGameGUI implements
      *
      * @param impossibleNumber The number that could not be placed.
      */
-    private final void handleGameLost(final int impossibleNumber)
+    private void handleGameLost(final int impossibleNumber)
     {
         final String lossMsg;
         final String fullMsg;
@@ -345,7 +345,7 @@ public class NumberGameGUI implements
     /*
      * Shows a final message with the overall score when the window is closed.
      */
-    private final void showFinalScoreMessage()
+    private void showFinalScoreMessage()
     {
         System.out.println("[GUI] Window Closed - Showing Final Stats.");
 
@@ -361,7 +361,7 @@ public class NumberGameGUI implements
      * @param gameJustWon Hint whether the last game ended in a win (for phrasing).
      * @return A formatted string with score details.
      */
-    private final String buildScoreString(final boolean gameJustWon)
+    private String buildScoreString(final boolean gameJustWon)
     {
         final int    played;
         final int    won;
