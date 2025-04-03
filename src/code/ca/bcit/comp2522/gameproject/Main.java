@@ -1,9 +1,10 @@
 package ca.bcit.comp2522.gameproject;
 
+import java.util.Scanner;
+
 import ca.bcit.comp2522.gameproject.mastermind.MastermindGame;
 import ca.bcit.comp2522.gameproject.numbergame.NumberGameGUI;
 import ca.bcit.comp2522.gameproject.wordgame.WordGameLauncher;
-import java.util.Scanner;
 
 /**
  * Main class for the game project.
@@ -21,7 +22,6 @@ public class Main
     private static final Playable wordGame;
     private static final Playable numberGame;
     private static final Playable mastermindGame;
-    
 
     private static final String CHOICE_WORD_GAME   = "w";
     private static final String CHOICE_NUMBER_GAME   = "n";

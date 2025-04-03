@@ -113,15 +113,18 @@ final class World
      */
     private void processFileLines(final List<String> lines)
     {
-        String   countryName;
-        String   capitalName;
-        String[] facts;
+        String   countryName; 
+        String   capitalName; 
+        String[] facts;       
 
+        // Iterate through each line in the file
         for(int lineIndex = 0; lineIndex < lines.size(); lineIndex++)
         {
-            final String  line;
-            final Country country;
+           
+            final String  line;    
+            final Country country; 
 
+            
             line = lines.get(lineIndex);
             if(line.isEmpty())
             {
@@ -132,25 +135,30 @@ final class World
             {
                 final String[] parts;
 
+                // Split the line into country name and capital city
                 parts       = line.split(COUNTRY_CAPITAL_SEPARATOR);
-                countryName = parts[COUNTRY_NAME_INDEX].trim();
-                capitalName = parts[CAPITAL_NAME_INDEX].trim();
-                facts       = new String[FACTS_PER_COUNTRY];
+                countryName = parts[COUNTRY_NAME_INDEX].trim();  
+                capitalName = parts[CAPITAL_NAME_INDEX].trim();  
+                facts       = new String[FACTS_PER_COUNTRY];     
 
+                // Extract the three facts that follow the country/capital line
                 for(int factIndex = 0; factIndex < FACTS_PER_COUNTRY; factIndex++)
                 {
+                    // Calculate the line index for each fact and check if it's within bounds
                     if(lineIndex + factIndex + FIRST_FACT_OFFSET < lines.size())
                     {
+                        // Extract and trim the fact from the appropriate line
                         facts[factIndex] = lines.get(lineIndex + factIndex + FIRST_FACT_OFFSET)
                                                 .trim();
                     }
                 }
 
+                // Create a new Country object with the extracted data
                 country = new Country(countryName,
                                       capitalName,
-                                      facts[FIRST_FACT_INDEX],
-                                      facts[SECOND_FACT_INDEX],
-                                      facts[THIRD_FACT_INDEX]);
+                                      facts[FIRST_FACT_INDEX],    
+                                      facts[SECOND_FACT_INDEX],   
+                                      facts[THIRD_FACT_INDEX]);   
                 addCountry(country);
                 lineIndex += LINES_TO_SKIP_AFTER_FACTS;
             }
@@ -209,7 +217,7 @@ final class World
      * @param name the name of the country to check
      * @return true if the country exists, false otherwise
      */
-    final boolean hasCountry(final String name)
+    boolean hasCountry(final String name)
     {
         validateCountryName(name);
 

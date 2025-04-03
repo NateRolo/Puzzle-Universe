@@ -42,6 +42,16 @@ abstract class Code
     }
 
     /**
+     * Returns code length as an int.
+     * 
+     * @return CODE_LENGTH as an int
+     */
+    static final int getCodeLength()
+    {
+        return CODE_LENGTH;
+    }
+
+    /**
      * Validates the provided list of digits for nullity, emptiness, correct
      * size,
      * and valid digit range. Also checks for null elements within the list.
@@ -77,16 +87,6 @@ abstract class Code
                                                                  DIGIT_MAX));
             }
         }
-    }
-
-    /**
-     * Returns code length as an int.
-     * 
-     * @return CODE_LENGTH as an int
-     */
-    static final int getCodeLength()
-    {
-        return CODE_LENGTH;
     }
 
     @Override
