@@ -28,10 +28,16 @@ final class Round
    
     /**
      * Constructs a new Round with the specified details.
+     * <p>
+     * Creates a round object that stores both the player's guess and the corresponding feedback.
+     * For deceptive rounds, both true and false feedback are stored, with the deception
+     * being applied according to the game's rules. The constructor also tracks the number
+     * of deceptive rounds used in the game.
+     * </p>
      *
-     * @param roundNumber  the number of this round
-     * @param guess        the player's guess for this round
-     * @param trueFeedback the feedback given for the guess
+     * @param roundNumber  the sequential number of this round in the current game
+     * @param guess        the player's guess code for this round
+     * @param trueFeedback the accurate feedback based on comparing the guess with the secret code
      */
     Round(final int roundNumber,
           final PlayerGuessCode guess,
@@ -113,16 +119,27 @@ final class Round
         }
     }
 
+    /**
+     * Increments the number of deceptive rounds used.
+     */
     static void incrementDeceptiveRounds()
     {
         Round.deceptiveRoundsUsed++;
     }
 
+    /**
+     * Gets the number of deceptive rounds used.
+     * 
+     * @return the number of deceptive rounds used
+     */
     static int getDeceptiveRoundsUsed()
     {
         return Round.deceptiveRoundsUsed;
     }
 
+    /**
+     * Resets the number of deceptive rounds used.
+     */
     static void resetDeceptiveRounds()
     {
         Round.deceptiveRoundsUsed = INITIAL_DECEPTIVE_ROUNDS;
@@ -198,7 +215,11 @@ final class Round
         return result.toString();
     }
 
-    /* Override toString to use the summary line for general printing */
+    /**
+     * Override toString to use the summary line for general printing
+     * 
+     * @return the summary line
+     */
     @Override
     public String toString()
     {
