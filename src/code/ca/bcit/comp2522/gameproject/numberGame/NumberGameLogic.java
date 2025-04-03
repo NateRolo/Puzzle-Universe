@@ -1,7 +1,8 @@
 package ca.bcit.comp2522.gameproject.numbergame;
 
 /**
- * Implements the core logic and state management for the 20-Number Challenge game.
+ * Implements the core logic and state management for the 20-Number Challenge
+ * game.
  * This class handles number generation, placement validation, board state,
  * and win/loss conditions, independent of the user interface.
  *
@@ -9,12 +10,13 @@ package ca.bcit.comp2522.gameproject.numbergame;
  * @version 1.1 2025
  */
 final class NumberGameLogic extends
-                      AbstractGame implements
-                      NumberGameInterface
+                            AbstractGame
+
 {
-    private static final int UPPER_BOUND_SENTINEL = AbstractGame.MAX_RANDOM_NUMBER + 1;
+    private static final int UPPER_BOUND_SENTINEL = AbstractGame.MAX_RANDOM_NUMBER +
+                                                    1;
     private static final int NO_GAMES_PLAYED      = 0;
-    private static final int POSITION_INCREMENT = 1;
+    private static final int POSITION_INCREMENT   = 1;
 
     private int successfulPlacementsThisGame;
 
@@ -32,7 +34,7 @@ final class NumberGameLogic extends
      * Called by startNewGame and constructor.
      */
     @Override
-    public final void initializeGame()
+    public void initializeGame()
     {
         super.initializeGame();
         this.successfulPlacementsThisGame = INITIAL_VALUE;
@@ -63,7 +65,7 @@ final class NumberGameLogic extends
      * @param position The 0-based index where the number should be placed.
      * @return true if the number was successfully placed, false otherwise.
      */
-    final boolean placeNumberOnBoard(final int position)
+    boolean placeNumberOnBoard(final int position)
     {
         if(isGameOver() || isGameWon())
         {
@@ -86,7 +88,6 @@ final class NumberGameLogic extends
 
             if(isBoardFull())
             {
-
                 setGameWon(true);
 
                 this.gamesWon++;
@@ -97,7 +98,6 @@ final class NumberGameLogic extends
                 this.currentNumber = generateNumber();
                 System.out.printf("[Logic] Generated next number: %d%n",
                                   this.currentNumber);
-
             }
 
             return true;
@@ -107,21 +107,20 @@ final class NumberGameLogic extends
             System.out.printf("[Logic] Invalid placement: %d at position %d%n",
                               this.currentNumber,
                               position);
-
             return false;
         }
     }
 
     /**
      * Places the current number at the specified position.
-     * Primarily for interface compliance; prefer placeNumberOnBoard for clearer feedback.
+     * Primarily for interface compliance; prefer placeNumberOnBoard for clearer
+     * feedback.
      *
      * @param position The 0-based index where the number should be placed.
      */
     @Override
     public void placeNumber(final int position)
     {
-
         placeNumberOnBoard(position);
     }
 
@@ -136,7 +135,6 @@ final class NumberGameLogic extends
     @Override
     public boolean isGameOver()
     {
-
         if(isGameWon())
         {
             return true;
@@ -180,7 +178,8 @@ final class NumberGameLogic extends
         if(this.gamesPlayed > NO_GAMES_PLAYED)
         {
 
-            final double avgPlacements = (double)this.totalPlacements / this.gamesPlayed;
+            final double avgPlacements = (double)this.totalPlacements /
+                                         this.gamesPlayed;
             System.out.printf("Average Placements per Game: %.2f%n",
                               avgPlacements);
         }
@@ -203,7 +202,8 @@ final class NumberGameLogic extends
     }
 
     /**
-     * Checks if placing the {@code currentNumber} at the specified {@code position}
+     * Checks if placing the {@code currentNumber} at the specified
+     * {@code position}
      * is valid according to the ascending order rule.
      *
      * @param position The 0-based index to check.
@@ -212,21 +212,18 @@ final class NumberGameLogic extends
     @Override
     public boolean isValidPlacement(final int position)
     {
-
         if(position < EMPTY_CELL || position >= BOARD_SIZE)
         {
             return false;
         }
-
 
         if(this.board[position] != EMPTY_CELL)
         {
             return false;
         }
 
-
         int leftValue;
-        
+
         leftValue = INVALID_NUMBER_SENTINEL;
 
         for(int i = position - POSITION_INCREMENT; i >= EMPTY_CELL; i--)
@@ -278,17 +275,13 @@ final class NumberGameLogic extends
             return true;
         }
 
-
         for(int i = 0; i < BOARD_SIZE; i++)
         {
-
             if(isValidPlacement(i))
             {
-
                 return true;
             }
         }
-
         return false;
     }
 
@@ -302,18 +295,32 @@ final class NumberGameLogic extends
         return this.successfulPlacementsThisGame;
     }
 
-
-    public final int getGamesPlayed()
+    /**
+     * Gets the total number of games played during the session.
+     *
+     * @return the number of games played
+     */
+    public int getGamesPlayed()
     {
         return this.gamesPlayed;
     }
 
-    public final int getGamesWon()
+    /**
+     * Gets the total number of games won by the player during the session.
+     *
+     * @return the number of games won
+     */
+    public int getGamesWon()
     {
         return this.gamesWon;
     }
 
-    public final int getTotalPlacements()
+    /**
+     * Gets the total number of guesses (placements) made by the player across all games.
+     *
+     * @return the total number of placements
+     */
+    public int getTotalPlacements()
     {
         return this.totalPlacements;
     }
