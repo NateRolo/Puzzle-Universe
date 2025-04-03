@@ -22,19 +22,30 @@ import java.util.List;
  */
 final class GameHistoryManager
 {
+    /**
+     * Represents a single game session record.
+     */
     static final class GameSessionRecord
     {
         private final LocalDateTime timestamp;
         private final List<String>  roundDetails;
 
         private final String truthScanInfo;
-
         private final String outcome;
 
+        /**
+         * Constructs a GameSessionRecord with the given timestamp, round
+         * details, truth scan info, and outcome.
+         *
+         * @param timestamp     the timestamp of the game session
+         * @param roundDetails  the round details of the game session
+         * @param truthScanInfo the truth scan info of the game session
+         * @param outcome       the outcome of the game session
+         */
         GameSessionRecord(final LocalDateTime timestamp,
-                                 final List<String> roundDetails,
-                                 final String truthScanInfo,
-                                 final String outcome)
+                          final List<String> roundDetails,
+                          final String truthScanInfo,
+                          final String outcome)
         {
             this.timestamp    = timestamp;
             this.roundDetails = new ArrayList<>(roundDetails);
@@ -43,27 +54,51 @@ final class GameHistoryManager
             this.outcome       = outcome;
         }
 
-
+        /**
+         * Gets the timestamp of the game session.
+         *
+         * @return the timestamp of the game session
+         */
         LocalDateTime getTimestamp()
         {
             return timestamp;
         }
 
+        /**
+         * Gets the round details of the game session.
+         *
+         * @return the round details of the game session
+         */
         List<String> getRoundDetails()
         {
             return new ArrayList<>(roundDetails);
         }
 
+        /**
+         * Gets the truth scan info of the game session.
+         *
+         * @return the truth scan info of the game session
+         */
         String getTruthScanInfo()
         {
             return truthScanInfo;
         }
 
+        /**
+         * Gets the outcome of the game session.
+         *
+         * @return the outcome of the game session
+         */
         String getOutcome()
         {
             return outcome;
         }
 
+        /**
+         * Returns a string representation of the game session record.
+         *
+         * @return a string representation of the game session record
+         */
         @Override
         public String toString()
         {
@@ -101,7 +136,52 @@ final class GameHistoryManager
     private static final String TRUTH_SCAN_PREFIX = "Truth Scan: ";
     private static final String OUTCOME_PREFIX    = "Outcome: ";
 
-    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    /**
+     * Represents the transient state while parsing a single game session record
+     * from the history file.
+     */
+    private static final class ParsingState
+    {
+        private LocalDateTime timestamp;
+        private List<String>  roundDetails;
+        private String        truthScanInfo;
+        private String        outcome;
+
+        /*
+         * Initializes a new parsing state with empty values.
+         */
+        private ParsingState()
+        {
+            reset();
+        }
+
+        /*
+         * Resets the state fields to their initial empty values.
+         */
+        private void reset()
+        {
+            this.timestamp     = null;
+            this.roundDetails  = new ArrayList<>();
+            this.truthScanInfo = null;
+            this.outcome       = null;
+        }
+
+        /*
+         * Checks if the current state contains enough valid information to
+         * build a GameSessionRecord.
+         * 
+         * @return true if timestamp, roundDetails, and outcome are present,
+         * false otherwise.
+         */
+        private boolean isValidForRecord()
+        {
+            return this.timestamp != null &&
+                   !this.roundDetails.isEmpty() &&
+                   this.outcome != null;
+        }
+    }
 
     /**
      * Saves a single game session record to the history file.
@@ -110,7 +190,7 @@ final class GameHistoryManager
      *
      * @param record The GameSessionRecord to save.
      */
-    public void saveGameHistory(final GameSessionRecord record)
+    void saveGameHistory(final GameSessionRecord record)
     {
         final Path filePath;
         filePath = Paths.get(HISTORY_FILE_PATH);
@@ -121,10 +201,10 @@ final class GameHistoryManager
             Files.createDirectories(filePath.getParent());
 
             // Append to the file, creating it if it doesn't exist
-            try(BufferedWriter writer = Files.newBufferedWriter(filePath,
-                                                                StandardCharsets.UTF_8,
-                                                                StandardOpenOption.CREATE,
-                                                                StandardOpenOption.APPEND))
+            try(final BufferedWriter writer = Files.newBufferedWriter(filePath,
+                                                                      StandardCharsets.UTF_8,
+                                                                      StandardOpenOption.CREATE,
+                                                                      StandardOpenOption.APPEND))
             {
                 writer.write(GAME_START_MARKER);
                 writer.newLine();
@@ -136,9 +216,8 @@ final class GameHistoryManager
                 writer.newLine();
                 for(final String roundDetail : record.getRoundDetails())
                 {
-                    // Assuming roundDetail is already formatted like "Round X:
-                    // Guess: ... | Feedback: ..."
-                    writer.write("  " + roundDetail); // Indent for readability
+                    // indent for readability
+                    writer.write("  " + roundDetail);
                     writer.newLine();
                 }
                 if(record.getTruthScanInfo() != null &&
@@ -152,7 +231,8 @@ final class GameHistoryManager
                 writer.newLine();
                 writer.write(GAME_END_MARKER);
                 writer.newLine();
-                writer.newLine(); // Add an extra blank line between entries
+                // Add an extra blank line between entries
+                writer.newLine();
             }
         }
         catch(final IOException e)
@@ -166,14 +246,21 @@ final class GameHistoryManager
 
     /**
      * Loads all game session records from the history file.
+     * <p>
+     * Parses the history file line by line, identifying game session boundaries
+     * and extracting relevant data using helper methods.
+     * Handles file not found errors and parsing issues gracefully.
+     * </p>
      *
      * @return A List of GameSessionRecord objects, or an empty list if the file
-     *         doesn't exist or an error occurs.
+     *         doesn't exist or an error occurs during reading/parsing.
      */
     final List<GameSessionRecord> loadGameHistory()
     {
         final Path                    filePath;
         final List<GameSessionRecord> gameHistory;
+        final ParsingState            parseState;
+        boolean                       inGameRecord;
 
         filePath    = Paths.get(HISTORY_FILE_PATH);
         gameHistory = new ArrayList<>();
@@ -186,98 +273,39 @@ final class GameHistoryManager
             return gameHistory; // Return empty list if file doesn't exist
         }
 
-        // refactor, overly complicated if-else
-        try(BufferedReader reader = Files.newBufferedReader(filePath,
-                                                            StandardCharsets.UTF_8))
+        parseState   = new ParsingState();
+        inGameRecord = false;
+
+        try(final BufferedReader reader = Files.newBufferedReader(filePath,
+                                                                  StandardCharsets.UTF_8))
         {
-            String        line;
-            LocalDateTime currentTimestamp;
-            List<String>  currentRoundDetails;
-            String        currentTruthScanInfo;
-            String        currentOutcome;
-            boolean       inGameRecord;
-
-            currentTimestamp     = null;
-            currentRoundDetails  = new ArrayList<>();
-            currentTruthScanInfo = null;
-            currentOutcome       = null;
-            inGameRecord         = false;
-
+            String line;
             while((line = reader.readLine()) != null)
             {
-                line = line.trim(); // Trim leading/trailing whitespace
+                final String trimmedLine;
+                trimmedLine = line.trim();
 
-                if(line.equals(GAME_START_MARKER))
+                if(trimmedLine.equals(GAME_START_MARKER))
                 {
+                    parseState.reset();
                     inGameRecord = true;
-                    // Reset for new record
-                    currentTimestamp = null;
-                    currentRoundDetails.clear();
-                    currentTruthScanInfo = null;
-                    currentOutcome       = null;
                 }
-                else if(line.equals(GAME_END_MARKER) && inGameRecord)
+                else if(trimmedLine.equals(GAME_END_MARKER))
                 {
-                    if(currentTimestamp != null &&
-                       !currentRoundDetails.isEmpty() &&
-                       currentOutcome != null)
+                    if(inGameRecord)
                     {
-                        final GameSessionRecord record;
-                        record = new GameSessionRecord(currentTimestamp,
-                                                       currentRoundDetails,
-                                                       currentTruthScanInfo,
-                                                       currentOutcome);
-                        gameHistory.add(record);
+                        buildAndAddRecord(parseState,
+                                          gameHistory);
+                        inGameRecord = false;
                     }
-                    else
-                    {
-                        System.err.println("Warning: Incomplete game record found in history file.");
-                    }
-                    inGameRecord = false; // Reset flag
                 }
                 else if(inGameRecord)
                 {
-                    if(line.startsWith(TIMESTAMP_PREFIX))
-                    {
-                        try
-                        {
-                            currentTimestamp = LocalDateTime.parse(line.substring(TIMESTAMP_PREFIX.length()),
-                                                                   TIMESTAMP_FORMATTER);
-                        }
-                        catch(final Exception e)
-                        {
-                            System.err.println("Warning: Could not parse timestamp: " +
-                                               line);
-                            currentTimestamp = null; // Invalidate record if
-                                                     // timestamp is bad
-
-                        }
-                    }
-                    else if(line.startsWith("Round ")) // Simple check for round
-                                                       // lines
-
-                    {
-                        currentRoundDetails.add(line);
-                    }
-                    else if(line.startsWith(TRUTH_SCAN_PREFIX))
-                    {
-                        currentTruthScanInfo = line.substring(TRUTH_SCAN_PREFIX.length());
-                    }
-                    else if(line.startsWith(OUTCOME_PREFIX))
-                    {
-                        currentOutcome = line.substring(OUTCOME_PREFIX.length());
-                        // Simple validation for outcome
-                        if(!"Won".equalsIgnoreCase(currentOutcome) &&
-                           !"Lost".equalsIgnoreCase(currentOutcome))
-                        {
-                            System.err.println("Warning: Invalid outcome found: " +
-                                               currentOutcome);
-                            currentOutcome = null; // Invalidate record if
-                                                   // outcome is bad
-                        }
-                    }
+                    processRecordLine(trimmedLine,
+                                      parseState);
                 }
             }
+
             if(inGameRecord)
             {
                 System.err.println("Warning: History file ended unexpectedly within a game record.");
@@ -290,10 +318,102 @@ final class GameHistoryManager
                                ": " +
                                error.getMessage());
         }
-
         return gameHistory;
     }
 
+    /*
+     * Processes a single line belonging to the current game record being
+     * parsed.
+     * Identifies the line type (timestamp, round, truth scan, outcome) and
+     * updates the parsing state.
+     *
+     * @param line The trimmed line from the history file.
+     * 
+     * @param state The current parsing state object to update.
+     */
+    private void processRecordLine(final String line,
+                                   final ParsingState state)
+    {
+        validateLine(line);
+        validateState(state);
+
+        if(line.startsWith(TIMESTAMP_PREFIX))
+        {
+            try
+            {
+                state.timestamp = LocalDateTime.parse(line.substring(TIMESTAMP_PREFIX.length()),
+                                                      TIMESTAMP_FORMATTER);
+            }
+            catch(final Exception e) 
+            {
+                System.err.println("Warning: Could not parse timestamp: " +
+                                   line +
+                                   " (" +
+                                   e.getMessage() +
+                                   ")");
+                state.timestamp = null;
+            }
+        }
+        else if(line.matches("^Round \\d+:.*$"))
+        {
+            state.roundDetails.add(line);
+        }
+        else if(line.startsWith(TRUTH_SCAN_PREFIX))
+        {
+            state.truthScanInfo = line.substring(TRUTH_SCAN_PREFIX.length());
+        }
+        else if(line.startsWith(OUTCOME_PREFIX))
+        {
+            final String parsedOutcome;
+            parsedOutcome = line.substring(OUTCOME_PREFIX.length());
+            
+            if("Won".equalsIgnoreCase(parsedOutcome) ||
+               "Lost".equalsIgnoreCase(parsedOutcome))
+            {
+                state.outcome = parsedOutcome;
+            }
+            else
+            {
+                System.err.println("Warning: Invalid outcome found: " +
+                                   parsedOutcome);
+                state.outcome = null;
+            }
+        }
+
+    }
+
+    /*
+     * Attempts to build a GameSessionRecord from the current parsing state and
+     * add it to the history list.
+     * Validates the state before creating the record.
+     *
+     * @param state The current parsing state containing data for one record.
+     * 
+     * @param gameHistory The list to add the created record to.
+     */
+    private void buildAndAddRecord(final ParsingState state,
+                                   final List<GameSessionRecord> gameHistory)
+    {
+        if(state.isValidForRecord())
+        {
+            final GameSessionRecord record = new GameSessionRecord(state.timestamp,
+                                                                   new ArrayList<>(state.roundDetails), // Create
+                                                                                                        // a
+                                                                                                        // copy
+                                                                                                        // of
+                                                                                                        // the
+                                                                                                        // list
+                                                                   state.truthScanInfo,
+                                                                   state.outcome);
+            gameHistory.add(record);
+        }
+        else
+        {
+            System.err.println("Warning: Incomplete game record found in history file. Skipping.");
+            // Log more details about the incomplete state if needed for
+            // debugging
+        }
+    }
 
     /**
      * Filters a list of game session records based on the desired outcome.
@@ -303,8 +423,8 @@ final class GameHistoryManager
      *                      Case-insensitive.
      * @return A new list containing only the records matching the filter.
      */
-    final List<GameSessionRecord> filterHistoryByOutcome(final List<GameSessionRecord> history,
-                                                          final String outcomeFilter)
+    List<GameSessionRecord> filterHistoryByOutcome(final List<GameSessionRecord> history,
+                                                   final String outcomeFilter)
     {
         final List<GameSessionRecord> filteredHistory;
 
@@ -318,5 +438,47 @@ final class GameHistoryManager
             }
         }
         return filteredHistory;
+    }
+
+    /**
+     * Validates the line.
+     * 
+     * @param line The line to validate.
+     */
+    private static void validateLine(final String line)
+    {
+        if(line == null || line.isEmpty())
+        {
+            throw new IllegalArgumentException("Line cannot be null or empty");
+        }
+    }
+
+    /**
+     * Validates the parsing state.
+     * 
+     * @param state The parsing state to validate.
+     */
+    private static void validateState(final ParsingState state)
+    {
+        if(state == null)
+        {
+            throw new IllegalArgumentException("State cannot be null");
+        }
+        if(state.timestamp == null)
+        {
+            throw new IllegalArgumentException("Timestamp cannot be null");
+        }
+        if(state.roundDetails == null || state.roundDetails.isEmpty())
+        {
+            throw new IllegalArgumentException("Round details cannot be null or empty");
+        }
+        if(state.truthScanInfo == null || state.truthScanInfo.isEmpty())
+        {
+            throw new IllegalArgumentException("Truth scan info cannot be null or empty");
+        }
+        if(state.outcome == null || state.outcome.isEmpty())
+        {
+            throw new IllegalArgumentException("Outcome cannot be null or empty");
+        }
     }
 }
