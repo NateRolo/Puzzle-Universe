@@ -159,5 +159,4 @@ public final class WordGameLauncher implements Playable
         System.out.println(question.getPrompt());
         answerValidator.validateAnswer(question.getExpectedAnswer());
     }
-
 }

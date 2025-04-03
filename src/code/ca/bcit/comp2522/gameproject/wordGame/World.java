@@ -230,7 +230,7 @@ final class World
      *
      * @return the number of countries
      */
-    final int getCountryCount()
+    int getCountryCount()
     {
         return countries.size();
     }
