@@ -34,35 +34,32 @@ public final class MastermindGame implements Replayable
     private static final int          ROUND_INCREMENT     = 1;
 
     private static final String SEPARATOR_LINE      = "----------------------------------------";
-    private static final String GAME_OVER_SEPARATOR = "=========== GAME OVER ============";
-    private static final String NEW_GAME_SEPARATOR  = "+++++++++++ NEW GAME +++++++++++";
-    private static final String HISTORY_SEPARATOR   = "*********** HISTORY ************";
 
     private static final String GAME_OVER_MESSAGE = "Game Over! The secret code was: %s";
-    private static final String WIN_MESSAGE       = "Congratulations! You won in %d rounds!";
-    private static final String WON_OUTCOME       = "Won";
-    private static final String LOST_OUTCOME      = "Lost";
+    private static final String WIN_MESSAGE       = "Congratulations! You won in %d round(s)!";
+    private static final String OUTCOME_WON       = "Won";
+    private static final String OUTCOME_LOST      = "Lost";
 
     private static final String RULES = """
-                                        === MASTERMIND GAME RULES ===
+                                        =========== MASTERMIND RULES ===========
                                         1. The computer will generate a secret code of 4 digits (1-6).
                                         2. You have 12 attempts to guess the code correctly.
                                         3. After each guess, you'll receive feedback:
                                            - Number of digits in the correct position
                                            - Number of correct digits in the wrong position
-
-                                        SPECIAL MECHANICS:
-                                        * Deceptive Rounds: Up to 3 rounds may give slightly altered feedback, it's up to you
+                                        
+                                        ----------SPECIAL MECHANICS-------------
+                                        - Deceptive Rounds: Up to 3 rounds may give slightly altered feedback, it's up to you
                                           to discern whether the feedback is truthful or not.
-                                        * Truth Scan: Once per game, you can reveal the true feedback of a
+                                        - Truth Scan: Once per game, you can reveal the true feedback of a
                                           previous round. Use this wisely!
-
-                                        HOW TO PLAY:
+                                        
+                                        -------------HOW TO PLAY----------------
                                         - Enter a 4-digit guess (digits 1-6).
                                         - Enter 't' to use your Truth Scan.
                                         - Enter 'g' to view a summary of your previous guesses.
 
-                                        EXAMPLE:
+                                        ---------------EXAMPLE------------------
                                         Secret Code: 1234
                                         Your Guess:  1356
                                         Feedback: Correct positions: 1, Misplaced: 1
@@ -193,22 +190,22 @@ public final class MastermindGame implements Replayable
 
             switch(choice)
             {
-                case HISTORY_OPTION_ALL -> {
-                    System.out.println("\n--- All Game History ---");
+                case HISTORY_OPTION_ALL -> {                                            
+                    System.out.println("\n-------------- All Games ---------------");
                     history = gameHistoryManager.loadGameHistory();
                     displayHistory(history);
                 }
                 case HISTORY_OPTION_WON -> {
-                    System.out.println("\n--- Won Games History ---");
+                    System.out.println("\n-------------- Games Won ---------------");
                     history = gameHistoryManager.loadGameHistory();
                     displayHistory(gameHistoryManager.filterHistoryByOutcome(history,
-                                                                             WON_OUTCOME));
+                                                                             OUTCOME_WON));
                 }
                 case HISTORY_OPTION_LOST -> {
-                    System.out.println("\n--- Lost Games History ---");
+                    System.out.println("\n-------------- Games Lost ---------------");
                     history = gameHistoryManager.loadGameHistory();
                     displayHistory(gameHistoryManager.filterHistoryByOutcome(history,
-                                                                             LOST_OUTCOME));
+                                                                             OUTCOME_LOST));
                 }
                 case HISTORY_OPTION_BACK -> {
                 }
@@ -258,7 +255,7 @@ public final class MastermindGame implements Replayable
      */
     private static void printHistorySubMenuOptions()
     {
-        System.out.println("\n" + HISTORY_SEPARATOR);
+        System.out.println("\n" + SEPARATOR_LINE);
         System.out.println("VIEW GAME HISTORY");
         System.out.println(SEPARATOR_LINE);
         System.out.println(HISTORY_OPTION_ALL + ". View All History");
@@ -283,9 +280,9 @@ public final class MastermindGame implements Replayable
         {
             for(final GameSessionRecord record : historyList)
             {
-                System.out.println(HISTORY_SEPARATOR);
+                System.out.println(SEPARATOR_LINE);
                 System.out.print(record.toString());
-                System.out.println(HISTORY_SEPARATOR);
+                System.out.println(SEPARATOR_LINE);
                 System.out.println();
             }
             System.out.println("End of history view.");
@@ -303,10 +300,11 @@ public final class MastermindGame implements Replayable
     {
         rounds     = new ArrayList<>();
         secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
+
+        System.out.println(secretCode); // code reveal for testing
         Round.resetDeceptiveRounds();
         TRUTH_SCANNER.resetTruthScanner();
         truthScanInfoForHistory = "Not Used";
-        System.out.println("\n" + NEW_GAME_SEPARATOR);
     }
 
     /*
@@ -363,7 +361,7 @@ public final class MastermindGame implements Replayable
     private void playRound()
     {
         final int roundNumber = rounds.size() + ROUND_INCREMENT;
-        System.out.printf("%n--- Round %d of %d ---%n",
+        System.out.printf("%nRound %d of %d%n",
                           roundNumber,
                           MAX_ROUNDS);
 
@@ -571,7 +569,7 @@ public final class MastermindGame implements Replayable
      */
     private void endGame()
     {
-        System.out.println("\n" + GAME_OVER_SEPARATOR);
+        System.out.println("\n" + SEPARATOR_LINE);
 
         final String        outcome;
         final LocalDateTime endTime = LocalDateTime.now();
@@ -579,7 +577,7 @@ public final class MastermindGame implements Replayable
         if(rounds.isEmpty())
         {
             System.out.println("Game ended without any guesses.");
-            outcome = LOST_OUTCOME;
+            outcome = OUTCOME_LOST;
         }
         else
         {
@@ -593,17 +591,17 @@ public final class MastermindGame implements Replayable
             {
                 System.out.printf(WIN_MESSAGE + "%n",
                                   roundsPlayed);
-                outcome = WON_OUTCOME;
+                outcome = OUTCOME_WON;
             }
             else
             {
                 System.out.printf(GAME_OVER_MESSAGE + "%n",
                                   secretCode);
-                outcome = LOST_OUTCOME;
+                outcome = OUTCOME_LOST;
             }
         }
 
-        System.out.println(GAME_OVER_SEPARATOR);
+        System.out.println(SEPARATOR_LINE);
 
         if(!rounds.isEmpty())
         {

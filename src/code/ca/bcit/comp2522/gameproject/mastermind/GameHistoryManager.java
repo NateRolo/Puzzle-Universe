@@ -139,7 +139,8 @@ final class GameHistoryManager
     private static final String TRUTH_SCAN_PREFIX = "Truth Scan: ";
     private static final String OUTCOME_PREFIX    = "Outcome: ";
 
-    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    // Use the standard ISO format which handles 'T' separator and fractional seconds
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
 
     /**
      * Represents the transient state while parsing a single game session record
