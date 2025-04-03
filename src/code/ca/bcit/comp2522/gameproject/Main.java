@@ -111,7 +111,12 @@ public final class Main
      */
     private static void printWelcomeMessage()
     {
-        System.out.println("Welcome to Nathan's Game Corner!\n" +
-                           "Choose one of the games below to start playing.");
+        System.out.println("""
+            
+                           ----------------------------------------
+                            WELCOME TO NATHAN'S GAME CORNER!
+                           ----------------------------------------
+                           Choose one of the games below to start playing.
+                           """);
     }
 }
