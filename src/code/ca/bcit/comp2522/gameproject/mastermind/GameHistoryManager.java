@@ -95,9 +95,12 @@ final class GameHistoryManager
         }
 
         /**
-         * Returns a string representation of the game session record.
+         * Returns a formatted string representation of the game session record.
+         * The string includes the timestamp in ISO date-time format, all round details
+         * with proper indentation, truth scan information (if available), and the game outcome.
+         * Each section is separated by newlines for better readability.
          *
-         * @return a string representation of the game session record
+         * @return a formatted multi-line string representation of the complete game session record
          */
         @Override
         public String toString()
