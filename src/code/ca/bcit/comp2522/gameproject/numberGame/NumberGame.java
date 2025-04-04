@@ -89,7 +89,7 @@ public final class NumberGame implements
         });
     }
 
-    /*
+    /**
      * Starts a new game by resetting the logic and updating the GUI.
      */
     @Override

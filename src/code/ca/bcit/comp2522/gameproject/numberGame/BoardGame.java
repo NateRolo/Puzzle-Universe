@@ -19,7 +19,7 @@ abstract class BoardGame
     static final int         EMPTY_CELL        = 0;
     static final int         INITIAL_VALUE     = 0;
 
-    static final int INVALID_NUMBER_SENTINEL = - 1;
+    
 
 
     private boolean      gameWon;

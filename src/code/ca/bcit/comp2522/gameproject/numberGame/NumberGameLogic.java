@@ -11,18 +11,23 @@ import java.util.Random;
  * @author Nathan O
  * @version 1.2 2025
  */
-final class NumberGameLogic extends BoardGame
+final class NumberGameLogic extends
+                            BoardGame
 
 {
-    private static final int         BOARD_SIZE        = 20;
-    private static final int RANGE_OFFSET      = 1;
-    private static final int UPPER_BOUND_SENTINEL = BoardGame.MAX_RANDOM_NUMBER +
+    private static final int BOARD_SIZE           = 20;
+    private static final int RANGE_OFFSET         = 1;
+
+    private static final int         NO_EMPTY_CELL_LEFT  = - 1;
+    private static final int NO_EMPTY_CELL_RIGHT = BoardGame.MAX_RANDOM_NUMBER +
                                                     1;
+                                                    
     private static final int NO_GAMES_PLAYED      = 0;
     private static final int POSITION_INCREMENT   = 1;
 
-    private       int    successfulPlacementsThisGame;
+    private int          successfulPlacementsThisGame;
     private final Random random;
+
     /**
      * Constructs a new NumberGameLogic instance.
      */
@@ -30,7 +35,30 @@ final class NumberGameLogic extends BoardGame
     {
         super(BOARD_SIZE);
         playOneGame();
-        this.random          = new Random();
+        this.random = new Random();
+    }
+
+    /**
+     * Initializes or resets the game state for a new round.
+     * Called by startNewGame and constructor.
+     */
+    @Override
+    void playOneGame()
+    {
+        super.playOneGame();
+        this.successfulPlacementsThisGame = INITIAL_VALUE;
+        this.currentNumber                = INITIAL_VALUE;
+    }
+
+    /**
+     * Returns a copy of the current game board.
+     *
+     * @return A copy of the board array.
+     */
+    @Override
+    int[] getBoard()
+    {
+        return super.getBoard();
     }
 
     /**
@@ -38,7 +66,7 @@ final class NumberGameLogic extends BoardGame
      *
      * @return The number of placements made in this game.
      */
-    public int getSuccessfulPlacementsThisGame()
+    int getSuccessfulPlacementsThisGame()
     {
         return this.successfulPlacementsThisGame;
     }
@@ -48,7 +76,7 @@ final class NumberGameLogic extends BoardGame
      *
      * @return the number of games played
      */
-    public int getGamesPlayed()
+    int getGamesPlayed()
     {
         return this.gamesPlayed;
     }
@@ -58,7 +86,7 @@ final class NumberGameLogic extends BoardGame
      *
      * @return the number of games won
      */
-    public int getGamesWon()
+    int getGamesWon()
     {
         return this.gamesWon;
     }
@@ -69,7 +97,7 @@ final class NumberGameLogic extends BoardGame
      *
      * @return the total number of placements
      */
-    public int getTotalPlacements()
+    int getTotalPlacements()
     {
         return this.totalPlacements;
     }
@@ -100,7 +128,7 @@ final class NumberGameLogic extends BoardGame
                               position,
                               this.successfulPlacementsThisGame,
                               this.totalPlacements);
-                              
+
             if(isBoardFull())
             {
                 setGameWon(true);
@@ -151,12 +179,11 @@ final class NumberGameLogic extends BoardGame
     /*
      * Finds the value of the nearest non-empty cell to the left of the given
      * position.
-     * Returns INVALID_NUMBER_SENTINEL if no non-empty cell is found to the
+     * Returns NO_EMPTY_CELL_LEFT if no non-empty cell is found to the
      * left.
      *
      * @param position The 0-based index from where to search leftwards.
-     * 
-     * @return The value of the left neighbor or INVALID_NUMBER_SENTINEL.
+     * @return The value of the left neighbor or NO_EMPTY_CELL_LEFT.
      */
     private int findLeftNeighborValue(final int position)
     {
@@ -167,17 +194,16 @@ final class NumberGameLogic extends BoardGame
                 return this.board[i]; // Found left neighbor
             }
         }
-        return INVALID_NUMBER_SENTINEL; // No left neighbor found
+        return NO_EMPTY_CELL_LEFT; // No left neighbor found
     }
 
     /*
      * Finds the value of the nearest non-empty cell to the right of the given
      * position.
-     * Returns UPPER_BOUND_SENTINEL if no non-empty cell is found to the right.
+     * Returns NO_EMPTY_CELL_RIGHT if no non-empty cell is found to the right.
      *
      * @param position The 0-based index from where to search rightwards.
-     * 
-     * @return The value of the right neighbor or UPPER_BOUND_SENTINEL.
+     * @return The value of the right neighbor or NO_EMPTY_CELL_RIGHT.
      */
     private int findRightNeighborValue(final int position)
     {
@@ -188,19 +214,7 @@ final class NumberGameLogic extends BoardGame
                 return this.board[i];
             }
         }
-        return UPPER_BOUND_SENTINEL;
-    }
-
-    /**
-     * Initializes or resets the game state for a new round.
-     * Called by startNewGame and constructor.
-     */
-    @Override
-    void playOneGame()
-    {
-        super.playOneGame();
-        this.successfulPlacementsThisGame = INITIAL_VALUE;
-        this.currentNumber                = INITIAL_VALUE;
+        return NO_EMPTY_CELL_RIGHT;
     }
 
     /**
@@ -239,7 +253,9 @@ final class NumberGameLogic extends BoardGame
             return true;
         }
 
-        final boolean canPlace = canPlaceCurrentNumber();
+        final boolean canPlace;
+        canPlace = canPlaceCurrentNumber();
+
         if(!canPlace)
         {
             System.out.println("[Logic] Game Over check: Cannot place current number.");
@@ -250,12 +266,12 @@ final class NumberGameLogic extends BoardGame
 
     /**
      * Displays the current score statistics to the console.
-     * 
      * The statistics include:
      * - Total number of games played
      * - Number of games won and lost
      * - Total successful number placements across all games
-     * - Average number of placements per game (if at least one game has been completed)
+     * - Average number of placements per game (if at least one game has been
+     * completed)
      */
     void showScore()
     {
@@ -265,7 +281,9 @@ final class NumberGameLogic extends BoardGame
         System.out.printf("Games Won: %d%n",
                           this.gamesWon);
 
-        final int gamesLost = this.gamesPlayed - this.gamesWon;
+        final int gamesLost;
+        gamesLost = this.gamesPlayed - this.gamesWon;
+
         System.out.printf("Games Lost: %d%n",
                           gamesLost);
         System.out.printf("Total Successful Placements (all games): %d%n",
@@ -274,8 +292,7 @@ final class NumberGameLogic extends BoardGame
         if(this.gamesPlayed > NO_GAMES_PLAYED)
         {
             final double avgPlacements;
-            avgPlacements = (double)this.totalPlacements /
-                                         this.gamesPlayed;
+            avgPlacements = (double)this.totalPlacements / this.gamesPlayed;
             System.out.printf("Average Placements per Game: %.2f%n",
                               avgPlacements);
         }
@@ -336,16 +353,7 @@ final class NumberGameLogic extends BoardGame
         return true;
     }
 
-    /**
-     * Returns a copy of the current game board.
-     *
-     * @return A copy of the board array.
-     */
-    @Override
-    int[] getBoard()
-    {
-        return super.getBoard();
-    }
+    
 
     /**
      * Generates a random number within the defined range [MIN, MAX].
