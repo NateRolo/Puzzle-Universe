@@ -23,7 +23,7 @@ import java.util.Map;
  */
 final class World
 {
-    private final Map<String, Country> countries;
+    private final Map<String, Country> countriesMap;
 
     // Directory constants
     private static final String DIRECTORY_SRC       = "src";
@@ -33,13 +33,13 @@ final class World
     private static final String COUNTRY_CAPITAL_SEPARATOR = ":";
     private static final int    FACTS_PER_COUNTRY         = 3;
     private static final int    LINES_TO_SKIP_AFTER_FACTS = 3;
-    private static final int    COUNTRY_NAME_INDEX        = 0;
-    private static final int    CAPITAL_NAME_INDEX        = 1;
+    private static final int    INDEX_NAME_COUNTRY        = 0;
+    private static final int    INDEX_NAME_CAPITAL        = 1;
     private static final int    FIRST_FACT_OFFSET         = 1;
 
-    private static final int FIRST_FACT_INDEX  = 0;
-    private static final int SECOND_FACT_INDEX = 1;
-    private static final int THIRD_FACT_INDEX  = 2;
+    private static final int INDEX_FACT_FIRST  = 0;
+    private static final int INDEX_FACT_SECOND = 1;
+    private static final int INDEX_FACT_THIRD  = 2;
 
     // Update RESOURCE_FILES to contain only filenames
     private static final String[] RESOURCE_FILES = {"a.txt",
@@ -72,7 +72,7 @@ final class World
      */
     World()
     {
-        this.countries = new HashMap<>();
+        this.countriesMap = new HashMap<>();
         try
         {
             loadCountriesFromAllFiles();
@@ -84,6 +84,73 @@ final class World
     }
 
     /**
+     * Adds a country to the world.
+     * Validates the country object before adding it to the countries map.
+     *
+     * @param country the country to add
+     */
+    void addCountry(final Country country)
+    {
+        validateCountryObject(country);
+
+        this.countriesMap.put(country.getCountryName(),
+                           country);
+    }
+
+    /**
+     * Gets a country by its name.
+     * Validates the country name before attempting to retrieve it.
+     *
+     * @param countryName the name of the country to retrieve
+     * @return the Country object if found, null otherwise
+     */
+    Country getCountry(final String countryName)
+    {
+        validateCountryName(countryName);
+
+        final Country requestedCountry;
+        requestedCountry = countriesMap.get(countryName);
+
+        return requestedCountry;
+    }
+
+    /**
+     * Returns a random Country from the list of available countries.
+     * Creates a list from the map values and selects a random index.
+     *
+     * @return A randomly selected Country object
+     */
+    Country getRandomCountry()
+    {
+        final List<Country> countryList;
+        final int           randomIndex;
+        final Country randomCountry;
+
+        countryList = new ArrayList<>(countriesMap.values());
+        randomIndex = (int)(Math.random() * countryList.size());
+        randomCountry = countryList.get(randomIndex);
+
+        return randomCountry;
+    }
+
+    /**
+     * Checks if a country exists in the world.
+     * Validates the country name before checking for its existence.
+     *
+     * @param countryName the name of the country to check
+     * @return true if the country exists, false otherwise
+     */
+    boolean hasCountry(final String countryName)
+    {
+        validateCountryName(countryName);
+
+        final boolean countryExists;
+        countryExists = countriesMap.containsKey(countryName);
+
+        return countryExists;
+    }
+
+    /*
      * Loads countries from all resource files defined in RESOURCE_FILES.
      * Iterates through each file path and calls loadCountriesFromFile for each
      * one.
@@ -105,7 +172,7 @@ final class World
         }
     }
 
-    /**
+    /*
      * Loads countries from a single resource file.
      * Validates the file path, reads lines from the resource, and processes
      * them.
@@ -117,8 +184,8 @@ final class World
         try
         {
             validateFilePath(filePath);
-            final List<String> lines;
 
+            final List<String> lines;
             lines = FileManager.readLinesFromResource(filePath.toString());
             processFileLines(lines);
         }
@@ -128,9 +195,19 @@ final class World
         }
     }
 
-    /**
+    /*
      * Processes lines from a file to create Country objects.
      * Parses country names, capital names, and facts from the file content.
+     * 
+     * The method expects a specific file format where:
+     * - Each country entry starts with a line containing "Country:Capital"
+     * - This is followed by three lines containing facts about the country
+     * - Empty lines are skipped
+     * - After processing a country and its facts, several lines are skipped
+     *   to position at the next country entry
+     * 
+     * Each valid country entry results in a new Country object being created
+     * and added to the world's collection of countries.
      * 
      * @param lines the list of strings read from a resource file
      */
@@ -143,7 +220,6 @@ final class World
         // Iterate through each line in the file
         for(int lineIndex = 0; lineIndex < lines.size(); lineIndex++)
         {
-
             final String  line;
             final Country country;
 
@@ -159,8 +235,8 @@ final class World
 
                 // Split the line into country name and capital city
                 parts       = line.split(COUNTRY_CAPITAL_SEPARATOR);
-                countryName = parts[COUNTRY_NAME_INDEX].trim();
-                capitalName = parts[CAPITAL_NAME_INDEX].trim();
+                countryName = parts[INDEX_NAME_COUNTRY].trim();
+                capitalName = parts[INDEX_NAME_CAPITAL].trim();
                 facts       = new String[FACTS_PER_COUNTRY];
 
                 // Extract the three facts that follow the country/capital line
@@ -168,7 +244,6 @@ final class World
                                        FACTS_PER_COUNTRY; factIndex++)
                 {
                     // Calculate the line index for each fact and check if it's
-                    // within bounds
                     if(lineIndex + factIndex + FIRST_FACT_OFFSET < lines.size())
                     {
                         // Extract and trim the fact from the appropriate line
@@ -182,72 +257,13 @@ final class World
                 // Create a new Country object with the extracted data
                 country = new Country(countryName,
                                       capitalName,
-                                      facts[FIRST_FACT_INDEX],
-                                      facts[SECOND_FACT_INDEX],
-                                      facts[THIRD_FACT_INDEX]);
+                                      facts[INDEX_FACT_FIRST],
+                                      facts[INDEX_FACT_SECOND],
+                                      facts[INDEX_FACT_THIRD]);
                 addCountry(country);
                 lineIndex += LINES_TO_SKIP_AFTER_FACTS;
             }
         }
-    }
-
-    /**
-     * Adds a country to the world.
-     * Validates the country object before adding it to the countries map.
-     *
-     * @param country the country to add
-     */
-    final void addCountry(final Country country)
-    {
-        validateCountry(country);
-
-        this.countries.put(country.getCountryName(),
-                           country);
-    }
-
-    /**
-     * Gets a country by its name.
-     * Validates the country name before attempting to retrieve it.
-     *
-     * @param name the name of the country to retrieve
-     * @return the Country object if found, null otherwise
-     */
-    final Country getCountry(final String name)
-    {
-        validateCountryName(name);
-
-        return countries.get(name);
-    }
-
-    /**
-     * Returns a random Country from the list of available countries.
-     * Creates a list from the map values and selects a random index.
-     *
-     * @return A randomly selected Country object
-     */
-    final Country getRandomCountry()
-    {
-        final List<Country> countryList;
-        final int           randomIndex;
-
-        countryList = new ArrayList<>(countries.values());
-        randomIndex = (int)(Math.random() * countryList.size());
-
-        return countryList.get(randomIndex);
-    }
-
-    /**
-     * Checks if a country exists in the world.
-     * Validates the country name before checking for its existence.
-     *
-     * @param name the name of the country to check
-     * @return true if the country exists, false otherwise
-     */
-    boolean hasCountry(final String name)
-    {
-        validateCountryName(name);
-
-        return countries.containsKey(name);
     }
 
     /**
@@ -258,7 +274,10 @@ final class World
      */
     int getCountryCount()
     {
-        return countries.size();
+        final int countryCount;
+        countryCount = countriesMap.size();
+
+        return countryCount;
     }
 
     /*
@@ -286,7 +305,7 @@ final class World
      * 
      * @param country the Country object to validate
      */
-    private static void validateCountry(final Country country)
+    private static void validateCountryObject(final Country country)
     {
         if(country == null)
         {
