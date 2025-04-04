@@ -34,18 +34,18 @@ final class Score
     private static final int GAMES_PLAYED_MIN = 0;
     private static final int GUESS_COUNT_MIN  = 0;
 
-    private static final int CORRECT_FIRST_GUESS_SCORE  = 2;
-    private static final int CORRECT_SECOND_GUESS_SCORE = 1;
+    private static final int SCORE_CORRECT_FIRST_GUESS  = 2;
+    private static final int SCORE_CORRECT_SECOND_GUESS = 1;
 
     // Constants for parsing score files
     private static final String DATE_TIME_PREFIX       = "Date and Time:";
     private static final int    LINE_PARSE_SPLIT_LIMIT = 2;
-    private static final int    PARSED_VALUE_INDEX     = 1;
-    private static final int    START_INDEX            = 0;
-    private static final int    GAMES_PLAYED_OFFSET    = 1;
-    private static final int    CORRECT_FIRST_OFFSET   = 2;
-    private static final int    CORRECT_SECOND_OFFSET  = 3;
-    private static final int    INCORRECT_OFFSET       = 4;
+    private static final int    INDEX_PARSED_VALUE     = 1;
+    private static final int    INDEX_START            = 0;
+    private static final int    OFFSET_GAMES_PLAYED    = 1;
+    private static final int    OFFSET_CORRECT_FIRST   = 2;
+    private static final int    OFFSET_CORRECT_SECOND  = 3;
+    private static final int    OFFSET_INCORRECT       = 4;
 
     private static final String DIR_SRC = "src";
     private static final String DIR_RES = "res";
@@ -54,7 +54,7 @@ final class Score
     private int numCorrectFirstAttempt;
     private int numCorrectSecondAttempt;
     private int numIncorrectTwoAttempts;
-    private int score;
+    private int totalPoints;
 
     final String formattedDateTime;
 
@@ -67,8 +67,8 @@ final class Score
      * </p>
      * <p>
      * The score is calculated as follows:
-     * - Each correct first attempt is worth {@value #CORRECT_FIRST_GUESS_SCORE} points
-     * - Each correct second attempt is worth {@value #CORRECT_SECOND_GUESS_SCORE} point
+     * - Each correct first attempt is worth {@value #SCORE_CORRECT_FIRST_GUESS} points
+     * - Each correct second attempt is worth {@value #SCORE_CORRECT_SECOND_GUESS} point
      * - Incorrect attempts do not contribute to the score but are tracked for statistics
      * </p>
      *
@@ -99,8 +99,8 @@ final class Score
         numCorrectSecondAttempt = numCorrectSecondGuess;
         numIncorrectTwoAttempts = twoIncorrectAttempts;
 
-        this.score = (numCorrectFirstGuess * CORRECT_FIRST_GUESS_SCORE) +
-                     (numCorrectSecondGuess * CORRECT_SECOND_GUESS_SCORE);
+        this.totalPoints = (numCorrectFirstGuess * SCORE_CORRECT_FIRST_GUESS) +
+                     (numCorrectSecondGuess * SCORE_CORRECT_SECOND_GUESS);
     }
 
     /**
@@ -176,7 +176,7 @@ final class Score
      */
     int getScore()
     {
-        return score;
+        return totalPoints;
     }
 
     /**
@@ -194,7 +194,7 @@ final class Score
     void incrementNumCorrectFirstAttempt()
     {
         this.numCorrectFirstAttempt++;
-        this.score += CORRECT_FIRST_GUESS_SCORE;
+        this.totalPoints += SCORE_CORRECT_FIRST_GUESS;
     }
 
     /**
@@ -204,7 +204,7 @@ final class Score
     void incrementNumCorrectSecondAttempt()
     {
         this.numCorrectSecondAttempt++;
-        this.score += CORRECT_SECOND_GUESS_SCORE;
+        this.totalPoints += SCORE_CORRECT_SECOND_GUESS;
     }
 
     /**
@@ -215,38 +215,7 @@ final class Score
         this.numIncorrectTwoAttempts++;
     }
 
-    /**
-     * Formats a Score object into a list of strings for display or storage.
-     * <p>
-     * This method converts all the score statistics (date/time, games played,
-     * correct attempts, incorrect attempts, and total score) into a formatted
-     * list of strings. Each string represents one line of score information
-     * with appropriate labels.
-     * </p>
-     *
-     * @param score the Score object to format, must not be null
-     * @return a List of strings representing the formatted score information,
-     *         with each element containing one aspect of the score data
-     * @throws IllegalArgumentException if the score parameter is null
-     */
-    private static List<String> formatScore(final Score score)
-    {
-        validateScore(score);
-
-        final List<String> scoreAsList;
-        scoreAsList = new ArrayList<>();
-
-        scoreAsList.add("Date and Time: " + score.formattedDateTime);
-        scoreAsList.add("Games Played: " + score.numGamesPlayed);
-        scoreAsList.add("Correct First Attempts: " +
-                        score.numCorrectFirstAttempt);
-        scoreAsList.add("Correct Second Attempts: " +
-                        score.numCorrectSecondAttempt);
-        scoreAsList.add("Incorrect Attempts: " + score.numIncorrectTwoAttempts);
-        scoreAsList.add("Score: " + score.score + " points");
-
-        return scoreAsList;
-    }
+   
 
     /**
      * Appends a Score object to a file in the resources directory.
@@ -285,7 +254,10 @@ final class Score
      */
     void printScore()
     {
-        formatScore(this).forEach(System.out::println);
+        final List<String> scoreList;
+        scoreList = formatScore(this);
+
+        scoreList.forEach(System.out::println);
     }
 
     /**
@@ -318,30 +290,31 @@ final class Score
 
         validateList(scoresLines);
 
-        scores = IntStream.range(START_INDEX,
+        // parse file and create score object from stream
+        scores = IntStream.range(INDEX_START,
                                  scoresLines.size())
                           .filter(startIndex -> scoresLines.get(startIndex)
                                                            .startsWith(DATE_TIME_PREFIX))
                           .mapToObj(startIndex -> new Score(LocalDateTime.parse(scoresLines.get(startIndex)
                                                                                            .split(": ",
-                                                                                                  LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX],
+                                                                                                  LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE],
                                                                                 formatter),
                                                             Integer.parseInt(scoresLines.get(startIndex +
-                                                                                             GAMES_PLAYED_OFFSET)
+                                                                                             OFFSET_GAMES_PLAYED)
                                                                                         .split(": ",
-                                                                                               LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                                                               LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE]),
                                                             Integer.parseInt(scoresLines.get(startIndex +
-                                                                                             CORRECT_FIRST_OFFSET)
+                                                                                             OFFSET_CORRECT_FIRST)
                                                                                         .split(": ",
-                                                                                               LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                                                               LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE]),
                                                             Integer.parseInt(scoresLines.get(startIndex +
-                                                                                             CORRECT_SECOND_OFFSET)
+                                                                                             OFFSET_CORRECT_SECOND)
                                                                                         .split(": ",
-                                                                                               LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX]),
+                                                                                               LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE]),
                                                             Integer.parseInt(scoresLines.get(startIndex +
-                                                                                             INCORRECT_OFFSET)
+                                                                                             OFFSET_INCORRECT)
                                                                                         .split(": ",
-                                                                                               LINE_PARSE_SPLIT_LIMIT)[PARSED_VALUE_INDEX])))
+                                                                                               LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE])))
                           .toList();
         return scores;
     }
@@ -375,7 +348,9 @@ final class Score
 
         for(final Score score : allScores)
         {
-            final double average = calculateAverageScore(score);
+            final double average;
+            average = calculateAverageScore(score);
+
             if(average > highestAverage)
             {
                 highestAverage = average;
@@ -406,24 +381,6 @@ final class Score
         }
     }
 
-    /*
-     * Calculates the average score per game.
-     *
-     * @param score the Score object to calculate the average for
-     * 
-     * @return the average score per game
-     */
-    private static double calculateAverageScore(final Score score)
-    {
-        validateScore(score);
-
-        if(score.numGamesPlayed == DEFAULT_GAMES_PLAYED)
-        {
-            return DEFAULT_SCORE;
-        }
-        return (double)score.score / score.numGamesPlayed;
-    }
-
     /**
      * Returns a string representation of this Score object.
      *
@@ -447,6 +404,57 @@ final class Score
 
         scoreAsString = builder.toString();
         return scoreAsString;
+    }
+
+
+    /*
+     * Formats a Score object into a list of strings for display or storage.
+     * <p>
+     * This method converts all the score statistics (date/time, games played,
+     * correct attempts, incorrect attempts, and total score) into a formatted
+     * list of strings. Each string represents one line of score information
+     * with appropriate labels.
+     * </p>
+     *
+     * @param score the Score object to format, must not be null
+     * @return a List of strings representing the formatted score information,
+     *         with each element containing one aspect of the score data
+     */
+    private static List<String> formatScore(final Score score)
+    {
+        validateScore(score);
+
+        final List<String> scoreAsList;
+        scoreAsList = new ArrayList<>();
+
+        scoreAsList.add("Date and Time: " + score.formattedDateTime);
+        scoreAsList.add("Games Played: " + score.numGamesPlayed);
+        scoreAsList.add("Correct First Attempts: " +
+                        score.numCorrectFirstAttempt);
+        scoreAsList.add("Correct Second Attempts: " +
+                        score.numCorrectSecondAttempt);
+        scoreAsList.add("Incorrect Attempts: " + score.numIncorrectTwoAttempts);
+        scoreAsList.add("Score: " + score.totalPoints + " points");
+
+        return scoreAsList;
+    }
+
+    /*
+     * Calculates the average score per game.
+     *
+     * @param score the Score object to calculate the average for
+     * 
+     * @return the average score per game
+     */
+    private static double calculateAverageScore(final Score score)
+    {
+        validateScore(score);
+
+        if(score.numGamesPlayed == DEFAULT_GAMES_PLAYED)
+        {
+            return DEFAULT_SCORE;
+        }
+        return (double)score.totalPoints / score.numGamesPlayed;
     }
 
     /*
@@ -527,7 +535,7 @@ final class Score
         }
     }
 
-    /**
+    /*
      * Validates that a list is not null or empty.
      *
      * @param list the list to validate
