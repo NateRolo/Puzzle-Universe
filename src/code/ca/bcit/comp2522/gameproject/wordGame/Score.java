@@ -47,6 +47,9 @@ final class Score
     private static final int    CORRECT_SECOND_OFFSET  = 3;
     private static final int    INCORRECT_OFFSET       = 4;
 
+    private static final String DIR_SRC = "src";
+    private static final String DIR_RES = "res";
+
     private int numGamesPlayed;
     private int numCorrectFirstAttempt;
     private int numCorrectSecondAttempt;
@@ -265,7 +268,7 @@ final class Score
         final String filePathString;
         final List<String> scoreAsList;
 
-        filePath = Paths.get("src", "res", file);
+        filePath = Paths.get(DIR_SRC, DIR_RES, file);
         filePathString = filePath.toString();
 
         validateScore(score);
@@ -294,18 +297,24 @@ final class Score
      * and incorrect attempts, then creates a new Score object with these values.
      * </p>
      *
-     * @param filePath the path to the file containing scores to be read
+     * @param file the path to the file containing scores to be read
      * @return a List of Score objects constructed from the file data
      * @throws IOException if there is an error reading from the file or if the file format is invalid.
      */
-    static List<Score> readScoresFromFile(final String filePath) throws IOException
+    static List<Score> readScoresFromFile(final String file) throws IOException
     {
-        validateFilePath(filePath);
+        final Path filePath;
+        final String filePathString;
+
+        filePath = Paths.get(DIR_SRC, DIR_RES, file);
+        filePathString = filePath.toString();
+
+        validateFilePath(filePathString);
 
         final List<String> scoresLines;
         final List<Score>  scores;
 
-        scoresLines = FileManager.readLinesFromResource(filePath);
+        scoresLines = FileManager.readLinesFromResource(filePathString);
 
         validateList(scoresLines);
 
