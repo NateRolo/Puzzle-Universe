@@ -9,6 +9,7 @@ import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 import ca.bcit.comp2522.gameproject.Replayable;
+import ca.bcit.comp2522.gameproject.RoundBased;
 import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
 import ca.bcit.comp2522.gameproject.mastermind.UIHandler.HistoryMenuOption;
 import ca.bcit.comp2522.gameproject.mastermind.UIHandler.MainMenuOption;
@@ -25,7 +26,8 @@ import ca.bcit.comp2522.gameproject.mastermind.UIHandler.MainMenuOption;
  * @version 1.4 2025
  */
 public final class MastermindGame implements
-                                  Replayable
+                                  Replayable,
+                                  RoundBased
 {
     private static final int          MAX_ROUNDS    = 12;
     private static final TruthScanner TRUTH_SCANNER = new TruthScanner();
@@ -185,7 +187,7 @@ public final class MastermindGame implements
     {
         while(!isGameOver())
         {
-            playRound();
+            playOneRound();
         }
     }
 
@@ -193,7 +195,8 @@ public final class MastermindGame implements
      * Plays a single round of the game.
      * Handles player input (guess, scan, summary) and processes the guess.
      */
-    private void playRound()
+    @Override
+    public void playOneRound()
     {
         final int roundNumber = rounds.size() + ROUND_INCREMENT;
         uiHandler.displayRoundHeader(roundNumber,

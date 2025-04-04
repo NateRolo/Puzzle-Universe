@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import ca.bcit.comp2522.gameproject.Replayable;
+import ca.bcit.comp2522.gameproject.RoundBased;
 
 /**
  * Launcher for the Word Game that implements the Playable interface.
@@ -17,7 +18,8 @@ import ca.bcit.comp2522.gameproject.Replayable;
  * @version 1.0 2025
  */
 public final class WordGame implements
-                            Replayable
+                            Replayable,
+                            RoundBased
 {
     private static final int QUESTIONS_PER_GAME    = 10;
     private static final int QUESTION_TYPES        = 3;
@@ -85,7 +87,7 @@ public final class WordGame implements
         {
             System.out.printf("----------Question %d/10----------\n",
                               questionsAsked);
-            askQuestion();
+            playOneRound();
         }
     }
 
@@ -144,7 +146,8 @@ public final class WordGame implements
      * question, and processes the player's response.
      * </p>
      */
-    private void askQuestion()
+    @Override
+    public void playOneRound()
     {
         final Country thisCountry;
         final int     questionStyle;
