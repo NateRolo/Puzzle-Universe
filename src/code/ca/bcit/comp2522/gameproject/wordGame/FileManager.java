@@ -51,7 +51,10 @@ final class FileManager
 
         if(Files.exists(path))
         {
-            return Files.readAllLines(path);
+            final List<String> allLines;
+            allLines = Files.readAllLines(path);
+
+            return allLines;
         }
 
         lines       = new ArrayList<>();
