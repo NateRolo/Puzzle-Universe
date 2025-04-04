@@ -18,7 +18,7 @@ import ca.bcit.comp2522.gameproject.Replayable;
  * Provides the Graphical User Interface (GUI) for the 20-Number Challenge game.
  * Handles user interaction, displays the game board and status, and interacts
  * with the NumberGameLogic class for game state management and rules.
- * Implements the Playable interface to be launchable from a main menu.
+ * Implements the Replayable interface to be launchable from a main menu.
  *
  * @author Nathan O
  * @version 1.1 2025

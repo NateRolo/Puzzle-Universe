@@ -20,9 +20,9 @@ import java.util.Scanner;
 public final class Main
 {
     private static final Scanner  scan;
-    private static final Playable wordGame;
-    private static final Playable numberGame;
-    private static final Playable mastermindGame;
+    private static final Replayable wordGame;
+    private static final Replayable numberGame;
+    private static final Replayable mastermindGame;
 
     private static final String CHOICE_WORD_GAME   = "W";
     private static final String CHOICE_NUMBER_GAME = "N";
