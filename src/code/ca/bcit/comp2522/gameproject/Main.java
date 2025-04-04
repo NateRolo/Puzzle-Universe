@@ -103,11 +103,13 @@ public final class Main
                    .append(MENU_MASTERMIND)
                    .append("Press ")
                    .append(CHOICE_QUIT)
-                   .append(" to quit");
+                   .append(" to quit")
+                   .append("\n\n")
+                   .append("Enter your choice: ");
 
         menu = menuBuilder.toString();
 
-        System.out.println(menu);
+        System.out.print(menu);
     }
 
     /*
