@@ -27,6 +27,8 @@ public final class WordGame implements
     private static final String OPTION_YES = "yes";
     private static final String OPTION_NO = "no";
 
+    private static final String FILE_SCORE = "score.txt";
+
     static final int         QUESTION_CAPITAL_CITY  = 0;
     static final int         QUESTION_COUNTRY       = 1;
     static final int         QUESTION_FACT          = 2;
@@ -138,9 +140,9 @@ public final class WordGame implements
     {
         try
         {
-            Score.displayHighScoreMessage(currentScore);
+            Score.displayHighScoreMessage(currentScore, FILE_SCORE);
             Score.appendScoreToFile(currentScore,
-                                    "score.txt");
+                                    FILE_SCORE);
         }
         catch(final IOException e)
         {
@@ -173,8 +175,8 @@ public final class WordGame implements
             }
         } while(!userChoice.equalsIgnoreCase(OPTION_YES) && !userChoice.equalsIgnoreCase(OPTION_NO));
 
-
-        willPlayAgain = userChoice.equalsIgnoreCase(OPTION_NO);
+    
+        willPlayAgain = userChoice.equalsIgnoreCase(OPTION_YES);
         return willPlayAgain;
     }
 }

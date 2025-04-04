@@ -59,24 +59,33 @@ final class Score
     final String formattedDateTime;
 
     /**
-     * Constructs a Score object with specific values for game performance tracking.
+     * Constructs a Score object with specific values for game performance
+     * tracking.
      * <p>
-     * This constructor initializes a Score object with detailed statistics about a player's
+     * This constructor initializes a Score object with detailed statistics
+     * about a player's
      * performance in the word game. It calculates the
      * total score based on the weighted values of correct guesses.
      * </p>
      * <p>
      * The score is calculated as follows:
-     * - Each correct first attempt is worth {@value #SCORE_CORRECT_FIRST_GUESS} points
-     * - Each correct second attempt is worth {@value #SCORE_CORRECT_SECOND_GUESS} point
-     * - Incorrect attempts do not contribute to the score but are tracked for statistics
+     * - Each correct first attempt is worth {@value #SCORE_CORRECT_FIRST_GUESS}
+     * points
+     * - Each correct second attempt is worth
+     * {@value #SCORE_CORRECT_SECOND_GUESS} point
+     * - Incorrect attempts do not contribute to the score but are tracked for
+     * statistics
      * </p>
      *
-     * @param dateTime              the date and time when the score was recorded
+     * @param dateTime              the date and time when the score was
+     *                              recorded
      * @param gamesPlayed           the number of games played
-     * @param numCorrectFirstGuess  the number of correct answers on first attempt
-     * @param numCorrectSecondGuess the number of correct answers on second attempt
-     * @param twoIncorrectAttempts  the number of questions with two incorrect attempts
+     * @param numCorrectFirstGuess  the number of correct answers on first
+     *                              attempt
+     * @param numCorrectSecondGuess the number of correct answers on second
+     *                              attempt
+     * @param twoIncorrectAttempts  the number of questions with two incorrect
+     *                              attempts
      */
     Score(final LocalDateTime dateTime,
           final int gamesPlayed,
@@ -100,13 +109,15 @@ final class Score
         numIncorrectTwoAttempts = twoIncorrectAttempts;
 
         this.totalPoints = (numCorrectFirstGuess * SCORE_CORRECT_FIRST_GUESS) +
-                     (numCorrectSecondGuess * SCORE_CORRECT_SECOND_GUESS);
+                           (numCorrectSecondGuess * SCORE_CORRECT_SECOND_GUESS);
     }
 
     /**
-     * Constructs a new Score object to track performance for a new game session.
+     * Constructs a new Score object to track performance for a new game
+     * session.
      * <p>
-     * This constructor delegates to the main constructor, providing default values
+     * This constructor delegates to the main constructor, providing default
+     * values
      * and the current {@link LocalDateTime}.
      * </p>
      */
@@ -215,14 +226,16 @@ final class Score
         this.numIncorrectTwoAttempts++;
     }
 
-   
 
     /**
      * Appends a Score object to a file in the resources directory.
      * <p>
-     * This method takes a Score object and converts it to a formatted list of strings
-     * using the formatScore method, then writes these strings to the specified file.
-     * The file is located in the "src/res" directory. If the file doesn't exist,
+     * This method takes a Score object and converts it to a formatted list of
+     * strings
+     * using the formatScore method, then writes these strings to the specified
+     * file.
+     * The file is located in the "src/res" directory. If the file doesn't
+     * exist,
      * it will be created; if it exists, the score will be appended to it.
      * </p>
      *
@@ -233,16 +246,18 @@ final class Score
     static void appendScoreToFile(final Score score,
                                   final String file) throws IOException
     {
-        final Path filePath;
-        final String filePathString;
+        final Path         filePath;
+        final String       filePathString;
         final List<String> scoreAsList;
 
-        filePath = Paths.get(DIR_SRC, DIR_RES, file);
+        filePath       = Paths.get(DIR_SRC,
+                                   DIR_RES,
+                                   file);
         filePathString = filePath.toString();
 
         validateScore(score);
-        validateFilePath(filePathString);
-        
+        validateFileString(filePathString);
+
         scoreAsList = formatScore(score);
 
         FileManager.writeToResource(scoreAsList,
@@ -263,25 +278,32 @@ final class Score
     /**
      * Reads scores from a file and returns them as a list of Score objects.
      * <p>
-     * This method parses the file content line by line, looking for score entries
-     * that start with the date/time prefix. For each score entry found, it extracts
-     * the date/time, games played, correct first attempts, correct second attempts,
-     * and incorrect attempts, then creates a new Score object with these values.
+     * This method parses the file content line by line, looking for score
+     * entries
+     * that start with the date/time prefix. For each score entry found, it
+     * extracts
+     * the date/time, games played, correct first attempts, correct second
+     * attempts,
+     * and incorrect attempts, then creates a new Score object with these
+     * values.
      * </p>
      *
      * @param file the path to the file containing scores to be read
      * @return a List of Score objects constructed from the file data
-     * @throws IOException if there is an error reading from the file or if the file format is invalid.
+     * @throws IOException if there is an error reading from the file or if the
+     *                     file format is invalid.
      */
     static List<Score> readScoresFromFile(final String file) throws IOException
     {
-        final Path filePath;
+        final Path   filePath;
         final String filePathString;
 
-        filePath = Paths.get(DIR_SRC, DIR_RES, file);
+        filePath       = Paths.get(DIR_SRC,
+                                   DIR_RES,
+                                   file);
         filePathString = filePath.toString();
 
-        validateFilePath(filePathString);
+        validateFileString(filePathString);
 
         final List<String> scoresLines;
         final List<Score>  scores;
@@ -320,20 +342,28 @@ final class Score
     }
 
     /**
-     * Displays a message comparing the current score with the highest score from previous games.
+     * Displays a message comparing the current score with the highest score
+     * from previous games.
      * <p>
-     * This method reads all scores from the score file, calculates the average score per game
-     * for each record, and determines if the current score is a new high score. It then displays
-     * an appropriate congratulatory message if the player achieved a new high score, or informs
+     * This method reads all scores from the score file, calculates the average
+     * score per game
+     * for each record, and determines if the current score is a new high score.
+     * It then displays
+     * an appropriate congratulatory message if the player achieved a new high
+     * score, or informs
      * them of the existing high score if they did not.
      * </p>
      *
-     * @param currentScore the Score object to compare against historical high scores
-     * @throws IOException if there is an error reading from the score file or if the file cannot be accessed
+     * @param currentScore the Score object to compare against historical high
+     *                     scores
+     * @throws IOException if there is an error reading from the score file or
+     *                     if the file cannot be accessed
      */
-    static void displayHighScoreMessage(final Score currentScore) throws IOException
+    static void displayHighScoreMessage(final Score currentScore,
+                                        final String fileString) throws IOException
     {
         validateScore(currentScore);
+        validateFileString(fileString);
 
         final List<Score> allScores;
         final double      currentAverage;
@@ -341,7 +371,7 @@ final class Score
         Score  highestScore;
         double highestAverage;
 
-        allScores      = readScoresFromFile("score.txt");
+        allScores      = readScoresFromFile(fileString);
         currentAverage = calculateAverageScore(currentScore);
         highestScore   = null;
         highestAverage = DEFAULT_AVERAGE;
@@ -372,6 +402,12 @@ final class Score
             {
                 System.out.println("!");
             }
+        }
+        else if(currentAverage == highestAverage)
+        {
+            System.out.printf("You MATCHED the current high score of %.2f points per game from %s%n",
+                              currentAverage,
+                              highestScore.formattedDateTime);
         }
         else
         {
@@ -417,8 +453,9 @@ final class Score
      * </p>
      *
      * @param score the Score object to format, must not be null
+     * 
      * @return a List of strings representing the formatted score information,
-     *         with each element containing one aspect of the score data
+     * with each element containing one aspect of the score data
      */
     private static List<String> formatScore(final Score score)
     {
@@ -522,16 +559,17 @@ final class Score
      *
      * @param filePath the file path to validate
      */
-    private static void validateFilePath(final String filePath)
+    private static void validateFileString(final String fileString)
     {
-        if(filePath == null || filePath.isEmpty())
+        if(fileString == null || fileString.isEmpty())
         {
             throw new IllegalArgumentException("File path cannot be null or empty");
         }
 
-        if(Files.notExists(Paths.get(filePath)))
+        if(Files.notExists(Paths.get(fileString)))
         {
-            throw new IllegalArgumentException("File path does not exist: " + filePath);
+            throw new IllegalArgumentException("File path does not exist: " +
+                                               fileString);
         }
     }
 
