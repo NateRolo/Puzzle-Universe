@@ -403,7 +403,7 @@ final class UIHandler
             case VIEW_ALL -> title = "-------------- All Games ---------------";
             case VIEW_WON -> title = "-------------- Games Won ---------------";
             case VIEW_LOST -> title = "-------------- Games Lost ---------------";
-            default -> title = "-------------- Unknown History View ---------------"; // Fallback
+            default -> title = "-------------- Unknown History View ---------------"; 
         }
 
         displayMessage("\n" + title);

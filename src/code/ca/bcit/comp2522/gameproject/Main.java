@@ -1,10 +1,9 @@
 package ca.bcit.comp2522.gameproject;
 
-import java.util.Scanner;
-
 import ca.bcit.comp2522.gameproject.mastermind.MastermindGame;
 import ca.bcit.comp2522.gameproject.numbergame.NumberGame;
 import ca.bcit.comp2522.gameproject.wordgame.WordGame;
+import java.util.Scanner;
 
 /**
  * Main class for the game project.
