@@ -16,11 +16,6 @@ abstract class Question
      * The country associated with this question.
      */
     final Country country;
-    
-    /**
-     * The text prompt for this question.
-     */
-    final String prompt;
 
     /**
      * Constructs a new Question with the specified country.
@@ -36,16 +31,18 @@ abstract class Question
     {
         validateCountry(country);
         this.country = country;
-        this.prompt = createPrompt();
     }
 
     /**
-     * Gets the prompt for this question.
+     * Gets the prompt for this question by calling createPrompt.
      *
      * @return the question prompt as a String
      */
     final String getPrompt()
     {
+        final String prompt;
+        prompt = createPrompt();
+        
         return prompt;
     }
 
