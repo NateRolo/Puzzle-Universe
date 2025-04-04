@@ -16,29 +16,37 @@ import ca.bcit.comp2522.gameproject.RoundBased;
  * @author Nathan O
  * @version 1.0 2025
  */
-public final class WordGame implements                            
+public final class WordGame implements
                             RoundBased
-                            
+
 {
-    private static final int QUESTIONS_PER_GAME    = 10;
-    private static final int QUESTION_TYPES        = 3;
-    static final int         CAPITAL_CITY_QUESTION = 0;
-    static final int         COUNTRY_QUESTION      = 1;
-    static final int         FACT_QUESTION         = 2;
+    private static final int NUM_QUESTIONS_PER_GAME = 10;
+    private static final int NUM_QUESTION_TYPES     = 3;
+    private static final int NUM_NO_QUESTIONS_ASKED = 0;
+
+    private static final String OPTION_YES = "yes";
+    private static final String OPTION_NO = "no";
+
+    static final int         QUESTION_CAPITAL_CITY  = 0;
+    static final int         QUESTION_COUNTRY       = 1;
+    static final int         QUESTION_FACT          = 2;
+
+
 
     private static final Scanner scan = new Scanner(System.in);
-    private final World world;
 
+    private final World          world;
     private final Score         currentScore;
     private final AnswerChecker answerChecker;
 
     /**
-     * Constructs a new WordGame, initializing required components including world data.
+     * Constructs a new WordGame, initializing required components including
+     * world data.
      */
     public WordGame()
     {
-        this.world = new World();
-        this.currentScore    = new Score();
+        this.world         = new World();
+        this.currentScore  = new Score();
         this.answerChecker = new AnswerChecker(scan,
                                                currentScore);
     }
@@ -71,7 +79,7 @@ public final class WordGame implements
         concludeGame();
     }
 
-    /*
+    /**
      * Plays a single game consisting of multiple questions.
      * <p>
      * This method runs through one complete game cycle, asking the configured
@@ -80,9 +88,9 @@ public final class WordGame implements
      */
     @Override
     public void playOneGame()
-    { // implement setupNewGame()
-        for(int questionsAsked = 1; questionsAsked <=
-                                    QUESTIONS_PER_GAME; questionsAsked++)
+    { 
+        for(int questionsAsked = NUM_NO_QUESTIONS_ASKED; questionsAsked <=
+                                    NUM_QUESTIONS_PER_GAME; questionsAsked++)
         {
             System.out.printf("----------Question %d/10----------\n",
                               questionsAsked);
@@ -90,33 +98,35 @@ public final class WordGame implements
         }
     }
 
-    /*
-     * Determines if the player wants to play another game.
+    /**
+     * Asks a single question and validates the player's answer.
      * <p>
-     * This method prompts the user and validates their response to ensure
-     * it's either "yes" or "no".
+     * This method selects a random country and question type, creates the
+     * appropriate
+     * question, and processes the player's response.
      * </p>
-     *
-     * @return true if the player wants to play again, false otherwise
      */
-    private boolean shouldPlayAgain()
+    @Override
+    public void playOneRound()
     {
-        String playAgain;
-        do
-        {
-            System.out.println("Would you like to play again? (yes/no)");
-            playAgain = scan.nextLine()
-                            .toLowerCase();
-            if(!playAgain.equals("yes") && !playAgain.equals("no"))
-            {
-                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
-            }
-        } while(!playAgain.equals("yes") && !playAgain.equals("no"));
+        final Country thisCountry;
+        final int     questionStyle;
+        final Question      question;
+        final String questionPrompt;
+        final String questionAnswer;
 
-        return playAgain.equals("yes");
+        thisCountry   = world.getRandomCountry();
+        questionStyle = (int)(Math.random() * NUM_QUESTION_TYPES);
+        question      = QuestionFactory.createQuestion(thisCountry,
+                                                       questionStyle);
+        questionPrompt = question.getPrompt();
+        questionAnswer = question.getExpectedAnswer();
+
+        System.out.println(questionPrompt);
+        answerChecker.checkAnswer(questionAnswer);
     }
 
-    /*
+    /**
      * Handles end-of-game operations.
      * <p>
      * This method displays the high score message and saves the current score
@@ -139,26 +149,32 @@ public final class WordGame implements
     }
 
     /*
-     * Asks a single question and validates the player's answer.
+     * Determines if the player wants to play another game.
      * <p>
-     * This method selects a random country and question type, creates the
-     * appropriate
-     * question, and processes the player's response.
+     * This method prompts the user and validates their response to ensure
+     * it's either "yes" or "no".
      * </p>
+     *
+     * @return true if the player wants to play again, false otherwise
      */
-    @Override
-    public void playOneRound()
+    private boolean shouldPlayAgain()
     {
-        final Country thisCountry;
-        final int     questionStyle;
-        Question      question;
+        final boolean willPlayAgain;
+        String userChoice;
 
-        thisCountry   = world.getRandomCountry();
-        questionStyle = (int)(Math.random() * QUESTION_TYPES);
-        question      = QuestionFactory.createQuestion(thisCountry,
-                                                       questionStyle);
+        do
+        {
+            System.out.println("Would you like to play again? (yes/no)");
+            userChoice = scan.nextLine()
+                            .toLowerCase();
+            if(!userChoice.equalsIgnoreCase(OPTION_YES) && !userChoice.equalsIgnoreCase(OPTION_NO))
+            {
+                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+            }
+        } while(!userChoice.equalsIgnoreCase(OPTION_YES) && !userChoice.equalsIgnoreCase(OPTION_NO));
 
-        System.out.println(question.getPrompt());
-        answerChecker.checkAnswer(question.getExpectedAnswer());
+
+        willPlayAgain = userChoice.equalsIgnoreCase(OPTION_NO);
+        return willPlayAgain;
     }
 }
