@@ -40,7 +40,7 @@ class CountryQuestion extends
 
         promptBuilder.append("What is the capital of ")
                      .append(countryName)
-                     .append(" ?");
+                     .append("?");
 
         promptString = promptBuilder.toString();
 
