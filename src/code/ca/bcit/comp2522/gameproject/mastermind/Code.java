@@ -96,6 +96,12 @@ abstract class Code
         }
     }
 
+    /**
+     * Checks if the current code is equal to another code.
+     * 
+     * @param other the other code to compare with
+     * @return true if the codes are equal, false otherwise
+     */
     @Override
     public boolean equals(final Object other)
     {
@@ -123,12 +129,22 @@ abstract class Code
         return codesAreEqual;
     }
 
+    /**
+     * Returns the hash code of the code's digits.
+     * 
+     * @return the hash code of the code's digits
+     */
     @Override
     public int hashCode()
     {
         return digits.hashCode();
     }
 
+    /**
+     * Returns a string representation of the code's digits.
+     * 
+     * @return a string representation of the code's digits
+     */
     @Override
     public String toString()
     {
