@@ -326,7 +326,7 @@ final class World
             throw new IllegalArgumentException("Country name can't be null or blank");
         }
 
-        if(!hasCountry(countryName))
+        if(countriesMap.containsKey(countryName))
         {
             throw new NullPointerException("Country doesn't exist: " +
                                            countryName);
