@@ -34,7 +34,7 @@ public final class NumberGame implements
     private static final String INITIAL_MESSAGE   = "Click 'Try Again' to start a new game.";
     private static final int    BOARD_SIZE        = GRID_ROWS * GRID_COLS;
     private static final int    NO_GAMES_PLAYED   = 0;
-    private static final int    TRY_AGAIN         = 0;
+    private static final int    START         = 0;
 
     private final NumberGameLogic gameLogic;
 
@@ -89,6 +89,35 @@ public final class NumberGame implements
         });
     }
 
+    /*
+     * Starts a new game by resetting the logic and updating the GUI.
+     */
+    @Override
+    public void playOneGame()
+    {
+        gameLogic.startNewGame();
+        updateGUIState();
+
+        if(gameLogic.isGameOver())
+        {
+            handleGameLost(gameLogic.getNextNumber());
+        }
+    }
+
+    /**
+     * Concludes the game session by disposing of the main game window.
+     * Implements the method required by the Replayable interface.
+     */
+    @Override
+    public void concludeGame()
+    {
+        if(frame != null)
+        {
+            frame.dispose();
+            frame = null; // Set frame to null after disposal
+        }
+    }
+    
     /**
      * Initializes and sets up the main graphical user interface components for the game.
      * This includes creating the main frame, status label, grid panel with buttons,
@@ -100,13 +129,16 @@ public final class NumberGame implements
 
         frame = new JFrame(WINDOW_TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        // Add a window listener to detect when the game window is closed
         frame.addWindowListener(new WindowAdapter()
         {
             @Override
             public void windowClosed(final WindowEvent e)
             {
+                // Check if at least one game was played before closing
                 if(gameLogic.getGamesPlayed() > NO_GAMES_PLAYED)
                 {
+                    // Display the final score summary when the window is closed
                     showFinalScoreMessage();
                 }
             }
@@ -140,21 +172,6 @@ public final class NumberGame implements
         frame.pack();
         frame.setMinimumSize(frame.getSize());
         frame.setLocationRelativeTo(null);
-    }
-
-    /*
-     * Starts a new game by resetting the logic and updating the GUI.
-     */
-    @Override
-    public void playOneGame()
-    {
-        gameLogic.startNewGame();
-        updateGUIState();
-
-        if(gameLogic.isGameOver())
-        {
-            handleGameLost(gameLogic.getNextNumber());
-        }
     }
 
     /*
@@ -199,9 +216,6 @@ public final class NumberGame implements
         }
         else
         {
-            System.out.printf("[GUI] Invalid click on pos %d for number %d.%n",
-                              position,
-                              numberToPlace);
         }
     }
 
@@ -263,15 +277,15 @@ public final class NumberGame implements
         final String[] options;
         final int      choice;
 
-        options = new String[] {"Try Again", "Quit"};
+        options = new String[] {"Play", "Quit"};
         choice  = JOptionPane.showOptionDialog(frame,
-                                               "Welcome to the 20-Number Challenge! Click 'Try Again' to start.",
+                                               "Welcome to the 20-Number Challenge! Click 'Play' to start.",
                                                "Game Start",
                                                JOptionPane.YES_NO_OPTION,
                                                JOptionPane.INFORMATION_MESSAGE,
                                                null,
                                                options,
-                                               options[TRY_AGAIN]);
+                                               options[START]);
 
         if(choice == JOptionPane.YES_OPTION)
         {
@@ -279,7 +293,7 @@ public final class NumberGame implements
         }
         else
         {
-            frame.dispose();
+            concludeGame();
         }
     }
 
@@ -290,7 +304,6 @@ public final class NumberGame implements
     {
         final int choice;
 
-        System.out.println("[GUI] Handling Game Won.");
         gameLogic.showScore();
 
         choice = JOptionPane.showConfirmDialog(frame,
@@ -304,7 +317,7 @@ public final class NumberGame implements
         }
         else
         {
-            frame.dispose();
+            concludeGame();
         }
     }
 
@@ -319,8 +332,6 @@ public final class NumberGame implements
         final String fullMsg;
         final int    choice;
 
-        System.out.printf("[GUI] Handling Game Lost (Cannot place %d).%n",
-                          impossibleNumber);
         gameLogic.showScore();
 
         lossMsg = String.format("Impossible to place the next number: %d.",
@@ -339,7 +350,7 @@ public final class NumberGame implements
         }
         else
         {
-            frame.dispose();
+            concludeGame();
         }
     }
 
@@ -348,8 +359,6 @@ public final class NumberGame implements
      */
     private void showFinalScoreMessage()
     {
-        System.out.println("[GUI] Window Closed - Showing Final Stats.");
-
         JOptionPane.showMessageDialog(null,
                                       buildScoreString(gameLogic.isGameWon()),
                                       "Final Score",

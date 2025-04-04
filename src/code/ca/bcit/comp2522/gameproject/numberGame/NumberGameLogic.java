@@ -29,7 +29,7 @@ final class NumberGameLogic extends BoardGame
     NumberGameLogic()
     {
         super(BOARD_SIZE);
-        initializeGame();
+        playOneGame();
         this.random          = new Random();
     }
 
@@ -196,9 +196,9 @@ final class NumberGameLogic extends BoardGame
      * Called by startNewGame and constructor.
      */
     @Override
-    void initializeGame()
+    void playOneGame()
     {
-        super.initializeGame();
+        super.playOneGame();
         this.successfulPlacementsThisGame = INITIAL_VALUE;
         this.currentNumber                = INITIAL_VALUE;
     }
@@ -211,7 +211,7 @@ final class NumberGameLogic extends BoardGame
     {
         this.gamesPlayed++;
 
-        initializeGame();
+        playOneGame();
 
         this.currentNumber = generateNumber();
         System.out.printf("[Logic] New Game Started (#%d). First number: %d%n",
@@ -226,7 +226,7 @@ final class NumberGameLogic extends BoardGame
      *
      * @return true if the game has concluded, false otherwise.
      */
-    boolean isGameOver()
+    public boolean isGameOver()
     {
         if(isGameWon())
         {
@@ -235,7 +235,6 @@ final class NumberGameLogic extends BoardGame
 
         if(isBoardFull())
         {
-
             setGameWon(true);
             return true;
         }

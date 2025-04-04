@@ -3,7 +3,6 @@ package ca.bcit.comp2522.gameproject.wordgame;
 import java.io.IOException;
 import java.util.Scanner;
 
-import ca.bcit.comp2522.gameproject.Replayable;
 import ca.bcit.comp2522.gameproject.RoundBased;
 
 /**
@@ -17,9 +16,9 @@ import ca.bcit.comp2522.gameproject.RoundBased;
  * @author Nathan O
  * @version 1.0 2025
  */
-public final class WordGame implements
-                            Replayable,
+public final class WordGame implements                            
                             RoundBased
+                            
 {
     private static final int QUESTIONS_PER_GAME    = 10;
     private static final int QUESTION_TYPES        = 3;
@@ -69,7 +68,7 @@ public final class WordGame implements
             currentScore.printScore();
         } while(shouldPlayAgain());
 
-        handleGameEnd();
+        concludeGame();
     }
 
     /*
@@ -81,7 +80,7 @@ public final class WordGame implements
      */
     @Override
     public void playOneGame()
-    {
+    { // implement setupNewGame()
         for(int questionsAsked = 1; questionsAsked <=
                                     QUESTIONS_PER_GAME; questionsAsked++)
         {
@@ -124,7 +123,8 @@ public final class WordGame implements
      * to a file.
      * </p>
      */
-    private void handleGameEnd()
+    @Override
+    public void concludeGame()
     {
         try
         {

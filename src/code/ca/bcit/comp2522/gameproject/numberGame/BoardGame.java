@@ -1,7 +1,7 @@
 package ca.bcit.comp2522.gameproject.numbergame;
 
 import java.util.Arrays;
-import java.util.Random;
+
 
 /**
  * Abstract base class for number-based games.
@@ -102,7 +102,7 @@ abstract class BoardGame
      * Initializes the game state for a new round.
      * Resets the game won status and clears the board.
      */
-    void initializeGame()
+    void playOneGame()
     {
         this.gameWon = false;
         Arrays.fill(this.board,

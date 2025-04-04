@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
-import ca.bcit.comp2522.gameproject.Replayable;
 import ca.bcit.comp2522.gameproject.RoundBased;
 import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
 import ca.bcit.comp2522.gameproject.mastermind.UIHandler.HistoryMenuOption;
@@ -26,7 +25,6 @@ import ca.bcit.comp2522.gameproject.mastermind.UIHandler.MainMenuOption;
  * @version 1.4 2025
  */
 public final class MastermindGame implements
-                                  Replayable,
                                   RoundBased
 {
     private static final int          MAX_ROUNDS    = 12;
@@ -93,9 +91,9 @@ public final class MastermindGame implements
             return;
         }
 
-        initializeNewGame();
+        setupNewGame();
         playGameLoop();
-        endGame();
+        concludeGame();
     }
 
     /*
@@ -141,7 +139,7 @@ public final class MastermindGame implements
      * Initializes the state for a new game.
      * Resets rounds, generates a new secret code, and resets counters.
      */
-    private void initializeNewGame()
+    public void setupNewGame()
     {
         rounds     = new ArrayList<>();
         secretCode = SecretCode.generateRandomCode(Code.CODE_LENGTH);
@@ -388,8 +386,9 @@ public final class MastermindGame implements
      * The game ends if the last guess was correct or max rounds are reached.
      *
      * @return true if the game is over, false otherwise.
+     *
      */
-    private boolean isGameOver()
+    boolean isGameOver()
     {
         if(rounds.isEmpty())
         {
@@ -415,7 +414,8 @@ public final class MastermindGame implements
      * Handles the end-of-game sequence.
      * Displays win/loss message, secret code, and saves the game history.
      */
-    private void endGame()
+    @Override
+    public void concludeGame()
     {
         uiHandler.displayGameOverHeader();
 

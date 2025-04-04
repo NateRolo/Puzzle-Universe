@@ -13,4 +13,9 @@ public interface Replayable extends Playable
      * Executes a single session or round of the game.
      */
     void playOneGame();
+
+    /**
+     * Concludes the game.
+     */
+    void concludeGame();
 }
