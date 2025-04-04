@@ -240,28 +240,28 @@ final class Score
      * </p>
      *
      * @param score the Score object to append, must not be null
-     * @param file  the name of the file within the resources directory
+     * @param fileString  the name of the file within the resources directory
      * @throws IOException if there is an error writing to the file
      */
     static void appendScoreToFile(final Score score,
-                                  final String file) throws IOException
+                                  final String fileString) throws IOException
     {
+        validateScore(score);
+        validateFileString(fileString);
+
         final Path         filePath;
-        final String       filePathString;
+        final String       fullFilePathString;
         final List<String> scoreAsList;
 
         filePath       = Paths.get(DIR_SRC,
                                    DIR_RES,
-                                   file);
-        filePathString = filePath.toString();
-
-        validateScore(score);
-        validateFileString(filePathString);
+                                   fileString);
+        fullFilePathString = filePath.toString();
 
         scoreAsList = formatScore(score);
 
         FileManager.writeToResource(scoreAsList,
-                                    filePathString);
+                                    fullFilePathString);
     }
 
     /**
@@ -288,27 +288,26 @@ final class Score
      * values.
      * </p>
      *
-     * @param file the path to the file containing scores to be read
+     * @param fileString the path to the file containing scores to be read
      * @return a List of Score objects constructed from the file data
      * @throws IOException if there is an error reading from the file or if the
      *                     file format is invalid.
      */
-    static List<Score> readScoresFromFile(final String file) throws IOException
+    static List<Score> readScoresFromFile(final String fileString) throws IOException
     {
+        validateFileString(fileString);
+
         final Path   filePath;
-        final String filePathString;
-
-        filePath       = Paths.get(DIR_SRC,
-                                   DIR_RES,
-                                   file);
-        filePathString = filePath.toString();
-
-        validateFileString(filePathString);
-
+        final String fullFilePathString;
         final List<String> scoresLines;
         final List<Score>  scores;
 
-        scoresLines = FileManager.readLinesFromResource(filePathString);
+        filePath       = Paths.get(DIR_SRC,
+                                   DIR_RES,
+                                   fileString);
+        fullFilePathString = filePath.toString();
+
+        scoresLines = FileManager.readLinesFromResource(fullFilePathString);
 
         validateList(scoresLines);
 
@@ -566,9 +565,9 @@ final class Score
             throw new IllegalArgumentException("File path cannot be null or empty");
         }
 
-        if(Files.notExists(Paths.get(fileString)))
+        if(Files.notExists(Paths.get(DIR_SRC, DIR_RES, fileString)))
         {
-            throw new IllegalArgumentException("File path does not exist: " +
+            throw new IllegalArgumentException("File path does not exist in res: " +
                                                fileString);
         }
     }

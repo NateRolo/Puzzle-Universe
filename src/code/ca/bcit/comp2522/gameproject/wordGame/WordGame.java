@@ -98,6 +98,8 @@ public final class WordGame implements
                               questionsAsked);
             playOneRound();
         }
+
+        System.out.println("----------GAME OVER----------");
     }
 
     /**
@@ -166,12 +168,12 @@ public final class WordGame implements
 
         do
         {
-            System.out.println("Would you like to play again? (yes/no)");
+            System.out.println("\nWould you like to play again? (yes/no)");
             userChoice = scan.nextLine()
                             .toLowerCase();
             if(!userChoice.equalsIgnoreCase(OPTION_YES) && !userChoice.equalsIgnoreCase(OPTION_NO))
             {
-                System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+                System.out.printf("Invalid input. Please enter %s or %s.", OPTION_YES, OPTION_NO);
             }
         } while(!userChoice.equalsIgnoreCase(OPTION_YES) && !userChoice.equalsIgnoreCase(OPTION_NO));
 
