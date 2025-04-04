@@ -159,6 +159,6 @@ public final class WordGame implements
                                                        questionStyle);
 
         System.out.println(question.getPrompt());
-        answerChecker.validateAnswer(question.getExpectedAnswer());
+        answerChecker.checkAnswer(question.getExpectedAnswer());
     }
 }

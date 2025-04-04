@@ -70,7 +70,10 @@ final class Country
      */
     String[] getFacts()
     {
-        return facts.clone();
+        final String[] factsCopy;
+        factsCopy = facts.clone();
+
+        return factsCopy;
     }
 
     /* 

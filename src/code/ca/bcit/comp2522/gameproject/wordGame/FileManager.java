@@ -33,13 +33,13 @@ final class FileManager
      * in the file system, attempts to read it from the classpath resources.
      * </p>
      *
-     * @param filePath path to the resource file
+     * @param pathString path to the resource file
      * @return List of strings, each representing a line from the file
      * @throws IOException if file cannot be read
      */
-    static List<String> readLinesFromResource(final String filePath) throws IOException
+    static List<String> readLinesFromResource(final String pathString) throws IOException
     {
-        validateFilePath(filePath);
+        validatePathString(pathString);
 
         final List<String>      lines;
         final InputStream       inputStream;
@@ -47,7 +47,7 @@ final class FileManager
         final BufferedReader    bufferedReader;
         final Path              path;
 
-        path = Paths.get(filePath);
+        path = Paths.get(pathString);
 
         if(Files.exists(path))
         {
@@ -55,7 +55,7 @@ final class FileManager
         }
 
         lines       = new ArrayList<>();
-        inputStream = FileManager.class.getResourceAsStream(filePath);
+        inputStream = FileManager.class.getResourceAsStream(pathString);
 
         validateInputStream(inputStream);
 
@@ -86,19 +86,19 @@ final class FileManager
      * </p>
      *
      * @param formattedScore list of strings to write to the file
-     * @param filePath       path to the file where data should be written
+     * @param pathString       path to the file where data should be written
      * @throws FileNotFoundException if the file path is invalid
      */
     static void writeToResource(final List<String> formattedScore,
-                                final String filePath) throws FileNotFoundException
+                                final String pathString) throws FileNotFoundException
     {
         validateFormattedScore(formattedScore);
-        validateFilePath(filePath);
+        validatePathString(pathString);
 
         try
         {
             final Path scorePath;
-            scorePath = Paths.get(filePath);
+            scorePath = Paths.get(pathString);
 
             Files.write(scorePath,
                         formattedScore,
@@ -129,11 +129,11 @@ final class FileManager
      *
      * @param file the file path to validate
      */
-    private static void validateFilePath(final String filePath) throws FileNotFoundException
+    private static void validatePathString(final String pathString) throws FileNotFoundException
     {
-        if(filePath == null ||
-           filePath.isBlank() ||
-           Files.notExists(Paths.get(filePath)))
+        if(pathString == null ||
+           pathString.isBlank() ||
+           Files.notExists(Paths.get(pathString)))
         {
             throw new FileNotFoundException("Invalid file path");
         }

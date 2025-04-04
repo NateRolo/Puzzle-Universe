@@ -44,7 +44,7 @@ final class AnswerChecker
      *
      * @param expectedAnswer the correct answer to validate against
      */
-    void validateAnswer(final String expectedAnswer)
+    void checkAnswer(final String expectedAnswer)
     {
         validateExpectedAnswer(expectedAnswer);
 
