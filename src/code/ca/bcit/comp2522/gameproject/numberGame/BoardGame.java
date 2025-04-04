@@ -13,16 +13,13 @@ import java.util.Arrays;
  */
 abstract class BoardGame
 {
-    static final int BOARD_SIZE_MIN = 0;
-    static final int         MAX_RANDOM_NUMBER = 1000;
-    static final int         MIN_RANDOM_NUMBER = 1;
-    static final int         EMPTY_CELL        = 0;
-    static final int         INITIAL_VALUE     = 0;
+    static final int BOARD_SIZE_MIN    = 0;
+    static final int MAX_RANDOM_NUMBER = 1000;
+    static final int MIN_RANDOM_NUMBER = 1;
+    static final int EMPTY_CELL        = 0;
+    static final int INITIAL_VALUE     = 0;
 
-    
-
-
-    private boolean      gameWon;
+    private boolean gameWon;
 
     int[] board;
     int   currentNumber;
@@ -43,16 +40,6 @@ abstract class BoardGame
         this.gamesWon        = INITIAL_VALUE;
         this.totalPlacements = INITIAL_VALUE;
         this.gameWon         = false;
-    }
-
-    /**
-     * Sets the game's won status.
-     *
-     * @param won the won status (true if won, false otherwise)
-     */
-    void setGameWon(final boolean won)
-    {
-        this.gameWon = won;
     }
 
     /**
@@ -99,6 +86,16 @@ abstract class BoardGame
     }
 
     /**
+     * Sets the game's won status.
+     *
+     * @param won the won status (true if won, false otherwise)
+     */
+    void setGameWon(final boolean won)
+    {
+        this.gameWon = won;
+    }
+
+    /**
      * Initializes the game state for a new round.
      * Resets the game won status and clears the board.
      */
@@ -118,7 +115,8 @@ abstract class BoardGame
     {
         if(boardSize < BOARD_SIZE_MIN)
         {
-            throw new IllegalArgumentException("Board size cannot be less than: " + BOARD_SIZE_MIN);
+            throw new IllegalArgumentException("Board size cannot be less than: " +
+                                               BOARD_SIZE_MIN);
         }
     }
 }
