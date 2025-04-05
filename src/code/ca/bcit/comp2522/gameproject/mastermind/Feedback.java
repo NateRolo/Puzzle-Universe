@@ -80,7 +80,16 @@ final class Feedback
         return result.toString();
     }
 
-    // comments
+    /*
+     * Validates the provided codes for nullity and correct length.
+     * <p>
+     * This method checks if the secret code and guess code are not null and
+     * have the correct length.
+     * </p>
+     * 
+     * @param secretCode the secret code to validate
+     * @param guessCode the player's guess code
+     */
     private static void validateCodes(final Code secretCode,
                                       final Code guessCode)
     {
@@ -105,7 +114,20 @@ final class Feedback
         }
     }
 
-    // comments
+    /*
+     * Evaluates a guess against a secret code and returns feedback.
+     * <p>
+     * This method compares the guess code with the secret code and calculates:
+     * 1. The number of digits in the correct position
+     * 2. The number of correct digits in the wrong position (misplaced)
+     * The result is returned as an array where the first element is the count of
+     * correct positions and the second element is the count of misplaced digits.
+     * </p>
+     * 
+     * @param secretCode the secret code to compare against
+     * @param guessCode the player's guess code
+     * @return an array containing counts of correct positions and misplaced digits
+     */
     private static int[] evaluateGuess(final Code secretCode,
                                        final Code guessCode)
     {
@@ -131,7 +153,7 @@ final class Feedback
             final int guessCodeDigitAtThisIndex;
 
             secretCodeDigitAtThisIndex = secretCodeDigits.get(i);
-            guessCodeDigitAtThisIndex = guessCodeDigits.get(i);
+            guessCodeDigitAtThisIndex  = guessCodeDigits.get(i);
 
             if(secretCodeDigitAtThisIndex == guessCodeDigitAtThisIndex)
             {
@@ -142,7 +164,8 @@ final class Feedback
         secretCopy = new ArrayList<>(secretCodeDigits);
         guessCopy  = new ArrayList<>(guessCodeDigits);
 
-        // Calculate total matches (including correct position) for misplaced count derivation
+        // Calculate total matches (including correct position) for misplaced
+        // count derivation
         for(int j = 0; j < Code.CODE_LENGTH; j++)
         {
             if(secretCopy.contains(guessCopy.get(j)))
@@ -161,8 +184,6 @@ final class Feedback
 
         return result;
     }
-
-
 
 
 }
