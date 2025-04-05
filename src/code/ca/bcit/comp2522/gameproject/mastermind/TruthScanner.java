@@ -10,7 +10,7 @@ import java.util.List;
  * </p>
  *
  * @author Nathan O
- * @version 1.1 2025 // Version updated
+ * @version 1.1 2025 
  */
 final class TruthScanner
 {

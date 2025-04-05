@@ -15,7 +15,9 @@ import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRec
  */
 final class UIHandler
 {
-    /** Represents options available in the main menu. */
+    /** 
+     * Represents options available in the main menu. 
+     */
     enum MainMenuOption
     {
         PLAY_GAME(1), 
@@ -43,7 +45,9 @@ final class UIHandler
         }
     }
 
-    /** Represents options available in the history sub-menu. */
+    /** 
+     * Represents options available in the history sub-menu. 
+     */
     enum HistoryMenuOption
     {
         VIEW_ALL(1), 
@@ -72,14 +76,14 @@ final class UIHandler
         }
     }
 
-    // --- Constants ---
+    
     private static final String SEPARATOR_LINE              = "----------------------------------------";
     private static final String GAME_OVER_MESSAGE           = "Game Over! The secret code was: %s";
     private static final String WIN_MESSAGE                 = "Congratulations! You won in %d round(s)!";
     private static final String GAME_OVER_SEPARATOR         = "=========== GAME OVER ============";
     private static final String GUESS_SUMMARY_HEADER_FOOTER = "----------- Guess Summary --------------";
 
-    // Moved from MastermindGame
+    
     private static final String RULES_TEMPLATE = """
                                                  =========== MASTERMIND RULES ===========
                                                  1. The computer will generate a secret code of %d digits (%d-%d).
@@ -107,8 +111,7 @@ final class UIHandler
 
                                                  Are you ready to start? (yes/no): """;
 
-    // Make integer constants private as they are now internal details for
-    // mapping
+
     private static final int OPTION_PLAY_INT         = 1;
     private static final int OPTION_VIEW_HISTORY_INT = 2;
     private static final int OPTION_EXIT_INT         = 3;
