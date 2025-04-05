@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ScoreTest {
 
+    private static final String SCORE_DIR = "src/res/";
     private static final String SCORE_FILE = "test_score.txt";
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -138,6 +139,6 @@ class ScoreTest {
     @AfterEach
     void tearDown() {
         // Clean up by deleting the test score file after each test
-        new File(SCORE_FILE).delete();
+        new File(SCORE_DIR + SCORE_FILE).delete();
     }
 }

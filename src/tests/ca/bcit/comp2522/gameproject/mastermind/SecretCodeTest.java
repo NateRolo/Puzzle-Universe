@@ -51,6 +51,9 @@ public class SecretCodeTest
 
         IllegalArgumentException digitsTooLargeException = assertThrows(IllegalArgumentException.class,
                                                                         () -> new SecretCode(largeCodeDigits));
+
+        assertEquals("Invalid code digit: 0. Must be between 1 and 6.", digitsTooSmallException.getMessage());
+        assertEquals("Invalid code digit: 7. Must be between 1 and 6.", digitsTooLargeException.getMessage());
     }
 }
 

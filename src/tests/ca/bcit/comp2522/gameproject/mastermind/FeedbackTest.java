@@ -314,8 +314,8 @@ public class FeedbackTest
                                    3,
                                    4);
         secretCode = new SecretCode(secret);
-        guess      = Arrays.asList(8,
-                                   7,
+        guess      = Arrays.asList(6,
+                                   6,
                                    6,
                                    5);
         
