@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
-import ca.bcit.comp2522.gameproject.RoundBased;
+import ca.bcit.comp2522.gameproject.interfaces.RoundBased;
 import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
 import ca.bcit.comp2522.gameproject.mastermind.UIHandler.HistoryMenuOption;
 import ca.bcit.comp2522.gameproject.mastermind.UIHandler.MainMenuOption;
@@ -45,7 +45,6 @@ public final class MastermindGame implements
     private List<Round> rounds;
     private SecretCode  secretCode;
     private String      truthScanInfoForHistory;
-
 
     /**
      * Constructs a new MastermindGame.
@@ -210,6 +209,81 @@ public final class MastermindGame implements
     }
 
     /*
+     * Handles the end-of-game sequence.
+     * Displays win/loss message, secret code, and saves the game history.
+     */
+    @Override
+    public void concludeGame()
+    {
+        uiHandler.displayGameOverHeader();
+
+        final String        outcome;
+        final LocalDateTime endTime = LocalDateTime.now();
+
+        if(rounds.isEmpty())
+        {
+            uiHandler.displayNoGuessesEndMessage();
+            outcome = OUTCOME_LOST;
+        }
+        else
+        {
+            final Round lastRound;
+            final int   roundsPlayed;
+
+            lastRound    = rounds.get(rounds.size() - ROUND_INCREMENT);
+            roundsPlayed = rounds.size();
+
+            if(isCorrectGuess(lastRound))
+            {
+                uiHandler.displayWinMessage(roundsPlayed);
+                outcome = OUTCOME_WON;
+            }
+            else
+            {
+                uiHandler.displayLossMessage(secretCode);
+                outcome = OUTCOME_LOST;
+            }
+        }
+
+        uiHandler.displaySeparator();
+
+        if(!rounds.isEmpty())
+        {
+            saveCurrentGameToHistory(endTime,
+                                     outcome);
+        }
+    }
+
+    /*
+     * Determines if the game has ended.
+     * The game ends if the last guess was correct or max rounds are reached.
+     *
+     * @return true if the game is over, false otherwise.
+     *
+     */
+    boolean isGameOver()
+    {
+        if(rounds.isEmpty())
+        {
+            return false;
+        }
+
+        final Round   lastRound;
+        final boolean maxRoundsReached;
+
+        lastRound = rounds.get(rounds.size() - ROUND_INCREMENT);
+
+        if(isCorrectGuess(lastRound))
+        {
+            return true;
+        }
+
+        maxRoundsReached = rounds.size() >= MAX_ROUNDS;
+
+        return maxRoundsReached;
+    }
+
+    /*
      * Processes a player's guess asynchronously.
      * Creates feedback and a new round object in a background thread,
      * then waits for the result before adding it to the history and displaying
@@ -346,7 +420,7 @@ public final class MastermindGame implements
      */
     private void handleGuessSummaryAction()
     {
-        uiHandler.displayGuessSummaryHeader();
+        uiHandler.displayGuessSummarySeparator();
         if(rounds.isEmpty())
         {
             uiHandler.displayNoGuessesMessage();
@@ -358,7 +432,6 @@ public final class MastermindGame implements
                 uiHandler.displayGuessSummaryItem(round.toString());
             }
         }
-        uiHandler.displayGuessSummaryFooter();
     }
 
     /*
@@ -379,81 +452,6 @@ public final class MastermindGame implements
                          Code.CODE_LENGTH;
 
         return isCorrectGuess;
-    }
-
-    /*
-     * Determines if the game has ended.
-     * The game ends if the last guess was correct or max rounds are reached.
-     *
-     * @return true if the game is over, false otherwise.
-     *
-     */
-    boolean isGameOver()
-    {
-        if(rounds.isEmpty())
-        {
-            return false;
-        }
-
-        final Round   lastRound;
-        final boolean maxRoundsReached;
-
-        lastRound = rounds.get(rounds.size() - ROUND_INCREMENT);
-
-        if(isCorrectGuess(lastRound))
-        {
-            return true;
-        }
-
-        maxRoundsReached = rounds.size() >= MAX_ROUNDS;
-
-        return maxRoundsReached;
-    }
-
-    /*
-     * Handles the end-of-game sequence.
-     * Displays win/loss message, secret code, and saves the game history.
-     */
-    @Override
-    public void concludeGame()
-    {
-        uiHandler.displayGameOverHeader();
-
-        final String        outcome;
-        final LocalDateTime endTime = LocalDateTime.now();
-
-        if(rounds.isEmpty())
-        {
-            uiHandler.displayNoGuessesEndMessage();
-            outcome = OUTCOME_LOST;
-        }
-        else
-        {
-            final Round lastRound;
-            final int   roundsPlayed;
-
-            lastRound    = rounds.get(rounds.size() - ROUND_INCREMENT);
-            roundsPlayed = rounds.size();
-
-            if(isCorrectGuess(lastRound))
-            {
-                uiHandler.displayWinMessage(roundsPlayed);
-                outcome = OUTCOME_WON;
-            }
-            else
-            {
-                uiHandler.displayLossMessage(secretCode);
-                outcome = OUTCOME_LOST;
-            }
-        }
-
-        uiHandler.displaySeparator();
-
-        if(!rounds.isEmpty())
-        {
-            saveCurrentGameToHistory(endTime,
-                                     outcome);
-        }
     }
 
     /*
