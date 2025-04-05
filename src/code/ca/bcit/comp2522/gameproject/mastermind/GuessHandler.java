@@ -7,7 +7,10 @@ import java.util.Scanner;
  * Handles user input for the Mastermind game.
  * <p>
  * This class manages all player input, including guess validation, truth scan
- * requests, and round selection for scanning.
+ * requests, and round selection for scanning. It provides methods to collect
+ * and validate user guesses, process special commands like truth scans, and
+ * gather yes/no responses from the player. The class ensures all input is
+ * properly formatted and within valid ranges before passing it to the game logic.
  * </p>
  *
  * @author Nathan O
@@ -20,10 +23,14 @@ final class GuessHandler
     private static final Scanner scan = new Scanner(System.in);
 
     /**
-     * Gets and validates the player's input.
+     * Gets and validates player input from the console.
+     * 
+     * Reads user input and returns the appropriate PlayerAction:
+     * - TruthScanRequest if input matches truth scan command
+     * - GuessSummaryRequest if input matches guess summary command
+     * - PlayerGuessCode otherwise
      *
-     * @return a PlayerGuessCode object representing either a guess or truth
-     *         scan request
+     * @return a PlayerAction based on the user's input
      */
     static PlayerAction getPlayerInput()
     {
@@ -64,13 +71,43 @@ final class GuessHandler
         return getRoundNumberWithValidation(currentRound);
     }
 
+    /**
+     * Gets a yes/no response from the user via the console.
+     * <p>
+     * This method repeatedly prompts the user until a valid response is
+     * received.
+     * Valid responses are case-insensitive variations of "yes" or "no".
+     * The input is trimmed of leading and trailing whitespace and converted to
+     * lowercase for consistent processing.
+     * </p>
+     *
+     * @return the user's response as a lowercase string (either "yes" or "no")
+     */
+    static String getYesNoResponse()
+    {
+        String response;
+        do
+        {
+            response = scan.nextLine()
+                           .trim()
+                           .toLowerCase();
+            if(!response.equalsIgnoreCase("yes") &&
+               !response.equalsIgnoreCase("no"))
+            {
+                System.out.println("Please enter either 'yes' or 'no':");
+            }
+        } while(!response.equalsIgnoreCase("yes") &&
+                !response.equalsIgnoreCase("no"));
+
+        return response;
+    }
+
     /*
      * Gets and validates the round number input from the user for a scan.
      * Continuously prompts until a valid round number within the allowed range
      * (1 to currentRound) is entered.
      *
      * @param currentRound the current round number to use as upper bound
-     * 
      * @return the validated round number selected by the user
      */
     private static int getRoundNumberWithValidation(final int currentRound)
@@ -110,7 +147,6 @@ final class GuessHandler
      * Checks if the input string contains only digits.
      *
      * @param input the string to validate
-     * 
      * @return true if the input contains only digits, false otherwise
      */
     private static boolean isValidNumericInput(final String input)
@@ -126,9 +162,7 @@ final class GuessHandler
      * The valid range is from the minimum round number up to the current round.
      *
      * @param roundNumber the number to validate
-     * 
      * @param currentRound the current round number (upper bound)
-     * 
      * @return true if the round number is valid, false otherwise
      */
     private static boolean isValidRoundNumber(final int roundNumber,
@@ -140,29 +174,7 @@ final class GuessHandler
         return isValid;
     }
 
-    /**
-     * Gets a yes/no response from the user.
-     *
-     * @return the user's response (either "yes" or "no")
-     */
-    static String getYesNoResponse()
-    {
-        String response;
-        do
-        {
-            response = scan.nextLine()
-                           .trim()
-                           .toLowerCase();
-            if(!response.equalsIgnoreCase("yes") &&
-               !response.equalsIgnoreCase("no"))
-            {
-                System.out.println("Please enter either 'yes' or 'no':");
-            }
-        } while(!response.equalsIgnoreCase("yes") &&
-                !response.equalsIgnoreCase("no"));
-
-        return response;
-    }
+    
 
     /*
      * Validates the current round number.

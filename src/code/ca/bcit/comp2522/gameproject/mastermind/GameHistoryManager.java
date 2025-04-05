@@ -16,7 +16,11 @@ import java.util.stream.Collectors;
 
 /**
  * Manages saving and loading Mastermind game history to a file.
- * Handles file I/O operations for game session records.
+ * Handles file I/O operations for game session records, including reading from and writing to
+ * the history file. Provides functionality to save individual game sessions, load the complete
+ * history, and filter records based on game outcomes. The class uses a standardized format
+ * for storing game data with markers to separate different game sessions and sections within
+ * each record.
  *
  * @author Nathan O
  * @version 1.0 2025
@@ -48,8 +52,8 @@ final class GameHistoryManager
                           final String truthScanInfo,
                           final String outcome)
         {
-            this.timestamp    = timestamp;
-            this.roundDetails = new ArrayList<>(roundDetails);
+            this.timestamp     = timestamp;
+            this.roundDetails  = new ArrayList<>(roundDetails);
             this.truthScanInfo = truthScanInfo;
             this.outcome       = outcome;
         }
@@ -96,11 +100,14 @@ final class GameHistoryManager
 
         /**
          * Returns a formatted string representation of the game session record.
-         * The string includes the timestamp in ISO date-time format, all round details
-         * with proper indentation, truth scan information (if available), and the game outcome.
+         * The string includes the timestamp in ISO date-time format, all round
+         * details
+         * with proper indentation, truth scan information (if available), and
+         * the game outcome.
          * Each section is separated by newlines for better readability.
          *
-         * @return a formatted multi-line string representation of the complete game session record
+         * @return a formatted multi-line string representation of the complete
+         *         game session record
          */
         @Override
         public String toString()
@@ -201,7 +208,7 @@ final class GameHistoryManager
     void saveGameHistory(final GameSessionRecord record)
     {
         validateRecord(record);
-        
+
         final Path filePath;
         filePath = Paths.get(HISTORY_FILE_PATH);
 
@@ -221,15 +228,15 @@ final class GameHistoryManager
                 final String truthScanString;
                 final String outcomeString;
 
-                dateTimeString = record.getTimestamp()
-                                        .format(TIMESTAMP_FORMATTER);
+                dateTimeString     = record.getTimestamp()
+                                           .format(TIMESTAMP_FORMATTER);
                 roundDetailsString = record.getRoundDetails()
-                                          .stream()
-                                          .map(detail -> "  " + detail)
-                                          .collect(Collectors.joining("\n"));               
-                truthScanString = record.getTruthScanInfo();
-                outcomeString = record.getOutcome();
-            
+                                           .stream()
+                                           .map(detail -> "  " + detail)
+                                           .collect(Collectors.joining("\n"));
+                truthScanString    = record.getTruthScanInfo();
+                outcomeString      = record.getOutcome();
+
                 writer.write(GAME_START_MARKER);
                 writer.newLine();
 
@@ -238,7 +245,7 @@ final class GameHistoryManager
 
                 writer.write(ROUNDS_HEADER);
                 writer.newLine();
-                
+
                 writer.write(roundDetailsString);
                 writer.newLine();
 
@@ -276,7 +283,7 @@ final class GameHistoryManager
      * @return A List of GameSessionRecord objects, or an empty list if the file
      *         doesn't exist or an error occurs during reading/parsing.
      */
-    final List<GameSessionRecord> loadGameHistory()
+    List<GameSessionRecord> loadGameHistory()
     {
         final Path                    filePath;
         final List<GameSessionRecord> gameHistory;
@@ -342,6 +349,51 @@ final class GameHistoryManager
         return gameHistory;
     }
 
+    /**
+     * Filters a list of game session records based on the desired outcome.
+     * <p>
+     * This method examines each game session record in the provided history
+     * list
+     * and selects only those that match the specified outcome filter. The
+     * comparison
+     * is case-insensitive, so "won", "Won", and "WON" are all treated as
+     * equivalent.
+     * Common filter values are "Won" or "Lost", but any string can be used as a
+     * filter.
+     * </p>
+     * <p>
+     * If no records match the filter, an empty list is returned. The original
+     * list
+     * remains unchanged, and a new list containing only the matching records is
+     * created.
+     * </p>
+     *
+     * @param history       The list of GameSessionRecord objects to filter.
+     *                      Cannot be null.
+     * @param outcomeFilter The outcome to filter by (typically "Won" or
+     *                      "Lost").
+     *                      Case-insensitive comparison is used. Cannot be null.
+     * @return A new list containing only the records matching the specified
+     *         outcome filter.
+     */
+    List<GameSessionRecord> filterHistoryByOutcome(final List<GameSessionRecord> history,
+                                                   final String outcomeFilter)
+    {
+        final List<GameSessionRecord> filteredHistory;
+
+        filteredHistory = new ArrayList<>();
+
+        for(final GameSessionRecord record : history)
+        {
+            if(record.getOutcome()
+                     .equalsIgnoreCase(outcomeFilter))
+            {
+                filteredHistory.add(record);
+            }
+        }
+        return filteredHistory;
+    }
+
     /*
      * Processes a single line belonging to the current game record being
      * parsed.
@@ -349,7 +401,6 @@ final class GameHistoryManager
      * updates the parsing state.
      *
      * @param line The trimmed line from the history file.
-     * 
      * @param state The current parsing state object to update.
      */
     private void processRecordLine(final String line,
@@ -362,7 +413,7 @@ final class GameHistoryManager
                 state.timestamp = LocalDateTime.parse(line.substring(TIMESTAMP_PREFIX.length()),
                                                       TIMESTAMP_FORMATTER);
             }
-            catch(final Exception e) 
+            catch(final Exception e)
             {
                 System.err.println("Warning: Could not parse timestamp: " +
                                    line +
@@ -384,7 +435,7 @@ final class GameHistoryManager
         {
             final String parsedOutcome;
             parsedOutcome = line.substring(OUTCOME_PREFIX.length());
-            
+
             if("Won".equalsIgnoreCase(parsedOutcome) ||
                "Lost".equalsIgnoreCase(parsedOutcome))
             {
@@ -414,13 +465,13 @@ final class GameHistoryManager
         if(state.isValidForRecord())
         {
             final GameSessionRecord record;
-            final List<String> roundDetails;
+            final List<String>      roundDetails;
 
             roundDetails = new ArrayList<>(state.roundDetails);
-            record = new GameSessionRecord(state.timestamp,
-                                          roundDetails,
-                                          state.truthScanInfo,
-                                          state.outcome);
+            record       = new GameSessionRecord(state.timestamp,
+                                                 roundDetails,
+                                                 state.truthScanInfo,
+                                                 state.outcome);
             gameHistory.add(record);
         }
         else
@@ -429,34 +480,11 @@ final class GameHistoryManager
         }
     }
 
-    /**
-     * Filters a list of game session records based on the desired outcome.
-     *
-     * @param history       The list of GameSessionRecord to filter.
-     * @param outcomeFilter The outcome to filter by ("Won" or "Lost").
-     *                      Case-insensitive.
-     * @return A new list containing only the records matching the filter.
-     */
-    List<GameSessionRecord> filterHistoryByOutcome(final List<GameSessionRecord> history,
-                                                   final String outcomeFilter)
-    {
-        final List<GameSessionRecord> filteredHistory;
 
-        filteredHistory = new ArrayList<>();
-        
-        for(final GameSessionRecord record : history)
-        {
-            if(record.getOutcome()
-                     .equalsIgnoreCase(outcomeFilter))
-            {
-                filteredHistory.add(record);
-            }
-        }
-        return filteredHistory;
-    }
-
-    /**
-     * Validates the game session record.
+    /*
+     * Validates that a game session record contains all required fields.
+     * Checks that the record, timestamp, round details, truth scan info,
+     * and outcome are all present and valid.
      * 
      * @param record The game session record to validate.
      */
@@ -470,7 +498,9 @@ final class GameHistoryManager
         {
             throw new IllegalArgumentException("Timestamp cannot be null");
         }
-        if(record.getRoundDetails() == null || record.getRoundDetails().isEmpty())
+        if(record.getRoundDetails() == null ||
+           record.getRoundDetails()
+                 .isEmpty())
         {
             throw new IllegalArgumentException("Round details cannot be null or empty");
         }
@@ -478,7 +508,9 @@ final class GameHistoryManager
         {
             throw new IllegalArgumentException("Truth scan info cannot be null");
         }
-        if(record.getOutcome() == null || record.getOutcome().isEmpty())
+        if(record.getOutcome() == null ||
+           record.getOutcome()
+                 .isEmpty())
         {
             throw new IllegalArgumentException("Outcome cannot be null or empty");
         }
