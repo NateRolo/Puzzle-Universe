@@ -8,14 +8,14 @@ package ca.bcit.comp2522.gameproject.mastermind;
  * @author Nathan O
  * @version 1.1 2025
  */
-interface PlayerAction
+ interface PlayerAction
 {
     /**
      * Represents a player's request to perform a "Truth Scan" on a
      * previously played round to reveal its actual feedback, potentially
      * bypassing deception.
      */
-    static final class TruthScanRequest implements PlayerAction
+    final class TruthScanRequest implements PlayerAction
     {
         /**
          * Constructs a TruthScanRequest.
@@ -27,7 +27,7 @@ interface PlayerAction
      * Represents a player's request to view a summary of all guesses
      * made so far in the current game, along with their feedback.
      */
-    static final class GuessSummaryRequest implements PlayerAction
+    final class GuessSummaryRequest implements PlayerAction
     {
         /**
          * Constructs a GuessSummaryRequest.
