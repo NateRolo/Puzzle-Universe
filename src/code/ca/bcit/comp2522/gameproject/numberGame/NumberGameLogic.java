@@ -21,7 +21,7 @@ final class NumberGameLogic extends
     private static final int         NO_EMPTY_CELL_LEFT  = - 1;
     private static final int NO_EMPTY_CELL_RIGHT = BoardGame.MAX_RANDOM_NUMBER +
                                                     1;
-                                                    
+
     private static final int NO_GAMES_PLAYED      = 0;
     private static final int POSITION_INCREMENT   = 1;
 
@@ -112,8 +112,7 @@ final class NumberGameLogic extends
     boolean placeNumberOnBoard(final int position)
     {
         if(isGameOver() || isGameWon())
-        {
-            System.out.println("[Logic] Placement attempted but game is already over.");
+        {            
             return false;
         }
 
@@ -123,33 +122,22 @@ final class NumberGameLogic extends
             this.successfulPlacementsThisGame++;
 
             this.totalPlacements++;
-            System.out.printf("[Logic] Placed %d at %d. Placements this game: %d / Total: %d%n",
-                              this.currentNumber,
-                              position,
-                              this.successfulPlacementsThisGame,
-                              this.totalPlacements);
 
             if(isBoardFull())
             {
                 setGameWon(true);
 
                 this.gamesWon++;
-                System.out.println("[Logic] Board full. Game Won.");
             }
             else
             {
                 this.currentNumber = generateNumber();
-                System.out.printf("[Logic] Generated next number: %d%n",
-                                  this.currentNumber);
             }
 
             return true;
         }
         else
         {
-            System.out.printf("[Logic] Invalid placement: %d at position %d%n",
-                              this.currentNumber,
-                              position);
             return false;
         }
     }
@@ -228,9 +216,6 @@ final class NumberGameLogic extends
         playOneGame();
 
         this.currentNumber = generateNumber();
-        System.out.printf("[Logic] New Game Started (#%d). First number: %d%n",
-                          this.gamesPlayed,
-                          this.currentNumber);
     }
 
     /**
@@ -256,51 +241,7 @@ final class NumberGameLogic extends
         final boolean canPlace;
         canPlace = canPlaceCurrentNumber();
 
-        if(!canPlace)
-        {
-            System.out.println("[Logic] Game Over check: Cannot place current number.");
-        }
-
         return !canPlace;
-    }
-
-    /**
-     * Displays the current score statistics to the console.
-     * The statistics include:
-     * - Total number of games played
-     * - Number of games won and lost
-     * - Total successful number placements across all games
-     * - Average number of placements per game (if at least one game has been
-     * completed)
-     */
-    void showScore()
-    {
-        System.out.println("--- [Logic] Game Statistics ---");
-        System.out.printf("Games Played: %d%n",
-                          this.gamesPlayed);
-        System.out.printf("Games Won: %d%n",
-                          this.gamesWon);
-
-        final int gamesLost;
-        gamesLost = this.gamesPlayed - this.gamesWon;
-
-        System.out.printf("Games Lost: %d%n",
-                          gamesLost);
-        System.out.printf("Total Successful Placements (all games): %d%n",
-                          this.totalPlacements);
-
-        if(this.gamesPlayed > NO_GAMES_PLAYED)
-        {
-            final double avgPlacements;
-            avgPlacements = (double)this.totalPlacements / this.gamesPlayed;
-            System.out.printf("Average Placements per Game: %.2f%n",
-                              avgPlacements);
-        }
-        else
-        {
-            System.out.println("Average Placements per Game: N/A (No games completed)");
-        }
-        System.out.println("-------------------------------");
     }
 
     /**
