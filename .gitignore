@@ -28,8 +28,7 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-/COMP2522-TermProject-vM.docx
-/.cursor
+
 score.txt
 applications.txt
 prompts.txt
