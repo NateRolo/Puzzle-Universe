@@ -472,11 +472,11 @@ final class UIHandler
     }
 
     /**
-     * Displays the header for the guess summary.
+     * Displays the separator for the guess summary.
      */
-    void displayGuessSummaryHeader()
+    void displayGuessSummarySeparator()
     {
-        displayMessage("\n" + GUESS_SUMMARY_HEADER_FOOTER);
+        displayMessage("\n" + GUESS_SUMMARY_HEADER_FOOTER + "\n");
     }
 
     /**
@@ -495,14 +495,6 @@ final class UIHandler
     void displayNoGuessesMessage()
     {
         displayMessage("No guesses made yet.");
-    }
-
-    /**
-     * Displays the footer for the guess summary.
-     */
-    void displayGuessSummaryFooter()
-    {
-        displayMessage(GUESS_SUMMARY_HEADER_FOOTER);
     }
 
     /**

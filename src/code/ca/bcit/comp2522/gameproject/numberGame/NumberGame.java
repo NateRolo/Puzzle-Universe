@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import ca.bcit.comp2522.gameproject.Replayable;
+import ca.bcit.comp2522.gameproject.interfaces.Replayable;
 
 /**
  * Provides the Graphical User Interface (GUI) for the 20-Number Challenge game.

@@ -256,6 +256,12 @@ final class Score
         filePath       = Paths.get(DIR_SRC,
                                    DIR_RES,
                                    fileString);
+
+        if(Files.notExists(filePath))
+        {
+            Files.createFile(filePath);
+        }
+
         fullFilePathString = filePath.toString();
 
         scoreAsList = formatScore(score);
@@ -305,11 +311,23 @@ final class Score
         filePath       = Paths.get(DIR_SRC,
                                    DIR_RES,
                                    fileString);
+
+        if(Files.notExists(filePath))
+        {
+            Files.createFile(filePath);
+        }
+
         fullFilePathString = filePath.toString();
 
         scoresLines = FileManager.readLinesFromResource(fullFilePathString);
 
         validateList(scoresLines);
+
+        if(scoresLines.isEmpty())
+        {
+            scores = new ArrayList<>();
+            return scores;
+        }
 
         // parse file and create score object from stream
         scores = IntStream.range(INDEX_START,
@@ -564,12 +582,6 @@ final class Score
         {
             throw new IllegalArgumentException("File path cannot be null or empty");
         }
-
-        if(Files.notExists(Paths.get(DIR_SRC, DIR_RES, fileString)))
-        {
-            throw new IllegalArgumentException("File path does not exist in res: " +
-                                               fileString);
-        }
     }
 
     /*
@@ -579,9 +591,9 @@ final class Score
      */
     private static void validateList(final List<String> list)
     {
-        if(list == null || list.isEmpty())
+        if(list == null)
         {
-            throw new IllegalArgumentException("List cannot be null or empty");
+            throw new IllegalArgumentException("List cannot be null");
         }
     }
 

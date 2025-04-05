@@ -72,7 +72,7 @@ final class FileManager
 
             while((line = bufferedReader.readLine()) != null)
             {
-                lines.add(line);
+                lines.add(line.trim());
             }
         }
         catch(final IOException error)

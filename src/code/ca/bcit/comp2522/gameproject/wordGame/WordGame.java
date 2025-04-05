@@ -3,7 +3,7 @@ package ca.bcit.comp2522.gameproject.wordgame;
 import java.io.IOException;
 import java.util.Scanner;
 
-import ca.bcit.comp2522.gameproject.RoundBased;
+import ca.bcit.comp2522.gameproject.interfaces.RoundBased;
 
 /**
  * Launcher for the Word Game that implements the Playable interface.
@@ -32,8 +32,6 @@ public final class WordGame implements
     static final int         QUESTION_CAPITAL_CITY  = 0;
     static final int         QUESTION_COUNTRY       = 1;
     static final int         QUESTION_FACT          = 2;
-
-
 
     private static final Scanner scan = new Scanner(System.in);
 
