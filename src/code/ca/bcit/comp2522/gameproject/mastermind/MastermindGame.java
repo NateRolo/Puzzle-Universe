@@ -27,33 +27,33 @@ import ca.bcit.comp2522.gameproject.mastermind.UIHandler.MainMenuOption;
 public final class MastermindGame implements
                                   RoundBased
 {
-    private static final int          MAX_ROUNDS    = 12;
-    private static final TruthScanner TRUTH_SCANNER = new TruthScanner();
-    private static final String       YES           = "yes";
+    private static final int          MAX_ROUNDS      = 12;
+    private static final int          ROUND_INCREMENT = 1;
+    private static final TruthScanner TRUTH_SCANNER   = new TruthScanner();
+    
 
-    static final String TRUTH_SCAN_INPUT    = "t";
-    static final String GUESS_SUMMARY_INPUT = "g";
-
-    private static final int ROUND_INCREMENT = 1;
-
-    private static final String OUTCOME_WON  = "Won";
-    private static final String OUTCOME_LOST = "Lost";
+    private static final String OUTCOME_WON         = "Won";
+    private static final String OUTCOME_LOST        = "Lost";
+    private static final String YES                 = "yes";
+    static final String         INPUT_TRUTH_SCAN    = "t";
+    static final String         INPUT_GUESS_SUMMARY = "g";
 
     private final GameHistoryManager gameHistoryManager;
     private final UIHandler          uiHandler;
+    private final Scanner            scannerForUIHandler;
 
     private List<Round> rounds;
     private SecretCode  secretCode;
     private String      truthScanInfoForHistory;
 
     /**
-     * Constructs a new MastermindGame.
+     * Constructs a new MastermindGame. Initializes the game history manager and UI handler.
      */
     public MastermindGame()
     {
+        this.scannerForUIHandler = new Scanner(System.in);
         this.gameHistoryManager = new GameHistoryManager();
-        final Scanner scanner = new Scanner(System.in);
-        this.uiHandler = new UIHandler(scanner);
+        this.uiHandler = new UIHandler(scannerForUIHandler);
     }
 
     /**
@@ -143,7 +143,6 @@ public final class MastermindGame implements
         rounds     = new ArrayList<>();
         secretCode = SecretCode.generateRandomCode(Code.CODE_LENGTH);
 
-        System.out.println(secretCode); // code reveal for testing
         Round.resetDeceptiveRounds();
         TRUTH_SCANNER.resetTruthScanner();
         truthScanInfoForHistory = "Not Used";
@@ -158,7 +157,9 @@ public final class MastermindGame implements
     {
         uiHandler.displayWelcome();
         uiHandler.promptForPlayedBefore();
-        final String response = GuessHandler.getYesNoResponse();
+        final String response;
+
+        response = GuessHandler.getYesNoResponse();
 
         if(!response.equalsIgnoreCase(YES))
         {
@@ -195,11 +196,13 @@ public final class MastermindGame implements
     @Override
     public void playOneRound()
     {
-        final int roundNumber = rounds.size() + ROUND_INCREMENT;
+        final int          roundNumber;
+        final PlayerAction action;
+
+        roundNumber = rounds.size() + ROUND_INCREMENT;
         uiHandler.displayRoundHeader(roundNumber,
                                      MAX_ROUNDS);
 
-        final PlayerAction action;
         action = handlePlayerInput();
 
         if(action instanceof PlayerGuessCode playerGuess)
@@ -218,7 +221,9 @@ public final class MastermindGame implements
         uiHandler.displayGameOverHeader();
 
         final String        outcome;
-        final LocalDateTime endTime = LocalDateTime.now();
+        final LocalDateTime endTime;
+
+        endTime = LocalDateTime.now();
 
         if(rounds.isEmpty())
         {
@@ -346,8 +351,8 @@ public final class MastermindGame implements
     {
         while(true)
         {
-            uiHandler.promptForGuess(TRUTH_SCAN_INPUT,
-                                     GUESS_SUMMARY_INPUT);
+            uiHandler.promptForGuess(INPUT_TRUTH_SCAN,
+                                     INPUT_GUESS_SUMMARY);
 
             final PlayerAction input;
             try
@@ -361,8 +366,8 @@ public final class MastermindGame implements
                                                        Code.CODE_LENGTH,
                                                        Code.DIGIT_MIN,
                                                        Code.DIGIT_MAX,
-                                                       TRUTH_SCAN_INPUT,
-                                                       GUESS_SUMMARY_INPUT));
+                                                       INPUT_TRUTH_SCAN,
+                                                       INPUT_GUESS_SUMMARY));
                 continue;
             }
 
@@ -492,8 +497,8 @@ public final class MastermindGame implements
                                Code.DIGIT_MAX,
                                MAX_ROUNDS,
                                Round.DECEPTIVE_ROUNDS_ALLOWED,
-                               TRUTH_SCAN_INPUT,
-                               GUESS_SUMMARY_INPUT,
+                               INPUT_TRUTH_SCAN,
+                               INPUT_GUESS_SUMMARY,
                                Code.EXAMPLE_SECRET,
                                Code.EXAMPLE_GUESS,
                                Code.EXAMPLE_CORRECT_POSITIONS,
