@@ -1,4 +1,4 @@
-package ca.bcit.comp2522.gameproject;
+package ca.bcit.comp2522.gameproject.interfaces;
 
 /**
  * Interface for games that are played in rounds. Extends the {@link Replayable} interface.
@@ -11,6 +11,6 @@ public interface RoundBased extends Replayable
     /**
      * Plays one round of the game.
      */
-    public void playOneRound();
+    void playOneRound();
 
 }

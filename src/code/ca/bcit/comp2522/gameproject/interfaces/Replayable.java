@@ -1,4 +1,4 @@
-package ca.bcit.comp2522.gameproject;
+package ca.bcit.comp2522.gameproject.interfaces;
 
 /**
  * Represents games that can be played repeatedly, one game at a time.
