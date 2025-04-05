@@ -41,6 +41,45 @@ final class Feedback
         this.misplacedCount       = result[MISPLACED];
     }
 
+    /**
+     * Gets the count of digits in correct positions.
+     *
+     * @return number of correctly positioned digits
+     */
+    int getCorrectPositionCount()
+    {
+        return correctPositionCount;
+    }
+
+    /**
+     * Gets the count of correct digits in wrong positions.
+     *
+     * @return number of misplaced digits
+     */
+    int getMisplacedCount()
+    {
+        return misplacedCount;
+    }
+
+    /**
+     * Returns the feedback object as a formatted String.
+     *
+     * @return the feedback as a String
+     */
+    @Override
+    public String toString()
+    {
+        final StringBuilder result;
+
+        result = new StringBuilder();
+        result.append("Correct positions: ")
+              .append(correctPositionCount)
+              .append(", Misplaced: ")
+              .append(misplacedCount);
+
+        return result.toString();
+    }
+
     // comments
     private static void validateCodes(final Code secretCode,
                                       final Code guessCode)
@@ -123,39 +162,7 @@ final class Feedback
         return result;
     }
 
-    /**
-     * Gets the count of digits in correct positions.
-     *
-     * @return number of correctly positioned digits
-     */
-    int getCorrectPositionCount()
-    {
-        return correctPositionCount;
-    }
 
-    /**
-     * Gets the count of correct digits in wrong positions.
-     *
-     * @return number of misplaced digits
-     */
-    int getMisplacedCount()
-    {
-        return misplacedCount;
-    }
-
-    @Override
-    public String toString()
-    {
-        final StringBuilder result;
-
-        result = new StringBuilder();
-        result.append("Correct positions: ")
-              .append(correctPositionCount)
-              .append(", Misplaced: ")
-              .append(misplacedCount);
-
-        return result.toString();
-    }
 
 
 }

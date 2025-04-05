@@ -37,11 +37,11 @@ final class GuessHandler
                     .trim()
                     .toUpperCase();
 
-        if(input.equalsIgnoreCase(MastermindGame.TRUTH_SCAN_INPUT))
+        if(input.equalsIgnoreCase(MastermindGame.INPUT_TRUTH_SCAN))
         {
             return new PlayerAction.TruthScanRequest();
         }
-        else if(input.equalsIgnoreCase(MastermindGame.GUESS_SUMMARY_INPUT))
+        else if(input.equalsIgnoreCase(MastermindGame.INPUT_GUESS_SUMMARY))
         {
             return new PlayerAction.GuessSummaryRequest();
         }
