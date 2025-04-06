@@ -12,5 +12,4 @@ public interface RoundBased extends Replayable
      * Plays one round of the game.
      */
     void playOneRound();
-
 }
