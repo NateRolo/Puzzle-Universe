@@ -31,12 +31,12 @@ final class SecretCode extends Code
     /**
      * Generates a random secret code of the specified length.
      *
-     * @param length the desired length of the secret code
+     * @param codeLength the desired length of the secret code
      * @return a new SecretCode with random digits
      */
     static SecretCode generateRandomCode(final int codeLength)
     {
-        if (length != CODE_LENGTH)
+        if (codeLength != CODE_LENGTH)
         {
             throw new IllegalArgumentException("Code length must be 4");
         }
@@ -45,7 +45,7 @@ final class SecretCode extends Code
         final SecretCode generatedSecretCode;
         
         randomDigits = new ArrayList<>();
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < codeLength; i++)
         {
             randomDigits.add(RANDOM.nextInt(DIGIT_MAX) + DIGIT_MIN);
         }
