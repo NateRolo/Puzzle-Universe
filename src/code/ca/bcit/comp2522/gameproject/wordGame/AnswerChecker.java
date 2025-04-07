@@ -63,7 +63,7 @@ final class AnswerChecker
         handleSecondAttempt(expectedAnswer);
     }
 
-    /**
+    /*
      * Handles the second attempt for an incorrect answer.
      * <p>
      * Provides the user with one more chance to answer correctly and updates
@@ -95,7 +95,7 @@ final class AnswerChecker
         }
     }
 
-    /**
+    /*
      * Validates that the required dependencies are not null.
      *
      * @param scanner the Scanner to validate
@@ -114,7 +114,7 @@ final class AnswerChecker
         }
     }
 
-    /**
+    /*
      * Validates that the expected answer is not null or empty.
      *
      * @param expectedAnswer the answer to validate

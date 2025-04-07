@@ -46,7 +46,7 @@ public final class MastermindGame implements
     private String      truthScanInfoForHistory;
 
     /**
-     * Constructs a new MastermindGame. Initializes the game history manager and UI handler.
+     * Constructs a new MastermindGame. Initializes the GameHistoryManager and UIHandler.
      */
     public MastermindGame()
     {

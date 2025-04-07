@@ -1,11 +1,10 @@
 package ca.bcit.comp2522.gameproject;
 
-import java.util.Scanner;
-
 import ca.bcit.comp2522.gameproject.interfaces.Replayable;
 import ca.bcit.comp2522.gameproject.mastermind.MastermindGame;
 import ca.bcit.comp2522.gameproject.numbergame.NumberGame;
 import ca.bcit.comp2522.gameproject.wordgame.WordGame;
+import java.util.Scanner;
 
 /**
  * Main class for the game project.
@@ -36,7 +35,7 @@ public final class Main
     private static final String MENU_MASTERMIND  = " to play Mastermind - Deception\n";
 
     private static final String SEPARATOR = "----------------------------------------";
-    private static final String GREETING  = "WELCOME TO NATHAN'S GAME CORNER";
+    private static final String GREETING  = "WELCOME TO PUZZLE UNIVERSE";
 
     private static final String MESSAGE_INVALID_CHOICE = "Not a valid option, please select a valid game.";
     private static final String MESSAGE_EXIT           = "Exiting the game. Goodbye!";

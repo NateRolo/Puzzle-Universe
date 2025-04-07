@@ -142,7 +142,7 @@ final class FileManager
         }
     }
 
-    /**
+    /*
      * Validates that the input stream is not null.
      *
      * @param inputStream the input stream to validate

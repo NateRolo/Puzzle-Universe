@@ -150,6 +150,20 @@ final class World
         return countryExists;
     }
 
+     /**
+     * Gets the number of countries in the world.
+     * Returns the size of the countries map.
+     *
+     * @return the number of countries
+     */
+    int getCountryCount()
+    {
+        final int countryCount;
+        countryCount = countriesMap.size();
+
+        return countryCount;
+    }
+
     /*
      * Loads countries from all resource files defined in RESOURCE_FILES.
      * Iterates through each file path and calls loadCountriesFromFile for each
@@ -221,7 +235,7 @@ final class World
         for(int lineIndex = 0; lineIndex < lines.size(); lineIndex++)
         {
             final String  line;
-            final Country country;
+            final Country countryToAdd;
 
             line = lines.get(lineIndex);
             if(line.isEmpty())
@@ -255,31 +269,18 @@ final class World
                 }
 
                 // Create a new Country object with the extracted data
-                country = new Country(countryName,
+                countryToAdd = new Country(countryName,
                                       capitalName,
                                       facts[INDEX_FACT_FIRST],
                                       facts[INDEX_FACT_SECOND],
                                       facts[INDEX_FACT_THIRD]);
-                addCountry(country);
+                addCountry(countryToAdd);
                 lineIndex += LINES_TO_SKIP_AFTER_FACTS;
             }
         }
     }
 
-    /**
-     * Gets the number of countries in the world.
-     * Returns the size of the countries map.
-     *
-     * @return the number of countries
-     */
-    int getCountryCount()
-    {
-        final int countryCount;
-        countryCount = countriesMap.size();
-
-        return countryCount;
-    }
-
+   
     /*
      * Validates that a file path is not null, blank, and exists.
      * 

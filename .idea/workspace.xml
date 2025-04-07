@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="633a1d32-90d6-45df-9599-df61f1aeadcd" name="Changes" comment="" />
+    <list default="true" id="633a1d32-90d6-45df-9599-df61f1aeadcd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/code/ca/bcit/comp2522/gameproject/mastermind/MastermindGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/code/ca/bcit/comp2522/gameproject/mastermind/MastermindGame.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -188,6 +190,7 @@
       <workItem from="1743997234373" duration="123000" />
       <workItem from="1743997397380" duration="83000" />
       <workItem from="1743997931973" duration="188000" />
+      <workItem from="1744045730019" duration="16000" />
     </task>
     <servers />
   </component>
