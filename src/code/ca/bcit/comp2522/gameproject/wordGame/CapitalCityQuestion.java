@@ -10,7 +10,8 @@ package ca.bcit.comp2522.gameproject.wordgame;
  * @author Nathan O
  * @version 1.0 2025
  */
-final class CapitalCityQuestion extends Question
+final class CapitalCityQuestion extends
+                                Question
 {
     /**
      * Constructs a new CapitalCityQuestion with the specified country.
@@ -30,7 +31,19 @@ final class CapitalCityQuestion extends Question
     @Override
     String createPrompt()
     {
-        return country.getCapitalCityName() + "is the capital of what country?";
+        final StringBuilder promptBuilder;
+        final String        capitalCityName;
+        final String        promptString;
+
+        promptBuilder   = new StringBuilder();
+        capitalCityName = country.getCapitalCityName();
+
+        promptBuilder.append(capitalCityName)
+                     .append(" is the capital of what country?");
+
+        promptString = promptBuilder.toString();
+
+        return promptString;
     }
 
     /**
@@ -41,6 +54,9 @@ final class CapitalCityQuestion extends Question
     @Override
     String getExpectedAnswer()
     {
-        return country.getName();
+        final String countryName;
+        countryName = country.getCountryName();
+
+        return countryName;
     }
 }

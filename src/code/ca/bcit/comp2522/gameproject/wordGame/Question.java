@@ -16,11 +16,6 @@ abstract class Question
      * The country associated with this question.
      */
     final Country country;
-    
-    /**
-     * The text prompt for this question.
-     */
-    final String prompt;
 
     /**
      * Constructs a new Question with the specified country.
@@ -36,30 +31,18 @@ abstract class Question
     {
         validateCountry(country);
         this.country = country;
-        this.prompt = createPrompt();
     }
 
     /**
-     * Validates that the country parameter is not null.
-     *
-     * @param country the Country object to validate
-     * @throws NullPointerException if country is null
-     */
-    private static void validateCountry(final Country country)
-    {
-        if(country == null)
-        {
-            throw new NullPointerException("Country cannot be null");
-        }
-    }
-
-    /**
-     * Gets the prompt for this question.
+     * Gets the prompt for this question by calling createPrompt.
      *
      * @return the question prompt as a String
      */
     final String getPrompt()
     {
+        final String prompt;
+        prompt = createPrompt();
+        
         return prompt;
     }
 
@@ -84,4 +67,18 @@ abstract class Question
      * @return a String containing the expected answer
      */
     abstract String getExpectedAnswer();
+
+    /**
+     * Validates that the country parameter is not null.
+     *
+     * @param country the Country object to validate
+     * @throws NullPointerException if country is null
+     */
+    private static void validateCountry(final Country country)
+    {
+        if(country == null)
+        {
+            throw new NullPointerException("Country cannot be null");
+        }
+    }
 }

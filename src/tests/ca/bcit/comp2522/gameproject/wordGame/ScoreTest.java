@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ScoreTest {
 
+    private static final String SCORE_DIR = "src/res/";
     private static final String SCORE_FILE = "test_score.txt";
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -41,7 +42,7 @@ class ScoreTest {
         String expected = String.format(
                 "Date and Time: %s\nGames Played: 1\nCorrect First Attempts: 6\nCorrect Second Attempts: 2\nIncorrect Attempts: 1\nScore: 14 points\n",
                 dateTime.format(formatter)
-        );
+                                       );
 
         assertEquals(expected, score.toString(), "The toString format should match the expected format.");
     }
@@ -138,6 +139,6 @@ class ScoreTest {
     @AfterEach
     void tearDown() {
         // Clean up by deleting the test score file after each test
-        new File(SCORE_FILE).delete();
+        new File(SCORE_DIR + SCORE_FILE).delete();
     }
 }

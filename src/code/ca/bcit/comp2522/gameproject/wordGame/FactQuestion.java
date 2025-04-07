@@ -1,7 +1,8 @@
 package ca.bcit.comp2522.gameproject.wordgame;
 
 /**
- * Represents a question about identifying a country based on an interesting fact.
+ * Represents a question about identifying a country based on an interesting
+ * fact.
  * <p>
  * This class extends the Question class to create questions where the user
  * is given a random fact about a country and must identify which country
@@ -11,7 +12,8 @@ package ca.bcit.comp2522.gameproject.wordgame;
  * @author Nathan O
  * @version 1.0 2025
  */
-class FactQuestion extends Question
+class FactQuestion extends
+                   Question
 {
     private final int factIndex;
 
@@ -24,7 +26,11 @@ class FactQuestion extends Question
     FactQuestion(Country country)
     {
         super(country);
-        this.factIndex = (int)(Math.random() * country.getFacts().length);
+
+        final int randomIndex;
+        randomIndex = (int)(Math.random() * country.getFacts().length);
+
+        this.factIndex = randomIndex;
     }
 
     /**
@@ -33,9 +39,22 @@ class FactQuestion extends Question
      * @return a string containing the question prompt with the selected fact
      */
     @Override
-    protected String createPrompt()
+    String createPrompt()
     {
-        return country.getFacts()[factIndex] + "\nWhat country is this fact describing?";
+        final StringBuilder promptBuilder;
+        final String        countryFact;
+        final String        promptString;
+
+        promptBuilder = new StringBuilder();
+        countryFact   = country.getFacts()[factIndex];
+
+        promptBuilder.append(countryFact)
+                     .append("\n")
+                     .append("What country is this fact describing?");
+
+        promptString = promptBuilder.toString();
+
+        return promptString;
     }
 
     /**
@@ -44,8 +63,11 @@ class FactQuestion extends Question
      * @return the name of the country as the expected answer
      */
     @Override
-    protected String getExpectedAnswer()
+    String getExpectedAnswer()
     {
-        return country.getName();
+        final String countryName;
+        countryName = country.getCountryName();
+
+        return countryName;
     }
 }

@@ -24,7 +24,7 @@ import java.util.List;
  * @author Nathan O
  * @version 1.0 2025
  */
-class FileManager
+final class FileManager
 {
     /**
      * Reads lines from a resource file.
@@ -33,13 +33,13 @@ class FileManager
      * in the file system, attempts to read it from the classpath resources.
      * </p>
      *
-     * @param filePath path to the resource file
+     * @param pathString path to the resource file
      * @return List of strings, each representing a line from the file
      * @throws IOException if file cannot be read
      */
-    static List<String> readLinesFromResource(final String filePath) throws IOException
+    static List<String> readLinesFromResource(final String pathString) throws IOException
     {
-        validateFilePath(filePath);
+        validatePathString(pathString);
 
         final List<String>      lines;
         final InputStream       inputStream;
@@ -47,19 +47,20 @@ class FileManager
         final BufferedReader    bufferedReader;
         final Path              path;
 
-        path = Paths.get(filePath);
+        path = Paths.get(pathString);
+
         if(Files.exists(path))
         {
-            return Files.readAllLines(path);
+            final List<String> allLines;
+            allLines = Files.readAllLines(path);
+
+            return allLines;
         }
 
         lines       = new ArrayList<>();
-        inputStream = FileManager.class.getResourceAsStream(filePath);
+        inputStream = FileManager.class.getResourceAsStream(pathString);
 
-        if(inputStream == null)
-        {
-            throw new IOException("Resource not found: " + filePath);
-        }
+        validateInputStream(inputStream);
 
         inputStreamReader = new InputStreamReader(inputStream,
                                                   StandardCharsets.UTF_8);
@@ -68,10 +69,15 @@ class FileManager
         try(inputStream; bufferedReader)
         {
             String line;
+
             while((line = bufferedReader.readLine()) != null)
             {
-                lines.add(line);
+                lines.add(line.trim());
             }
+        }
+        catch(final IOException error)
+        {
+            error.printStackTrace();
         }
         return lines;
     }
@@ -83,26 +89,26 @@ class FileManager
      * </p>
      *
      * @param formattedScore list of strings to write to the file
-     * @param file           path to the file where data should be written
+     * @param pathString       path to the file where data should be written
      * @throws FileNotFoundException if the file path is invalid
      */
     static void writeToResource(final List<String> formattedScore,
-                                final String file) throws FileNotFoundException
+                                final String pathString) throws FileNotFoundException
     {
         validateFormattedScore(formattedScore);
-        validateFilePath(file);
+        validatePathString(pathString);
 
         try
         {
             final Path scorePath;
-            scorePath = Paths.get(file);
+            scorePath = Paths.get(pathString);
 
             Files.write(scorePath,
                         formattedScore,
                         StandardOpenOption.CREATE,
                         StandardOpenOption.APPEND);
         }
-        catch(IOException error)
+        catch(final IOException error)
         {
             error.printStackTrace();
         }
@@ -126,11 +132,26 @@ class FileManager
      *
      * @param file the file path to validate
      */
-    private static void validateFilePath(final String file) throws FileNotFoundException
+    private static void validatePathString(final String pathString) throws FileNotFoundException
     {
-        if(file == null || file.isBlank() || Files.notExists(Paths.get(file)))
+        if(pathString == null ||
+           pathString.isBlank() ||
+           Files.notExists(Paths.get(pathString)))
         {
             throw new FileNotFoundException("Invalid file path");
+        }
+    }
+
+    /**
+     * Validates that the input stream is not null.
+     *
+     * @param inputStream the input stream to validate
+     */
+    private static void validateInputStream(final InputStream inputStream)
+    {
+        if(inputStream == null)
+        {
+            throw new IllegalArgumentException("Input stream cannot be null");
         }
     }
 }

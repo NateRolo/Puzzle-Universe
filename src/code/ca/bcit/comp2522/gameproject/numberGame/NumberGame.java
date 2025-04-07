@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,19 +13,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import ca.bcit.comp2522.gameproject.Playable;
+import ca.bcit.comp2522.gameproject.interfaces.Replayable;
 
 /**
  * Provides the Graphical User Interface (GUI) for the 20-Number Challenge game.
  * Handles user interaction, displays the game board and status, and interacts
  * with the NumberGameLogic class for game state management and rules.
- * Implements the Playable interface to be launchable from a main menu.
+ * Implements the Replayable interface to be launchable from a main menu.
  *
  * @author Nathan O
- * @version 1.1 2025
+ * @version 1.2 2025
  */
-public class NumberGameGUI implements
-                           Playable
+public final class NumberGame implements
+                              Replayable
 {
     private static final int    GRID_ROWS         = 4;
     private static final int    GRID_COLS         = 5;
@@ -34,8 +35,11 @@ public class NumberGameGUI implements
     private static final String INITIAL_MESSAGE   = "Click 'Try Again' to start a new game.";
     private static final int    BOARD_SIZE        = GRID_ROWS * GRID_COLS;
     private static final int    NO_GAMES_PLAYED   = 0;
-    private static final int    TRY_AGAIN         = 0;
+    private static final int    PLAY             = 0;
+    private static final int    QUIT             = 1;
 
+
+    private final Object          lockObject = new Object();
     private final NumberGameLogic gameLogic;
 
     private JFrame    frame;
@@ -47,7 +51,7 @@ public class NumberGameGUI implements
      * Initializes the game logic and creates the user interface.
      */
 
-    public NumberGameGUI()
+    public NumberGame()
     {
         this.gameLogic = new NumberGameLogic();
     }
@@ -55,59 +59,138 @@ public class NumberGameGUI implements
     /**
      * Implementation of the Playable interface.
      * Ensures the game window is visible and ready for interaction.
-     * This might be called from an external launcher/main menu.
+     * This method now blocks the calling thread until the game window is
+     * closed.
      */
     @Override
     public void play()
     {
-        SwingUtilities.invokeLater(() ->
-        {
-            boolean wasJustCreated;
+        try
+        {            
+            SwingUtilities.invokeAndWait(this::createAndShowGUI);
 
-            wasJustCreated = false;
-            if(frame == null)
-            {
-                createGUI();
-                wasJustCreated = true;
-            }
-
-            if(frame != null)
-            {
-                frame.setVisible(true);
-                frame.toFront();
-                frame.requestFocus();
-
-                if(wasJustCreated)
+            // Wait until the window is closed
+            synchronized(lockObject)
+            {            
+                while(frame != null && frame.isDisplayable())
                 {
-                    showWelcomeMessage();
+                    lockObject.wait(); 
                 }
             }
-            else
+        }
+        catch(final InterruptedException |
+              InvocationTargetException e)
+        {
+            System.err.println("Error while waiting for NumberGame to finish: " +
+                               e.getMessage());
+            Thread.currentThread()
+                  .interrupt(); 
+
+            concludeGame();
+        }
+        finally
+        {            
+            synchronized(lockObject)
             {
-                System.err.println("Error: Frame is null even after createGUI attempt in play()!");
+                frame = null; 
+            }
+        }
+    }
+
+    /**
+     * Helper method to encapsulate GUI creation and display logic.
+     * Intended to be called via SwingUtilities.invokeAndWait or invokeLater.
+     */
+    private void createAndShowGUI()
+    {
+        boolean wasJustCreated = false;
+        if(frame == null)
+        {
+            createGUI();
+            wasJustCreated = true;
+        }
+
+        if(frame != null)
+        {
+            frame.setVisible(true);
+            frame.toFront();
+            frame.requestFocus();
+
+            if(wasJustCreated)
+            {
+                showWelcomeMessage();
+            }
+        }
+        else
+        {
+            System.err.println("Error: Frame is null even after createGUI attempt!");
+        }
+    }
+
+    /**
+     * Starts a new game by resetting the logic and updating the GUI.
+     */
+    @Override
+    public void playOneGame()
+    {
+        gameLogic.startNewGame();
+        updateGUIState();
+
+        if(gameLogic.isGameOver())
+        {
+            handleGameLost(gameLogic.getNextNumber());
+        }
+    }
+
+    /**
+     * Concludes the game session by disposing of the main game window.
+     * Implements the method required by the Replayable interface.
+     * Note: This might be called externally, but closing the window via 'X'
+     * is the primary way the game ends for the user.
+     */
+    @Override
+    public void concludeGame()
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            if(frame != null)
+            {
+                frame.dispose(); 
             }
         });
     }
 
     /**
-     * Initializes and sets up the main graphical user interface components for the game.
-     * This includes creating the main frame, status label, grid panel with buttons,
+     * Initializes and sets up the main graphical user interface components for
+     * the game.
+     * This includes creating the main frame, status label, grid panel with
+     * buttons,
      * setting layouts, and adding necessary event listeners.
      */
-    private final void createGUI()
+    private void createGUI()
     {
         final JPanel gridPanel;
 
         frame = new JFrame(WINDOW_TITLE);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        // Add a window listener to detect when the game window is closed
         frame.addWindowListener(new WindowAdapter()
         {
             @Override
             public void windowClosed(final WindowEvent e)
             {
+                // Check if at least one game was played before closing
                 if(gameLogic.getGamesPlayed() > NO_GAMES_PLAYED)
                 {
+                    // Display the final score summary when the window is closed
                     showFinalScoreMessage();
+                }
+                // Notify the waiting thread (in play()) that the game window is closed            
+                synchronized(lockObject)
+                {
+                    NumberGame.this.frame = null;
+                    lockObject.notifyAll(); 
+                                           
                 }
             }
         });
@@ -128,7 +211,7 @@ public class NumberGameGUI implements
         {
             final int position;
             position = i;
-            
+
             buttons[position] = new JButton(EMPTY_BUTTON_TEXT);
             buttons[position].addActionListener(e -> handleButtonClick(position));
             buttons[position].setEnabled(false);
@@ -143,26 +226,13 @@ public class NumberGameGUI implements
     }
 
     /*
-     * Starts a new game by resetting the logic and updating the GUI.
-     */
-    private final void startNewGame()
-    {
-        gameLogic.startNewGame();
-        updateGUIState();
-
-        if(gameLogic.isGameOver())
-        {
-            handleGameLost(gameLogic.getNextNumber());
-        }
-    }
-
-    /*
      * Handles the logic when a grid button is clicked.
-     * Delegates placement attempt to game logic and updates GUI based on outcome.
+     * Delegates placement attempt to game logic and updates GUI based on
+     * outcome.
      *
      * @param position The 0-based index of the clicked button.
      */
-    private final void handleButtonClick(final int position)
+    private void handleButtonClick(final int position)
     {
         final int     numberToPlace;
         final boolean placementSuccess;
@@ -198,9 +268,6 @@ public class NumberGameGUI implements
         }
         else
         {
-            System.out.printf("[GUI] Invalid click on pos %d for number %d.%n",
-                              position,
-                              numberToPlace);
         }
     }
 
@@ -209,7 +276,7 @@ public class NumberGameGUI implements
      * Updates the GUI elements (buttons, status label) to reflect the current
      * game state obtained from NumberGameLogic.
      */
-    private final void updateGUIState()
+    private void updateGUIState()
     {
         final int[]   currentBoard;
         final boolean gameOver;
@@ -248,7 +315,7 @@ public class NumberGameGUI implements
             else
             {
                 buttons[i].setText(EMPTY_BUTTON_TEXT);
-                buttons[i].setEnabled(! gameOver);
+                buttons[i].setEnabled(!gameOver);
             }
         }
     }
@@ -257,40 +324,38 @@ public class NumberGameGUI implements
      * Shows an initial welcome message with instructions.
      * Offers "Try Again" (start game) and "Quit" options.
      */
-    private final void showWelcomeMessage()
+    private void showWelcomeMessage()
     {
         final String[] options;
         final int      choice;
 
-        options = new String[] {"Try Again", "Quit"};
+        options = new String[] {"Play", "Quit"};
         choice  = JOptionPane.showOptionDialog(frame,
-                                               "Welcome to the 20-Number Challenge! Click 'Try Again' to start.",
+                                               "Welcome to the 20-Number Challenge! Click 'Play' to start.",
                                                "Game Start",
                                                JOptionPane.YES_NO_OPTION,
                                                JOptionPane.INFORMATION_MESSAGE,
                                                null,
                                                options,
-                                               options[TRY_AGAIN]);
+                                               options[PLAY]);
 
-        if(choice == JOptionPane.YES_OPTION)
+        if(choice == PLAY)
         {
-            startNewGame();
+            playOneGame();
         }
         else
         {
-            frame.dispose();
+            concludeGame();
         }
     }
 
     /*
      * Handles the display and actions for the game win condition.
      */
-    private final void handleGameWon()
+    private void handleGameWon()
     {
         final int choice;
-
-        System.out.println("[GUI] Handling Game Won.");
-        gameLogic.showScore();
+        
 
         choice = JOptionPane.showConfirmDialog(frame,
                                                buildScoreString(true),
@@ -299,11 +364,11 @@ public class NumberGameGUI implements
                                                JOptionPane.INFORMATION_MESSAGE);
         if(choice == JOptionPane.YES_OPTION)
         {
-            startNewGame();
+            playOneGame();
         }
         else
         {
-            frame.dispose();
+            concludeGame();
         }
     }
 
@@ -312,19 +377,25 @@ public class NumberGameGUI implements
      *
      * @param impossibleNumber The number that could not be placed.
      */
-    private final void handleGameLost(final int impossibleNumber)
+    private void handleGameLost(final int impossibleNumber)
     {
+        final StringBuilder fullMsgBuilder;
+
         final String lossMsg;
         final String fullMsg;
         final int    choice;
 
-        System.out.printf("[GUI] Handling Game Lost (Cannot place %d).%n",
-                          impossibleNumber);
-        gameLogic.showScore();
+        fullMsgBuilder = new StringBuilder();
 
         lossMsg = String.format("Impossible to place the next number: %d.",
                                 impossibleNumber);
-        fullMsg = lossMsg + "\n" + buildScoreString(false);
+
+        fullMsgBuilder.append(lossMsg);
+        fullMsgBuilder.append("\n");
+        fullMsgBuilder.append(buildScoreString(false));
+        fullMsgBuilder.append("\n");
+        fullMsgBuilder.append("Do you want to play again?");
+        fullMsg = fullMsgBuilder.toString();
 
         choice = JOptionPane.showConfirmDialog(frame,
                                                fullMsg,
@@ -334,21 +405,19 @@ public class NumberGameGUI implements
 
         if(choice == JOptionPane.YES_OPTION)
         {
-            startNewGame();
+            playOneGame();
         }
         else
         {
-            frame.dispose();
+            concludeGame();
         }
     }
 
     /*
      * Shows a final message with the overall score when the window is closed.
      */
-    private final void showFinalScoreMessage()
+    private void showFinalScoreMessage()
     {
-        System.out.println("[GUI] Window Closed - Showing Final Stats.");
-
         JOptionPane.showMessageDialog(null,
                                       buildScoreString(gameLogic.isGameWon()),
                                       "Final Score",
@@ -356,12 +425,15 @@ public class NumberGameGUI implements
     }
 
     /*
-     * Builds a string summarizing the current score status using data from gameLogic.
+     * Builds a string summarizing the current score status using data from
+     * gameLogic.
      *
-     * @param gameJustWon Hint whether the last game ended in a win (for phrasing).
+     * @param gameJustWon Hint whether the last game ended in a win (for
+     * phrasing).
+     * 
      * @return A formatted string with score details.
      */
-    private final String buildScoreString(final boolean gameJustWon)
+    private String buildScoreString(final boolean gameJustWon)
     {
         final int    played;
         final int    won;
@@ -371,6 +443,7 @@ public class NumberGameGUI implements
         final String placementInfo;
         final double avgPlacements;
         final String firstLine;
+        final String scoreResults;
 
         played      = gameLogic.getGamesPlayed();
         won         = gameLogic.getGamesWon();
@@ -394,10 +467,13 @@ public class NumberGameGUI implements
             placementInfo = "No games completed yet.";
         }
 
-        firstLine = gameJustWon ? "You Won! Game Stats:" : "Game Over! Stats:";
-        return String.format("%s\n%s\n%s",
+        firstLine = gameJustWon ? "You Won! Game Stats:" : "Stats:";
+
+        scoreResults = String.format("%s\n%s\n%s",
                              firstLine,
                              winLossRatio,
                              placementInfo);
+        
+        return scoreResults;
     }
 }

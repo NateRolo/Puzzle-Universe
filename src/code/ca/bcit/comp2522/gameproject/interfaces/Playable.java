@@ -1,4 +1,4 @@
-package ca.bcit.comp2522.gameproject;
+package ca.bcit.comp2522.gameproject.interfaces;
 
 /**
  * Represents an entity or action that can be "played" or executed.
@@ -15,3 +15,4 @@ public interface Playable
      */
     void play();
 }
+

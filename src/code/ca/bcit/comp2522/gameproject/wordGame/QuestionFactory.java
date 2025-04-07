@@ -21,7 +21,8 @@ final class QuestionFactory
      * </p>
      *
      * @param country      the country to create a question about
-     * @param questionType the type of question to create (must be one of the constants defined in WordGameLauncher)
+     * @param questionType the type of question to create (must be one of the
+     *                     constants defined in WordGameLauncher)
      * @return a new Question instance of the specified type
      */
     static Question createQuestion(final Country country,
@@ -29,13 +30,17 @@ final class QuestionFactory
     {
         validateCountry(country);
 
-        return switch(questionType)
+        final Question question;
+
+        switch(questionType)
         {
-            case WordGameLauncher.CAPITAL_CITY_QUESTION -> new CapitalCityQuestion(country);
-            case WordGameLauncher.COUNTRY_QUESTION -> new CountryQuestion(country);
-            case WordGameLauncher.FACT_QUESTION -> new FactQuestion(country);
+            case WordGame.QUESTION_CAPITAL_CITY -> question = new CapitalCityQuestion(country);
+            case WordGame.QUESTION_COUNTRY -> question = new CountryQuestion(country);
+            case WordGame.QUESTION_FACT -> question = new FactQuestion(country);
             default -> throw new IllegalArgumentException("Invalid question type");
-        };
+        }
+
+        return question;
     }
 
     /**

@@ -42,13 +42,15 @@ final class SecretCode extends Code
         }
 
         final List<Integer> randomDigits;
+        final SecretCode generatedSecretCode;
         
         randomDigits = new ArrayList<>();
         for (int i = 0; i < length; i++)
         {
-            randomDigits.add(RANDOM.nextInt(MAX_DIGIT) + MIN_DIGIT);
+            randomDigits.add(RANDOM.nextInt(DIGIT_MAX) + DIGIT_MIN);
         }
+        generatedSecretCode = new SecretCode(randomDigits);
 
-        return new SecretCode(randomDigits);
+        return generatedSecretCode;
     }
 }

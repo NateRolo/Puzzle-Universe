@@ -6,92 +6,115 @@ import java.util.List;
  * Handles the truth scan functionality in the Mastermind game.
  * <p>
  * This class encapsulates the logic for revealing true feedback
- * for potentially deceptive rounds.
+ * for potentially deceptive rounds and tracks scan usage.
  * </p>
  *
  * @author Nathan O
- * @version 1.0 2025
+ * @version 1.1 2025 
  */
 final class TruthScanner
 {
-    private static final int INCREMENT = 1;
+    private static final int ROUND_INCREMENT = 1;
+    private static final int ROUND_MINIMUM = 0;
+    private static final int DEFAULT_ROUND_SCAN_INITIATED = -1;
+    private static final int DEFAULT_ROUND_SCANNED = -1;
     
-    private boolean truthScanUsed;
+    // Tracking scan usage for history
+    private int     roundScanInitiatedIn = DEFAULT_ROUND_SCAN_INITIATED;
+    private int     roundScanned = DEFAULT_ROUND_SCANNED;
+    private boolean truthScanUsedThisGame;
     
     /**
      * Constructs a new TruthScanner.
+     * Initializes scan usage state.
      */
     TruthScanner()
     {
-        this.truthScanUsed = false;
+        resetTruthScanner(); 
     }
     
     /**
-     * Handles a truth scan request.
-     * 
-     * @param rounds the list of game rounds
-     * @param secretCode the secret code
+     * Handles a truth scan request, performs the scan, and returns info for history.
+     * Checks if scan is available, prompts for target round, reveals truth if needed,
+     * updates internal state, and returns a descriptive string or null.
+     *
+     * @param rounds The list of game rounds played so far.
+     * @param secretCode The secret code for the current game.
+     * @return A formatted string describing the scan action (e.g., "Used in Round 5, targeting Round 3 (Deceptive)")
+     *         if the scan was successfully completed, otherwise returns null (e.g., if already used, no rounds, or cancelled).
      */
-    boolean handleTruthScanRequest(final List<Round> rounds,
-                                         final SecretCode secretCode)
+    final String handleTruthScanRequestAndGetInfo(final List<Round> rounds,
+                                                  final SecretCode secretCode)
     {
-        if (truthScanUsed)
+        if (truthScanUsedThisGame)
         {
-            System.out.println("You have already used your truth scan!");
-            return false;
+            // Scan already used
+            System.out.println("You have already used your truth scan this game!");
+            return null;
         }
         
         if (rounds.isEmpty())
         {
+            // No previous rounds to scan
             System.out.println("No previous rounds to scan!");
-            return false;
+            return null;
         }
 
-        useTruthScan(rounds, secretCode);
-        return true;
-    }
-    
-    /**
-     * Performs the truth scan on a selected round.
-     * 
-     * @param rounds the list of game rounds
-     * @param secretCode the secret code
-     */
-    private void useTruthScan(final List<Round> rounds,
-                             final SecretCode secretCode)
-    {
-        final int   roundNumber;
-        final Round round;
+        final int currentRoundNumber;
+        final int targetRoundNumber;
+        final Round selectedRound;
+        final String scanResultDescription;
 
-        roundNumber = InputHandler.getRoundNumberForScan(rounds.size());
-        round       = rounds.get(roundNumber - INCREMENT);
+        currentRoundNumber = rounds.size() + ROUND_INCREMENT;
+        targetRoundNumber = GuessHandler.getRoundNumberForScan(rounds.size());
 
-        if (round.isDeceptiveRound())
+        if (targetRoundNumber <= ROUND_MINIMUM)
         {
-            final Feedback trueFeedback = new Feedback(secretCode, round.getGuess());
-            System.out.println("True feedback for round " + roundNumber + ":");
+             System.out.println("Truth Scan cancelled.");
+             return null;
+        }
+
+        selectedRound = rounds.get(targetRoundNumber - ROUND_INCREMENT);
+
+        // Perform the scan logic    
+        if (selectedRound.isDeceptiveRound())
+        {
+            final Feedback trueFeedback;
+            trueFeedback = new Feedback(secretCode, selectedRound.getGuess());
+
+            System.out.println("Revealing true feedback for round " + targetRoundNumber + ":");
             System.out.println(trueFeedback);
+
+            // Reveal the truth
+            selectedRound.revealTruth(); 
+            scanResultDescription = String.format("Used in Round %d, targeting Round %d (Deceptive - Truth Revealed)",
+                                                currentRoundNumber,
+                                                targetRoundNumber);
         }
         else
         {
-            System.out.println("This round was not deceptive!");
+            System.out.println("Round " + targetRoundNumber + " was not deceptive! Scan used, but no change.");
+            // Even if not deceptive, the scan attempt counts as used
+            scanResultDescription = String.format("Used in Round %d, targeting Round %d (Not Deceptive)",
+                                                currentRoundNumber,
+                                                targetRoundNumber);
         }
-        
-        truthScanUsed = true;
+
+        // Mark scan as used for this game and store details
+        this.truthScanUsedThisGame = true;
+        this.roundScanInitiatedIn  = currentRoundNumber;
+        this.roundScanned          = targetRoundNumber;
+
+        return scanResultDescription; 
     }
     
     /**
-     * Checks if the truth scan has been used.
-     * 
-     * @return true if the truth scan has been used, false otherwise
+     * Resets the truth scanner state for a new game.
      */
-    boolean isTruthScanUsed()
+    final void resetTruthScanner()
     {
-        return truthScanUsed;
-    }
-
-    void resetTruthScanner()
-    {
-        this.truthScanUsed = false;
+        this.truthScanUsedThisGame = false;
+        this.roundScanInitiatedIn  = DEFAULT_ROUND_SCAN_INITIATED;
+        this.roundScanned          = DEFAULT_ROUND_SCANNED;
     }
 } 

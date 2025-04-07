@@ -1,245 +1,286 @@
 package ca.bcit.comp2522.gameproject.mastermind;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
-import ca.bcit.comp2522.gameproject.Playable;
+import ca.bcit.comp2522.gameproject.interfaces.RoundBased;
+import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRecord;
+import ca.bcit.comp2522.gameproject.mastermind.UIHandler.HistoryMenuOption;
+import ca.bcit.comp2522.gameproject.mastermind.UIHandler.MainMenuOption;
 
 /**
  * Main controller for the Mastermind game.
  * <p>
  * This class coordinates all game components and manages the main game loop,
- * including handling player input, tracking rounds, and managing deception.
+ * including handling player input, tracking rounds, managing deception,
+ * and interacting with game history.
  * </p>
  *
  * @author Nathan O
- * @version 1.1 2025
+ * @version 1.4 2025
  */
 public final class MastermindGame implements
-                                  Playable
+                                  RoundBased
 {
-    private static final int          MAX_ROUNDS    = 12;
-    private static final int          CODE_LENGTH   = 4;
-    private static final TruthScanner TRUTH_SCANNER = new TruthScanner();
-    private static final String       YES           = "yes";
+    private static final int          MAX_ROUNDS      = 12;
+    private static final int          ROUND_INCREMENT = 1;
+    private static final TruthScanner TRUTH_SCANNER   = new TruthScanner();
+    
 
-    private static final int INCREMENT = 1;
+    private static final String OUTCOME_WON         = "Won";
+    private static final String OUTCOME_LOST        = "Lost";
+    private static final String YES                 = "yes";
+    static final String         INPUT_TRUTH_SCAN    = "t";
+    static final String         INPUT_GUESS_SUMMARY = "g";
 
-    private static final String SEPARATOR_LINE      = "----------------------------------------";
-    private static final String GAME_OVER_SEPARATOR = "=========== GAME OVER ============";
-    private static final String NEW_GAME_SEPARATOR  = "+++++++++++ NEW GAME +++++++++++";
-
-    private static final String GAME_OVER_MESSAGE = "Game Over! The secret code was: %s";
-    private static final String WIN_MESSAGE       = "Congratulations! You won in %d rounds!";
-
-    private static final String RULES = """
-                                        === MASTERMIND GAME RULES ===
-                                        1. The computer will generate a secret code of 4 digits (1-6).
-                                        2. You have 12 attempts to guess the code correctly.
-                                        3. After each guess, you'll receive feedback:
-                                           - Number of digits in the correct position
-                                           - Number of correct digits in the wrong position
-
-                                        SPECIAL MECHANICS:
-                                        * Deceptive Rounds: Up to 3 rounds may give slightly altered feedback
-                                          (marked with a '?')
-                                        * Truth Scan: Once per game, you can reveal the true feedback of a
-                                          previous round. Use this wisely!
-
-                                        EXAMPLE:
-                                        Secret Code: 1234
-                                        Your Guess: 1356
-                                        Feedback: Correct positions: 1, Misplaced: 1
-                                        (1 is correct position, 3 is right digit wrong position)
-
-                                        Are you ready to start? (yes/no): """;
+    private final GameHistoryManager gameHistoryManager;
+    private final UIHandler          uiHandler;
+    private final Scanner            scannerForUIHandler;
 
     private List<Round> rounds;
     private SecretCode  secretCode;
+    private String      truthScanInfoForHistory;
 
     /**
-     * Constructs a new MastermindGame.
+     * Constructs a new MastermindGame. Initializes the game history manager and UI handler.
      */
     public MastermindGame()
     {
+        this.scannerForUIHandler = new Scanner(System.in);
+        this.gameHistoryManager = new GameHistoryManager();
+        this.uiHandler = new UIHandler(scannerForUIHandler);
     }
 
     /**
-     * Starts and manages the game session, allowing for multiple games.
+     * Presents the main menu and manages the overall application flow.
      */
     @Override
     public void play()
     {
-        if(! handleGameIntroduction())
+        MainMenuOption choice;
+        do
+        {
+            uiHandler.displayMainMenu();
+            choice = uiHandler.getMainMenuChoice();
+
+            switch(choice)
+            {
+                case PLAY_GAME -> playOneGame();
+                case VIEW_HISTORY -> handleViewHistoryMenu();
+                case EXIT -> uiHandler.displayExitMessage();
+                default -> uiHandler.displayError("Unexpected main menu choice: " +
+                                                  choice);
+            }
+        } while(choice != MainMenuOption.EXIT);
+    }
+
+    /**
+     * Handles playing a complete game session, including intro and saving.
+     */
+    @Override
+    public void playOneGame()
+    {
+        if(!handleGameIntroduction())
         {
             return;
         }
 
+        setupNewGame();
+        playGameLoop();
+        concludeGame();
+    }
+
+    /*
+     * Handles the View History menu and displays selected game records.
+     */
+    private void handleViewHistoryMenu()
+    {
+        HistoryMenuOption choice;
         do
         {
-            initializeNewGame();
-            playGameLoop();
-            endGame();
-        } while(askPlayAgain());
+            uiHandler.displayHistorySubMenu();
+            choice = uiHandler.getHistoryMenuChoice();
+            List<GameSessionRecord> history;
 
-        System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("Returning to main menu...");
-        System.out.println(SEPARATOR_LINE + "\n");
-    }
-
-    private void initializeNewGame()
-    {
-        rounds     = new ArrayList<>(); 
-        secretCode = SecretCode.generateRandomCode(CODE_LENGTH);
-        Round.resetDeceptiveRounds(); 
-        TRUTH_SCANNER.resetTruthScanner();
-        System.out.println("\n" + NEW_GAME_SEPARATOR);
-    }
-
-    private static boolean handleGameIntroduction()
-    {
-        final String response;
-        final String ready;
-
-        System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("Welcome to Mastermind!");
-        System.out.println(SEPARATOR_LINE);
-        System.out.print("Have you played this version before? (yes/no): ");
-
-        response = InputHandler.getYesNoResponse();
-
-        if(! response.equalsIgnoreCase(YES))
-        {
-            System.out.println(RULES);
-            ready = InputHandler.getYesNoResponse();
-
-            if(! ready.equalsIgnoreCase(YES))
+            switch(choice)
             {
-                System.out.println("\nMaybe next time! Goodbye.\n");
+                case VIEW_ALL -> {
+                    history = gameHistoryManager.loadGameHistory();
+                    uiHandler.displayHistory(history,
+                                             HistoryMenuOption.VIEW_ALL);
+                }
+                case VIEW_WON -> {
+                    history = gameHistoryManager.loadGameHistory();
+                    uiHandler.displayHistory(gameHistoryManager.filterHistoryByOutcome(history,
+                                                                                       OUTCOME_WON),
+                                             HistoryMenuOption.VIEW_WON);
+                }
+                case VIEW_LOST -> {
+                    history = gameHistoryManager.loadGameHistory();
+                    uiHandler.displayHistory(gameHistoryManager.filterHistoryByOutcome(history,
+                                                                                       OUTCOME_LOST),
+                                             HistoryMenuOption.VIEW_LOST);
+                }
+                case BACK_TO_MAIN -> {
+                }
+                default -> uiHandler.displayError("Unexpected history menu choice: " +
+                                                  choice);
+            }
+        } while(choice != HistoryMenuOption.BACK_TO_MAIN);
+    }
+
+    /*
+     * Initializes the state for a new game.
+     * Resets rounds, generates a new secret code, and resets counters.
+     */
+    public void setupNewGame()
+    {
+        rounds     = new ArrayList<>();
+        secretCode = SecretCode.generateRandomCode(Code.CODE_LENGTH);
+
+        Round.resetDeceptiveRounds();
+        TRUTH_SCANNER.resetTruthScanner();
+        truthScanInfoForHistory = "Not Used";
+    }
+
+    /*
+     * Handles the initial game introduction and rules display.
+     *
+     * @return true if the player is ready to start, false otherwise.
+     */
+    private boolean handleGameIntroduction()
+    {
+        uiHandler.displayWelcome();
+        uiHandler.promptForPlayedBefore();
+        final String response;
+
+        response = GuessHandler.getYesNoResponse();
+
+        if(!response.equalsIgnoreCase(YES))
+        {
+            displayFormattedRules();
+            final String ready = GuessHandler.getYesNoResponse();
+
+            if(!ready.equalsIgnoreCase(YES))
+            {
+                uiHandler.displayMessage("\nMaybe next time! Returning to main menu...\n");
                 return false;
             }
         }
 
-        System.out.println("\n" + SEPARATOR_LINE);
-        System.out.println("Try to guess the " + CODE_LENGTH + "-digit code.");
-        System.out.println("You have " + MAX_ROUNDS + " attempts.");
-        System.out.println(SEPARATOR_LINE);
+        uiHandler.displayInitialInstructions(Code.CODE_LENGTH,
+                                             MAX_ROUNDS);
         return true;
     }
 
+    /*
+     * Manages the main loop of the game, playing rounds until the game is over.
+     */
     private void playGameLoop()
     {
-        while(! isGameOver())
+        while(!isGameOver())
         {
-            playRound();
+            playOneRound();
         }
     }
 
-    private void playRound()
+    /*
+     * Plays a single round of the game.
+     * Handles player input (guess, scan, summary) and processes the guess.
+     */
+    @Override
+    public void playOneRound()
     {
         final int          roundNumber;
-        final PlayerAction guess;
+        final PlayerAction action;
 
-        roundNumber = rounds.size() + INCREMENT;
-        System.out.printf("%n--- Round %d of %d ---%n",
-                          roundNumber,
-                          MAX_ROUNDS);
+        roundNumber = rounds.size() + ROUND_INCREMENT;
+        uiHandler.displayRoundHeader(roundNumber,
+                                     MAX_ROUNDS);
 
-        guess = handlePlayerInput();
+        action = handlePlayerInput();
 
-        if(guess instanceof PlayerGuessCode playerGuess)
+        if(action instanceof PlayerGuessCode playerGuess)
         {
             processGuess(playerGuess);
         }
-        else if(guess instanceof TruthScanRequest)
+    }
+
+    /*
+     * Handles the end-of-game sequence.
+     * Displays win/loss message, secret code, and saves the game history.
+     */
+    @Override
+    public void concludeGame()
+    {
+        uiHandler.displayGameOverHeader();
+
+        final String        outcome;
+        final LocalDateTime endTime;
+
+        endTime = LocalDateTime.now();
+
+        if(rounds.isEmpty())
         {
-            System.out.println("(Continuing round after Truth Scan...)");
+            uiHandler.displayNoGuessesEndMessage();
+            outcome = OUTCOME_LOST;
         }
         else
         {
-            System.err.println("Unexpected input received, skipping round.");
-        }
-    }
+            final Round lastRound;
+            final int   roundsPlayed;
 
-    private void processGuess(final PlayerGuessCode guess)
-    {
-        final Round    thisRound;
-        final Feedback actualFeedback;
-        final Feedback thisRoundFeedback;
-        final int      roundsPlayed;
+            lastRound    = rounds.get(rounds.size() - ROUND_INCREMENT);
+            roundsPlayed = rounds.size();
 
-        roundsPlayed   = rounds.size() + INCREMENT;
-        actualFeedback = new Feedback(secretCode,
-                                      guess);
-        thisRound      = new Round(roundsPlayed,
-                                   guess,
-                                   actualFeedback);
-        rounds.add(thisRound);
-
-        thisRoundFeedback = thisRound.getFeedback();
-
-        System.out.println("\nFeedback: " + thisRoundFeedback);
-    }
-
-    private PlayerAction handlePlayerInput()
-    {
-        while(true)
-        {
-            final PlayerAction input = InputHandler.getPlayerInput();
-
-            if(input instanceof TruthScanRequest)
+            if(isCorrectGuess(lastRound))
             {
-                System.out.println("\n--- Truth Scan Requested ---");
-                final boolean scanSuccess = TRUTH_SCANNER.handleTruthScanRequest(rounds,
-                                                                                 secretCode);
-                if(scanSuccess)
-                {
-                    System.out.println("--- Truth Scan Complete ---");
-                }
-                else
-                {
-                    System.out.println("--- Truth Scan Failed ---");
-                }                
-            }
-            else if(input instanceof PlayerGuessCode)
-            {
-                return input; 
+                uiHandler.displayWinMessage(roundsPlayed);
+                outcome = OUTCOME_WON;
             }
             else
             {
-                System.err.println("Input error detected. Please try again or restart.");
-                return null; 
+                uiHandler.displayLossMessage(secretCode);
+                outcome = OUTCOME_LOST;
             }
+        }
+
+        uiHandler.displaySeparator();
+
+        if(!rounds.isEmpty())
+        {
+            saveCurrentGameToHistory(endTime,
+                                     outcome);
         }
     }
 
-    private boolean isCorrectGuess(final Round round)
-    {
-        final Feedback actualFeedback;
-        final boolean isCorrectGuess;
-        
-        actualFeedback = new Feedback(secretCode,
-                                      round.getGuess());
-        isCorrectGuess = actualFeedback.getCorrectPositionCount() == CODE_LENGTH;
-        
-        return isCorrectGuess;
-    }
-
-    private boolean isGameOver()
+    /*
+     * Determines if the game has ended.
+     * The game ends if the last guess was correct or max rounds are reached.
+     *
+     * @return true if the game is over, false otherwise.
+     *
+     */
+    boolean isGameOver()
     {
         if(rounds.isEmpty())
         {
             return false;
         }
 
-        final Round lastRound;
+        final Round   lastRound;
         final boolean maxRoundsReached;
 
-        lastRound = rounds.get(rounds.size() - INCREMENT);
-        
+        lastRound = rounds.get(rounds.size() - ROUND_INCREMENT);
+
         if(isCorrectGuess(lastRound))
         {
-            return true; 
+            return true;
         }
 
         maxRoundsReached = rounds.size() >= MAX_ROUNDS;
@@ -247,45 +288,220 @@ public final class MastermindGame implements
         return maxRoundsReached;
     }
 
-    private void endGame()
+    /*
+     * Processes a player's guess asynchronously.
+     * Creates feedback and a new round object in a background thread,
+     * then waits for the result before adding it to the history and displaying
+     * feedback.
+     *
+     * @param guess The player's guess code for the current round.
+     */
+    private void processGuess(final PlayerGuessCode guess)
     {
-        System.out.println("\n" + GAME_OVER_SEPARATOR);
+        final int                      nextRoundNumber;
+        final CompletableFuture<Round> roundFuture;
 
-        if(rounds.isEmpty())
+        nextRoundNumber = rounds.size() + ROUND_INCREMENT;
+
+        roundFuture = CompletableFuture.supplyAsync(() ->
         {
-            System.out.println("Game ended without any guesses.");
-            System.out.println(GAME_OVER_SEPARATOR);
-            return;
+            final Feedback actualFeedback;
+            final Round    calculatedRound;
+
+            actualFeedback  = new Feedback(secretCode,
+                                           guess);
+            calculatedRound = new Round(nextRoundNumber,
+                                        guess,
+                                        actualFeedback);
+            return calculatedRound;
+        });
+
+        try
+        {
+            final Round    thisRound;
+            final Feedback displayFeedback;
+
+            thisRound = roundFuture.join();
+            rounds.add(thisRound);
+
+            displayFeedback = thisRound.getFeedback();
+            uiHandler.displayFeedback(displayFeedback);
         }
-
-        final Round lastRound;
-        final int roundsPlayed;
-        
-        lastRound = rounds.get(rounds.size() - INCREMENT);
-        roundsPlayed = rounds.size();
-
-        if(isCorrectGuess(lastRound))
+        catch(final CompletionException e)
         {
-            System.out.println(String.format(WIN_MESSAGE, roundsPlayed));
+            uiHandler.displayError("Error during feedback calculation: " +
+                                   e.getCause());
+        }
+        catch(final Exception e)
+        {
+            uiHandler.displayError("Unexpected error processing guess: " +
+                                   e.getMessage());
+        }
+    }
+
+    /*
+     * Handles player input within a round.
+     * Loops until a valid action (guess, scan, summary) is received.
+     * Processes scan and summary requests directly.
+     *
+     * @return The PlayerAction representing the player's choice (only
+     * PlayerGuessCode exits loop).
+     */
+    private PlayerAction handlePlayerInput()
+    {
+        while(true)
+        {
+            uiHandler.promptForGuess(INPUT_TRUTH_SCAN,
+                                     INPUT_GUESS_SUMMARY);
+
+            final PlayerAction input;
+            try
+            {
+                input = GuessHandler.getPlayerInput();
+            }
+            catch(final InvalidGuessException e)
+            {
+                uiHandler.displayError(e.getMessage());
+                uiHandler.displayMessage(String.format("Please try again. Enter %d digits (%d-%d), '%s' for truth scan, or '%s' for summary.",
+                                                       Code.CODE_LENGTH,
+                                                       Code.DIGIT_MIN,
+                                                       Code.DIGIT_MAX,
+                                                       INPUT_TRUTH_SCAN,
+                                                       INPUT_GUESS_SUMMARY));
+                continue;
+            }
+
+            if(input == null)
+            {
+                uiHandler.displayError("Received unexpected null input. Please try again.");
+                continue;
+            }
+
+            if(input instanceof PlayerAction.TruthScanRequest)
+            {
+                handleTruthScanAction();
+            }
+            else if(input instanceof PlayerAction.GuessSummaryRequest)
+            {
+                handleGuessSummaryAction();
+            }
+            else if(input instanceof PlayerGuessCode guess)
+            {
+                return guess;
+            }
+            else
+            {
+                uiHandler.displayError("Input error detected. Please try again or restart.");
+            }
+        }
+    }
+
+    /*
+     * Handles the action when a Truth Scan is requested by the player.
+     * Invokes the truth scanner and prints appropriate messages.
+     * Updates the truthScanInfoForHistory field if successful.
+     */
+    private void handleTruthScanAction()
+    {
+        uiHandler.displayTruthScanRequested();
+        final String scanResultInfo = TRUTH_SCANNER.handleTruthScanRequestAndGetInfo(rounds,
+                                                                                     secretCode);
+
+        if(scanResultInfo != null)
+        {
+            this.truthScanInfoForHistory = scanResultInfo;
+            uiHandler.displayTruthScanResult(scanResultInfo);
+            uiHandler.displayTruthScanComplete();
         }
         else
         {
-            System.out.println(String.format(GAME_OVER_MESSAGE,
-                                             secretCode));
+            uiHandler.displayTruthScanFailed();
         }
-
-        System.out.println("Deceptive rounds used: " +
-                           Round.getDeceptiveRoundsUsed());
-        System.out.println(GAME_OVER_SEPARATOR);
     }
 
-    private boolean askPlayAgain()
+    /*
+     * Handles the action when a Guess Summary is requested by the player.
+     * Calls the method to print the summary.
+     */
+    private void handleGuessSummaryAction()
     {
-        System.out.print("\nPlay again? (yes/no): ");
-        
-        final String response;
-        response = InputHandler.getYesNoResponse();
+        uiHandler.displayGuessSummarySeparator();
+        if(rounds.isEmpty())
+        {
+            uiHandler.displayNoGuessesMessage();
+        }
+        else
+        {
+            for(final Round round : rounds)
+            {
+                uiHandler.displayGuessSummaryItem(round.toString());
+            }
+        }
+    }
 
-        return response.equalsIgnoreCase(YES);
+    /*
+     * Checks if the guess in a given round matches the secret code.
+     *
+     * @param round The round to check.
+     * 
+     * @return true if the guess is correct, false otherwise.
+     */
+    private boolean isCorrectGuess(final Round round)
+    {
+        final Feedback actualFeedback;
+        final boolean  isCorrectGuess;
+
+        actualFeedback = new Feedback(secretCode,
+                                      round.getGuess());
+        isCorrectGuess = actualFeedback.getCorrectPositionCount() ==
+                         Code.CODE_LENGTH;
+
+        return isCorrectGuess;
+    }
+
+    /*
+     * Helper method to collect game data and save it using GameHistoryManager.
+     *
+     * @param endTime The timestamp when the game ended.
+     * 
+     * @param outcome The result of the game ("Won" or "Lost").
+     */
+    private void saveCurrentGameToHistory(final LocalDateTime endTime,
+                                          final String outcome)
+    {
+        final List<String>      roundDetails;
+        final GameSessionRecord record;
+
+        roundDetails = rounds.stream()
+                             .map(Round::toString)
+                             .collect(Collectors.toList());
+        record       = new GameSessionRecord(endTime,
+                                             roundDetails,
+                                             this.truthScanInfoForHistory,
+                                             outcome);
+
+        uiHandler.displaySavingHistory();
+        gameHistoryManager.saveGameHistory(record);
+        uiHandler.displaySaveComplete();
+    }
+
+    /*
+     * Prints the rules of the game. Uses the RULES constant and the Code and
+     * Round classes
+     * to format the rules string.
+     */
+    private void displayFormattedRules()
+    {
+        uiHandler.displayRules(Code.CODE_LENGTH,
+                               Code.DIGIT_MIN,
+                               Code.DIGIT_MAX,
+                               MAX_ROUNDS,
+                               Round.DECEPTIVE_ROUNDS_ALLOWED,
+                               INPUT_TRUTH_SCAN,
+                               INPUT_GUESS_SUMMARY,
+                               Code.EXAMPLE_SECRET,
+                               Code.EXAMPLE_GUESS,
+                               Code.EXAMPLE_CORRECT_POSITIONS,
+                               Code.EXAMPLE_MISPLACED);
     }
 }

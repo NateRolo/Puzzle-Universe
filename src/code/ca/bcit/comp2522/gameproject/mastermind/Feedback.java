@@ -16,93 +16,29 @@ import java.util.List;
  */
 final class Feedback
 {
-    private static final int RESULT_SIZE = 2;
-    private static final int CORRECT_POSITION = 0;
-    private static final int MISPLACED = 1;
+    private static final int RESULT_SIZE               = 2;
+    private static final int CORRECT_POSITION          = 0;
+    private static final int MISPLACED                 = 1;
+    private static final int DEFAULT_CORRECT_POSITIONS = 0;
+    private static final int DEFAULT_MISPLACED         = 0;
 
-    private final int     correctPositionCount;
-    private final int     misplacedCount;
+    private final int correctPositionCount;
+    private final int misplacedCount;
 
     /**
      * Constructs a new Feedback object.
-     *
      */
-    Feedback(final SecretCode secretCode,
-             final PlayerGuessCode guessCode)
+    <S extends Code, G extends Code> Feedback(final S secretCode,
+                                              final G guessCode)
     {
-        validateCodes(secretCode, guessCode);
+        validateCodes(secretCode,
+                      guessCode);
 
-        this.correctPositionCount = evaluateGuess(secretCode, guessCode)[CORRECT_POSITION];
-        this.misplacedCount       = evaluateGuess(secretCode, guessCode)[MISPLACED];
-    }
-
-    private static void validateCodes(final SecretCode secretCode,
-                                  final PlayerGuessCode guessCode)
-    {
-        if(secretCode == null || guessCode == null)
-        {
-            throw new IllegalArgumentException("Codes cannot be null");
-        }
-
-        final int secretCodeLength;
-        final int guessCodeLength;
-
-        secretCodeLength = secretCode.getDigits().size();
-        guessCodeLength = secretCode.getDigits()
-                                     .size();
-
-        if(secretCodeLength != Code.CODE_LENGTH ||
-           guessCodeLength != Code.CODE_LENGTH)
-        {
-            throw new IllegalArgumentException("Codes must be of length " + Code.CODE_LENGTH);
-        }
-    }
-
-    private static int[] evaluateGuess(final SecretCode secretCode,
-                                      final PlayerGuessCode guessCode)
-    {
-        final List<Integer> secretCodeDigits;
-        final List<Integer> guessCodeDigits;
-        final List<Integer> secretCopy;
-        final List<Integer> guessCopy;
         final int[] result;
-
-        int correctPosition;
-        int misplaced;
-
-        correctPosition = 0;
-        misplaced = 0;
-
-        secretCodeDigits = secretCode.getDigits();
-        guessCodeDigits = guessCode.getDigits();
-
-        for(int i = 0; i < Code.CODE_LENGTH; i++)
-        {
-            if(secretCodeDigits.get(i).equals(guessCodeDigits.get(i)))
-            {
-                correctPosition++;
-            }
-        }
-
-        secretCopy = new ArrayList<>(secretCodeDigits);
-        guessCopy = new ArrayList<>(guessCodeDigits);
-
-        for(int j = 0; j < Code.CODE_LENGTH; j++)
-        {
-            if(secretCopy.contains(guessCopy.get(j)))
-            {
-                misplaced++;
-                secretCopy.remove(guessCopy.get(j));
-            }
-        }
-
-        misplaced = misplaced - correctPosition;
-
-        result = new int[RESULT_SIZE];
-        result[CORRECT_POSITION] = correctPosition;
-        result[MISPLACED] = misplaced;
-
-        return result;
+        result                    = evaluateGuess(secretCode,
+                                                  guessCode);
+        this.correctPositionCount = result[CORRECT_POSITION];
+        this.misplacedCount       = result[MISPLACED];
     }
 
     /**
@@ -110,7 +46,7 @@ final class Feedback
      *
      * @return number of correctly positioned digits
      */
-    final int getCorrectPositionCount()
+    int getCorrectPositionCount()
     {
         return correctPositionCount;
     }
@@ -120,11 +56,16 @@ final class Feedback
      *
      * @return number of misplaced digits
      */
-    final int getMisplacedCount()
+    int getMisplacedCount()
     {
         return misplacedCount;
     }
 
+    /**
+     * Returns the feedback object as a formatted String.
+     *
+     * @return the feedback as a String
+     */
     @Override
     public String toString()
     {
@@ -137,6 +78,111 @@ final class Feedback
               .append(misplacedCount);
 
         return result.toString();
+    }
+
+    /*
+     * Validates the provided codes for nullity and correct length.
+     * <p>
+     * This method checks if the secret code and guess code are not null and
+     * have the correct length.
+     * </p>
+     * 
+     * @param secretCode the secret code to validate
+     * @param guessCode the player's guess code
+     */
+    private static void validateCodes(final Code secretCode,
+                                      final Code guessCode)
+    {
+        if(secretCode == null || guessCode == null)
+        {
+            throw new IllegalArgumentException("Codes cannot be null");
+        }
+
+        final int secretCodeLength;
+        final int guessCodeLength;
+
+        secretCodeLength = secretCode.getDigits()
+                                     .size();
+        guessCodeLength  = guessCode.getDigits()
+                                    .size();
+
+        if(secretCodeLength != Code.CODE_LENGTH ||
+           guessCodeLength != Code.CODE_LENGTH)
+        {
+            throw new IllegalArgumentException("Codes must be of length " +
+                                               Code.CODE_LENGTH);
+        }
+    }
+
+    /*
+     * Evaluates a guess against a secret code and returns feedback.
+     * <p>
+     * This method compares the guess code with the secret code and calculates:
+     * 1. The number of digits in the correct position
+     * 2. The number of correct digits in the wrong position (misplaced)
+     * The result is returned as an array where the first element is the count of
+     * correct positions and the second element is the count of misplaced digits.
+     * </p>
+     * 
+     * @param secretCode the secret code to compare against
+     * @param guessCode the player's guess code
+     * @return an array containing counts of correct positions and misplaced digits
+     */
+    private static int[] evaluateGuess(final Code secretCode,
+                                       final Code guessCode)
+    {
+        final List<Integer> secretCodeDigits;
+        final List<Integer> guessCodeDigits;
+        final List<Integer> secretCopy;
+        final List<Integer> guessCopy;
+        final int[]         result;
+
+        int correctPosition;
+        int misplaced;
+
+        correctPosition = DEFAULT_CORRECT_POSITIONS;
+        misplaced       = DEFAULT_MISPLACED;
+
+        secretCodeDigits = secretCode.getDigits();
+        guessCodeDigits  = guessCode.getDigits();
+
+        // Calculate correct positions
+        for(int i = 0; i < Code.CODE_LENGTH; i++)
+        {
+            final int secretCodeDigitAtThisIndex;
+            final int guessCodeDigitAtThisIndex;
+
+            secretCodeDigitAtThisIndex = secretCodeDigits.get(i);
+            guessCodeDigitAtThisIndex  = guessCodeDigits.get(i);
+
+            if(secretCodeDigitAtThisIndex == guessCodeDigitAtThisIndex)
+            {
+                correctPosition++;
+            }
+        }
+
+        secretCopy = new ArrayList<>(secretCodeDigits);
+        guessCopy  = new ArrayList<>(guessCodeDigits);
+
+        // Calculate total matches (including correct position) for misplaced
+        // count derivation
+        for(int j = 0; j < Code.CODE_LENGTH; j++)
+        {
+            if(secretCopy.contains(guessCopy.get(j)))
+            {
+                misplaced++;
+                secretCopy.remove(guessCopy.get(j));
+            }
+        }
+
+        // Adjust misplaced: total matches minus those in the correct position
+        misplaced = misplaced - correctPosition;
+
+        result                   = new int[RESULT_SIZE];
+        result[CORRECT_POSITION] = correctPosition;
+        result[MISPLACED]        = misplaced;
+
+        return result;
     }
 
 
