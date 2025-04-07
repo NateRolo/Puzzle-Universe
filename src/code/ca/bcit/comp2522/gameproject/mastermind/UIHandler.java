@@ -16,7 +16,12 @@ import ca.bcit.comp2522.gameproject.mastermind.GameHistoryManager.GameSessionRec
 final class UIHandler
 {
     /** 
-     * Represents options available in the main menu. 
+     * Represents options available in the main menu.
+     * <p>
+     * This enum defines all possible actions a player can take from the main menu
+     * of the Mastermind game. Each option is associated with a numeric value that
+     * corresponds to the user input expected from the console.
+     * </p>
      */
     enum MainMenuOption
     {
@@ -27,11 +32,26 @@ final class UIHandler
 
         private final int value;
 
+        /**
+         * Constructs a menu option with the specified numeric value.
+         *
+         * @param value the integer value associated with this menu option
+         */
         MainMenuOption(final int value)
         {
             this.value = value;
         }
 
+        /**
+         * Converts a numeric input to the corresponding menu option.
+         * <p>
+         * This method maps user input integers to their associated menu options.
+         * If no matching option is found, returns UNKNOWN.
+         * </p>
+         *
+         * @param value the integer input to convert
+         * @return the matching MainMenuOption or UNKNOWN if no match exists
+         */
         static MainMenuOption fromInt(final int value)
         {
             for(MainMenuOption option : values())
@@ -46,7 +66,13 @@ final class UIHandler
     }
 
     /** 
-     * Represents options available in the history sub-menu. 
+     * Represents options available in the history sub-menu.
+     * <p>
+     * This enum defines all possible actions a player can take from the history menu
+     * of the Mastermind game. Each option is associated with a numeric value that
+     * corresponds to the user input expected from the console. Options include viewing
+     * all game records, filtering by outcome, or returning to the main menu.
+     * </p>
      */
     enum HistoryMenuOption
     {
@@ -58,11 +84,26 @@ final class UIHandler
 
         private final int value;
 
+        /**
+         * Constructs a history menu option with the specified numeric value.
+         *
+         * @param value the integer value associated with this menu option
+         */
         HistoryMenuOption(final int value)
         {
             this.value = value;
         }
 
+        /**
+         * Converts a numeric input to the corresponding history menu option.
+         * <p>
+         * This method maps user input integers to their associated history menu options.
+         * If no matching option is found, returns UNKNOWN.
+         * </p>
+         *
+         * @param value the integer input to convert
+         * @return the matching HistoryMenuOption or UNKNOWN if no match exists
+         */
         static HistoryMenuOption fromInt(final int value)
         {
             for(HistoryMenuOption option : values())
