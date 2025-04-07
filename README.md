@@ -1,7 +1,4 @@
-# Puzzle Universe (aka Nathan's COMP 2522 Term Project)
 
-As advertised (sort of)! Because sometimes you just need to guess codes, numbers, or words instead of doing actual work.
-=======
 # Puzzle Universe (aka Nate's COMP 2522 Term Project)
 
 As advertised (sort of)! Because sometimes you just need to guess colors, numbers, or words instead of doing actual work.
@@ -62,7 +59,9 @@ Well, you've found the source code! This repo contains a thrilling(?) collection
 
 ## 📝 License
 
-This project is likely under the MIT License, but honestly, who's checking? Feel free to use it, learn from it, or point and laugh. See the (maybe non-existent) `LICENSE` file for details if you care.
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. Feel free to use it, learn from it, or point and laugh.
+
 
 ## 🤝 Contributing
 
