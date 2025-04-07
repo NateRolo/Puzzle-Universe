@@ -76,5 +76,8 @@ Go for it! Open an issue or submit a pull request. Or don't. It's cool.
 *   **Stack Overflow:** The silent architect behind most student code.
 *   **My Sanity:** RIP.
 *   **Anyone who actually cloned this:** You're the real MVP.
+<<<<<<< HEAD
+*   **The Marketing Department (Me):** For coming up with "Puzzle Universe".
+=======
 *   **The Marketing Department (Me):** For coming up with "Puzzle Universe".
 >>>>>>> main-updates
