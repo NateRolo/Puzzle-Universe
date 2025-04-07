@@ -30,7 +30,6 @@ public final class MastermindGame implements
     private static final int          MAX_ROUNDS      = 12;
     private static final int          ROUND_INCREMENT = 1;
     private static final TruthScanner TRUTH_SCANNER   = new TruthScanner();
-    
 
     private static final String OUTCOME_WON         = "Won";
     private static final String OUTCOME_LOST        = "Lost";
@@ -40,7 +39,7 @@ public final class MastermindGame implements
 
     private final GameHistoryManager gameHistoryManager;
     private final UIHandler          uiHandler;
-    private final Scanner            scannerForUIHandler;
+
 
     private List<Round> rounds;
     private SecretCode  secretCode;
@@ -51,7 +50,8 @@ public final class MastermindGame implements
      */
     public MastermindGame()
     {
-        this.scannerForUIHandler = new Scanner(System.in);
+        final Scanner            scannerForUIHandler;
+        scannerForUIHandler = new Scanner(System.in);
         this.gameHistoryManager = new GameHistoryManager();
         this.uiHandler = new UIHandler(scannerForUIHandler);
     }

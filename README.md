@@ -1,6 +1,11 @@
 # Puzzle Universe (aka Nathan's COMP 2522 Term Project)
 
 As advertised (sort of)! Because sometimes you just need to guess codes, numbers, or words instead of doing actual work.
+=======
+# Puzzle Universe (aka Nate's COMP 2522 Term Project)
+
+As advertised (sort of)! Because sometimes you just need to guess colors, numbers, or words instead of doing actual work.
+>>>>>>> main-updates
 
 ## 🤔 What's This Pile of Code?
 
@@ -72,3 +77,4 @@ Go for it! Open an issue or submit a pull request. Or don't. It's cool.
 *   **My Sanity:** RIP.
 *   **Anyone who actually cloned this:** You're the real MVP.
 *   **The Marketing Department (Me):** For coming up with "Puzzle Universe".
+>>>>>>> main-updates
