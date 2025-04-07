@@ -2,7 +2,6 @@
 # Puzzle Universe (aka Nate's COMP 2522 Term Project)
 
 As advertised (sort of)! Because sometimes you just need to guess colors, numbers, or words instead of doing actual work.
->>>>>>> main-updates
 
 ## 🤔 What's This Pile of Code?
 
@@ -59,7 +58,6 @@ Well, you've found the source code! This repo contains a thrilling(?) collection
 
 ## 📝 License
 
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. Feel free to use it, learn from it, or point and laugh.
 
 
@@ -75,8 +73,6 @@ Go for it! Open an issue or submit a pull request. Or don't. It's cool.
 *   **Stack Overflow:** The silent architect behind most student code.
 *   **My Sanity:** RIP.
 *   **Anyone who actually cloned this:** You're the real MVP.
-<<<<<<< HEAD
 *   **The Marketing Department (Me):** For coming up with "Puzzle Universe".
-=======
-*   **The Marketing Department (Me):** For coming up with "Puzzle Universe".
->>>>>>> main-updates
+
+
