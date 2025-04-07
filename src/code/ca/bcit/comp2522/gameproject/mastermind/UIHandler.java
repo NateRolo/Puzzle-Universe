@@ -167,7 +167,7 @@ final class UIHandler
     private final Scanner inputScanner;
 
     /**
-     * Constructs a ConsoleView with the specified Scanner.
+     * Constructs a UIHandler with the specified Scanner.
      *
      * @param scanner The Scanner instance to use for input.
      */
