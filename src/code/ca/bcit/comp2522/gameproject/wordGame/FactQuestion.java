@@ -12,7 +12,7 @@ package ca.bcit.comp2522.gameproject.wordgame;
  * @author Nathan O
  * @version 1.0 2025
  */
-class FactQuestion extends
+final class FactQuestion extends
                    Question
 {
     private final int factIndex;

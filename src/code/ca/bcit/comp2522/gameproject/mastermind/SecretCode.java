@@ -34,7 +34,7 @@ final class SecretCode extends Code
      * @param length the desired length of the secret code
      * @return a new SecretCode with random digits
      */
-    static SecretCode generateRandomCode(final int length)
+    static SecretCode generateRandomCode(final int codeLength)
     {
         if (length != CODE_LENGTH)
         {
