@@ -200,7 +200,10 @@ final class World
             validateFilePath(filePath);
 
             final List<String> lines;
-            lines = FileManager.readLinesFromResource(filePath.toString());
+            final String      filePathString;
+            
+            filePathString = filePath.toString();
+            lines = FileManager.readLinesFromResource(filePathString);
             processFileLines(lines);
         }
         catch(final IOException e)
@@ -257,14 +260,16 @@ final class World
                 for(int factIndex = 0; factIndex <
                                        FACTS_PER_COUNTRY; factIndex++)
                 {
+                    final int lineIndexForFact;
+                    lineIndexForFact = lineIndex + factIndex + FIRST_FACT_OFFSET;
+
                     // Calculate the line index for each fact and check if it's
-                    if(lineIndex + factIndex + FIRST_FACT_OFFSET < lines.size())
+                    // within the bounds of the list
+                    if(lineIndexForFact < lines.size())
                     {
                         // Extract and trim the fact from the appropriate line
-                        facts[factIndex] = lines.get(lineIndex +
-                                                     factIndex +
-                                                     FIRST_FACT_OFFSET)
-                                                .trim();
+                        facts[factIndex] = lines.get(lineIndexForFact)
+                                                .trim();                                        
                     }
                 }
 
@@ -280,12 +285,11 @@ final class World
         }
     }
 
-   
+
     /*
      * Validates that a file path is not null, blank, and exists.
      * 
      * @param filePath the file path to validate
-     * 
      * @throws IOException if the path does not exist
      */
     private static void validateFilePath(final Path filePath) throws FileNotFoundException
