@@ -56,25 +56,26 @@ final class Score
     private int numIncorrectTwoAttempts;
     private int totalPoints;
 
-    final String formattedDateTime;
+    private final String formattedDateTime;
 
     /**
      * Constructs a Score object with specific values for game performance
      * tracking.
      * <p>
      * This constructor initializes a Score object with detailed statistics
-     * about a player's
-     * performance in the word game. It calculates the
-     * total score based on the weighted values of correct guesses.
+     * about a player's performance in the word game. It calculates the total
+     * score based on the weighted values of correct guesses.
      * </p>
      * <p>
      * The score is calculated as follows:
-     * - Each correct first attempt is worth {@value #SCORE_CORRECT_FIRST_GUESS}
-     * points
-     * - Each correct second attempt is worth
-     * {@value #SCORE_CORRECT_SECOND_GUESS} point
-     * - Incorrect attempts do not contribute to the score but are tracked for
-     * statistics
+     * <ul>
+     * <li>Each correct first attempt is worth
+     * {@value #SCORE_CORRECT_FIRST_GUESS} points</li>
+     * <li>Each correct second attempt is worth
+     * {@value #SCORE_CORRECT_SECOND_GUESS} point</li>
+     * <li>Incorrect attempts do not contribute to the score but are tracked for
+     * statistics</li>
+     * </ul>
      * </p>
      *
      * @param dateTime              the date and time when the score was
@@ -117,8 +118,7 @@ final class Score
      * session.
      * <p>
      * This constructor delegates to the main constructor, providing default
-     * values
-     * and the current {@link LocalDateTime}.
+     * values and the current {@link LocalDateTime}.
      * </p>
      */
     Score()
@@ -199,8 +199,8 @@ final class Score
     }
 
     /**
-     * Increments the number of correct first attempt and adds
-     * 2 points to score.
+     * Increments the number of correct first attempt and adds 2 points to
+     * score.
      */
     void incrementNumCorrectFirstAttempt()
     {
@@ -209,8 +209,8 @@ final class Score
     }
 
     /**
-     * Increments the number of correct second attempts and adds
-     * 1 point to score.
+     * Increments the number of correct second attempts and adds 1 point to
+     * score.
      */
     void incrementNumCorrectSecondAttempt()
     {
@@ -231,16 +231,14 @@ final class Score
      * Appends a Score object to a file in the resources directory.
      * <p>
      * This method takes a Score object and converts it to a formatted list of
-     * strings
-     * using the formatScore method, then writes these strings to the specified
-     * file.
-     * The file is located in the "src/res" directory. If the file doesn't
-     * exist,
-     * it will be created; if it exists, the score will be appended to it.
+     * strings using the formatScore method, then writes these strings to the
+     * specified file. The file is located in the "src/res" directory. If the
+     * file doesn't exist, it will be created; if it exists, the score will be
+     * appended to it.
      * </p>
      *
-     * @param score the Score object to append, must not be null
-     * @param fileString  the name of the file within the resources directory
+     * @param score      the Score object to append, must not be null
+     * @param fileString the name of the file within the resources directory
      * @throws IOException if there is an error writing to the file
      */
     static void appendScoreToFile(final Score score,
@@ -253,9 +251,9 @@ final class Score
         final String       fullFilePathString;
         final List<String> scoreAsList;
 
-        filePath       = Paths.get(DIR_SRC,
-                                   DIR_RES,
-                                   fileString);
+        filePath = Paths.get(DIR_SRC,
+                             DIR_RES,
+                             fileString);
 
         if(Files.notExists(filePath))
         {
@@ -285,13 +283,10 @@ final class Score
      * Reads scores from a file and returns them as a list of Score objects.
      * <p>
      * This method parses the file content line by line, looking for score
-     * entries
-     * that start with the date/time prefix. For each score entry found, it
-     * extracts
-     * the date/time, games played, correct first attempts, correct second
-     * attempts,
-     * and incorrect attempts, then creates a new Score object with these
-     * values.
+     * entries that start with the date/time prefix. For each score entry found,
+     * it extracts the date/time, games played, correct first attempts, correct
+     * second attempts, and incorrect attempts, then creates a new Score object
+     * with these values.
      * </p>
      *
      * @param fileString the path to the file containing scores to be read
@@ -303,14 +298,14 @@ final class Score
     {
         validateFileString(fileString);
 
-        final Path   filePath;
-        final String fullFilePathString;
+        final Path         filePath;
+        final String       fullFilePathString;
         final List<String> scoresLines;
         final List<Score>  scores;
 
-        filePath       = Paths.get(DIR_SRC,
-                                   DIR_RES,
-                                   fileString);
+        filePath = Paths.get(DIR_SRC,
+                             DIR_RES,
+                             fileString);
 
         if(Files.notExists(filePath))
         {
@@ -329,32 +324,42 @@ final class Score
             return scores;
         }
 
-        // parse file and create score object from stream
+        // Parse file and create score objects from stream
         scores = IntStream.range(INDEX_START,
                                  scoresLines.size())
+                          // Filter to find lines that start with the date/time prefix
                           .filter(startIndex -> scoresLines.get(startIndex)
                                                            .startsWith(DATE_TIME_PREFIX))
-                          .mapToObj(startIndex -> new Score(LocalDateTime.parse(scoresLines.get(startIndex)
+                          // For each date/time line found, create a new Score object
+                          .mapToObj(startIndex -> new Score(
+                                                            // Parse the date/time string after the prefix
+                                                            LocalDateTime.parse(scoresLines.get(startIndex)
                                                                                            .split(": ",
                                                                                                   LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE],
                                                                                 formatter),
+                                                            // Parse games played from the line after date/time
                                                             Integer.parseInt(scoresLines.get(startIndex +
                                                                                              OFFSET_GAMES_PLAYED)
                                                                                         .split(": ",
                                                                                                LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE]),
+                                                            // Parse correct first attempts from the next line
                                                             Integer.parseInt(scoresLines.get(startIndex +
                                                                                              OFFSET_CORRECT_FIRST)
                                                                                         .split(": ",
                                                                                                LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE]),
+                                                            // Parse correct second attempts from the next line
                                                             Integer.parseInt(scoresLines.get(startIndex +
                                                                                              OFFSET_CORRECT_SECOND)
                                                                                         .split(": ",
                                                                                                LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE]),
+                                                            // Parse incorrect attempts from the next line
                                                             Integer.parseInt(scoresLines.get(startIndex +
                                                                                              OFFSET_INCORRECT)
                                                                                         .split(": ",
                                                                                                LINE_PARSE_SPLIT_LIMIT)[INDEX_PARSED_VALUE])))
+                          // Convert the stream to an immutable list
                           .toList();
+        // Return the list of Score objects parsed from the file
         return scores;
     }
 
@@ -363,12 +368,10 @@ final class Score
      * from previous games.
      * <p>
      * This method reads all scores from the score file, calculates the average
-     * score per game
-     * for each record, and determines if the current score is a new high score.
-     * It then displays
-     * an appropriate congratulatory message if the player achieved a new high
-     * score, or informs
-     * them of the existing high score if they did not.
+     * score per game for each record, and determines if the current score is a
+     * new high score. It then displays an appropriate congratulatory message if
+     * the player achieved a new high score, or informs them of the existing
+     * high score if they did not.
      * </p>
      *
      * @param currentScore the Score object to compare against historical high
@@ -393,11 +396,13 @@ final class Score
         highestScore   = null;
         highestAverage = DEFAULT_AVERAGE;
 
+        // Iterate through all previous scores to find the highest average
         for(final Score score : allScores)
         {
             final double average;
             average = calculateAverageScore(score);
 
+            // If this score's average is higher than our current highest, update the highest
             if(average > highestAverage)
             {
                 highestAverage = average;
@@ -405,29 +410,37 @@ final class Score
             }
         }
 
+        // Case 1: Current score is a new high score (or first score ever)
         if(highestScore == null || currentAverage > highestAverage)
         {
+
             System.out.printf("CONGRATULATIONS! You are the new high score with an average of %.2f points per game",
                               currentAverage);
+
             if(highestScore != null)
             {
                 System.out.printf("; the previous record was %.2f points per game on %s%n",
                                   highestAverage,
                                   highestScore.formattedDateTime);
             }
+
             else
             {
                 System.out.println("!");
             }
         }
+        // Case 2: Current score equals the high score (a tie)
         else if(currentAverage == highestAverage)
         {
+
             System.out.printf("You MATCHED the current high score of %.2f points per game from %s%n",
                               currentAverage,
                               highestScore.formattedDateTime);
         }
+        // Case 3: Current score is lower than the high score
         else
         {
+
             System.out.printf("You did not beat the high score of %.2f points per game from %s%n",
                               highestAverage,
                               highestScore.formattedDateTime);
@@ -436,8 +449,14 @@ final class Score
 
     /**
      * Returns a string representation of this Score object.
+     * <p>
+     * Creates a formatted multi-line string containing all score statistics:
+     * date/time, games played, correct attempts (first and second), incorrect
+     * attempts, and total points. Uses the formatScore method to generate the
+     * content and joins each line with newline characters.
+     * </p>
      *
-     * @return a string containing all score information
+     * @return a formatted string containing all score information
      */
     @Override
     public String toString()
@@ -470,7 +489,6 @@ final class Score
      * </p>
      *
      * @param score the Score object to format, must not be null
-     * 
      * @return a List of strings representing the formatted score information,
      * with each element containing one aspect of the score data
      */
@@ -495,9 +513,13 @@ final class Score
 
     /*
      * Calculates the average score per game.
-     *
+     * <p>
+     * This method takes a Score object and calculates the average score per
+     * game. If the player has not played any games yet, it returns the
+     * {@value #DEFAULT_SCORE}. Otherwise, it divides the total points by the
+     * number of games played to get the average score.
+     * </p>
      * @param score the Score object to calculate the average for
-     * 
      * @return the average score per game
      */
     private static double calculateAverageScore(final Score score)
@@ -505,7 +527,7 @@ final class Score
         validateScore(score);
 
         final double averageScore;
-        
+
         if(score.numGamesPlayed == DEFAULT_GAMES_PLAYED)
         {
             return DEFAULT_SCORE;
@@ -518,7 +540,7 @@ final class Score
 
     /*
      * Validates that the date time is not null and not in the future.
-     *
+     * 
      * @param dateTime the LocalDateTime to validate
      */
     private static void validateDateTime(final LocalDateTime dateTime)
@@ -535,7 +557,7 @@ final class Score
 
     /*
      * Validates that the number of games played is not negative.
-     *
+     * 
      * @param gamesPlayed the number of games played to validate
      */
     private static void validateGamesPlayed(final int gamesPlayed)
@@ -548,9 +570,8 @@ final class Score
 
     /*
      * Validates that a guess count is not negative.
-     *
-     * @param count the count to validate
      * 
+     * @param count the count to validate
      * @param guessType the type of guess for error messaging
      */
     private static void validateGuessCount(final int count,
@@ -565,7 +586,7 @@ final class Score
 
     /*
      * Validates that a Score object is not null.
-     *
+     * 
      * @param score the Score object to validate
      */
     private static void validateScore(final Score score)
@@ -578,7 +599,7 @@ final class Score
 
     /*
      * Validates that a file path is not null, empty, and exists.
-     *
+     * 
      * @param filePath the file path to validate
      */
     private static void validateFileString(final String fileString)
@@ -591,7 +612,7 @@ final class Score
 
     /*
      * Validates that a list is not null or empty.
-     *
+     * 
      * @param list the list to validate
      */
     private static void validateList(final List<String> list)
