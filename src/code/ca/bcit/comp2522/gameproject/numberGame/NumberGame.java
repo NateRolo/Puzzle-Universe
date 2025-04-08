@@ -50,7 +50,6 @@ public final class NumberGame implements
      * Constructs a new NumberGameGUI instance.
      * Initializes the game logic and creates the user interface.
      */
-
     public NumberGame()
     {
         this.gameLogic = new NumberGameLogic();

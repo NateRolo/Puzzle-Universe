@@ -24,7 +24,7 @@ abstract class Question
      * by calling the createPrompt method.
      * </p>
      *
-     * @param country the Country object containing data for this question
+     * @param country the {@code Country} object containing data for this question
      */
     Question(final Country country)
     {
@@ -33,7 +33,7 @@ abstract class Question
     }
 
     /**
-     * Gets the prompt for this question by calling createPrompt.
+     * Gets the prompt for this question by calling {@code createPrompt}.
      *
      * @return the question prompt as a String
      */
@@ -67,10 +67,10 @@ abstract class Question
      */
     abstract String getExpectedAnswer();
 
-    /**
+    /*
      * Validates that the country parameter is not null.
      *
-     * @param country the Country object to validate
+     * @param country the {@code Country} object to validate
      * @throws NullPointerException if country is null
      */
     private static void validateCountry(final Country country)

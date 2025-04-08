@@ -4,8 +4,8 @@ package ca.bcit.comp2522.gameproject.wordgame;
  * Factory class for creating different types of questions.
  * <p>
  * This class handles the creation of specific question types based on the
- * provided question style and country data. It ensures proper instantiation
- * of the correct question subclass.
+ * provided question style and country data. It ensures proper instantiation of
+ * the correct question subclass.
  * </p>
  *
  * @author Nathan O
@@ -14,16 +14,17 @@ package ca.bcit.comp2522.gameproject.wordgame;
 final class QuestionFactory
 {
     /**
-     * Creates a new question of the specified type for the given country.
+     * Creates a new question of the specified type for the given
+     * {@code Country}.
      * <p>
      * This method validates the country parameter and creates the appropriate
      * question type based on the questionType parameter.
      * </p>
      *
-     * @param country      the country to create a question about
+     * @param country      the {@code Country} to create a question about
      * @param questionType the type of question to create (must be one of the
-     *                     constants defined in WordGameLauncher)
-     * @return a new Question instance of the specified type
+     *                     constants defined in {@code WordGameLauncher})
+     * @return a new {@code Question} instance of the specified type
      */
     static Question createQuestion(final Country country,
                                    final int questionType)
@@ -43,14 +44,14 @@ final class QuestionFactory
         return question;
     }
 
-    /**
-     * Validates that the country parameter is not null.
+    /*
+     * Validates that the country parameter is not null. 
      * <p>
-     * This method ensures that a valid Country object is provided before
-     * attempting to create a question.
+     * This method ensures
+     * that a valid {@code Country} object is provided before attempting to
+     * create a question. 
      * </p>
-     *
-     * @param country the Country object to validate
+     * @param country the {@code Country} object to validate
      */
     private static void validateCountry(final Country country)
     {
