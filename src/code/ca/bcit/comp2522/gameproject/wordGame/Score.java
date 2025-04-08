@@ -504,11 +504,16 @@ final class Score
     {
         validateScore(score);
 
+        final double averageScore;
+        
         if(score.numGamesPlayed == DEFAULT_GAMES_PLAYED)
         {
             return DEFAULT_SCORE;
         }
-        return (double)score.totalPoints / score.numGamesPlayed;
+
+        averageScore = (double)score.totalPoints / score.numGamesPlayed;
+
+        return averageScore;
     }
 
     /*

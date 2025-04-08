@@ -25,7 +25,6 @@ abstract class Question
      * </p>
      *
      * @param country the Country object containing data for this question
-     * @throws NullPointerException if country is null
      */
     Question(final Country country)
     {

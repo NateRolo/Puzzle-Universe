@@ -1,10 +1,11 @@
 package ca.bcit.comp2522.gameproject;
 
+import java.util.Scanner;
+
 import ca.bcit.comp2522.gameproject.interfaces.Replayable;
 import ca.bcit.comp2522.gameproject.mastermind.MastermindGame;
 import ca.bcit.comp2522.gameproject.numbergame.NumberGame;
 import ca.bcit.comp2522.gameproject.wordgame.WordGame;
-import java.util.Scanner;
 
 /**
  * Main class for the game project.
@@ -12,7 +13,7 @@ import java.util.Scanner;
  * This class provides a simple text-based menu that allows the user to choose
  * from different games.
  * The menu runs in an infinite loop until the user chooses to quit by pressing
- * 'Q' or 'q'.
+ * {@value #CHOICE_QUIT}.
  * </p>
  *
  * @author Nathan O
@@ -114,6 +115,11 @@ public final class Main
 
     /*
      * Prints a welcome message to the console.
+     * <p>
+     * This method constructs a formatted welcome message using the predefined
+     * {@value #SEPARATOR} and {@value #GREETING} constants, then displays it to the user at the
+     * start of the application.
+     * </p>
      */
     private static void printWelcomeMessage()
     {

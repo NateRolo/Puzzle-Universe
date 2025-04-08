@@ -161,7 +161,7 @@ public final class WordGame implements
      */
     private boolean shouldPlayAgain()
     {
-        final boolean willPlayAgain;
+        final boolean playAgainChoice;
         String userChoice;
 
         do
@@ -175,8 +175,7 @@ public final class WordGame implements
             }
         } while(!userChoice.equalsIgnoreCase(OPTION_YES) && !userChoice.equalsIgnoreCase(OPTION_NO));
 
-    
-        willPlayAgain = userChoice.equalsIgnoreCase(OPTION_YES);
-        return willPlayAgain;
+        playAgainChoice = userChoice.equalsIgnoreCase(OPTION_YES);
+        return playAgainChoice;
     }
 }
