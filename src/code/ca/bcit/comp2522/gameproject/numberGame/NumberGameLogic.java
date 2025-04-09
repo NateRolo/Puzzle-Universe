@@ -4,26 +4,24 @@ import java.util.Random;
 
 /**
  * Implements the core logic and state management for the 20-Number Challenge
- * game.
- * This class handles number generation, placement validation, board state,
- * and win/loss conditions, independent of the user interface.
+ * game. This class handles number generation, placement validation, board
+ * state, and win/loss conditions, independent of the user interface.
  *
  * @author Nathan O
- * @version 1.2 2025
+ * @version 1.3 2025 
  */
 final class NumberGameLogic extends
                             BoardGame
 
 {
-    private static final int BOARD_SIZE           = 20;
-    private static final int RANGE_OFFSET         = 1;
+    private static final int BOARD_SIZE   = 20;
+    private static final int RANGE_OFFSET = 1;
 
-    private static final int         NO_EMPTY_CELL_LEFT  = - 1;
+    private static final int NO_EMPTY_CELL_LEFT  = - 1;
     private static final int NO_EMPTY_CELL_RIGHT = BoardGame.MAX_RANDOM_NUMBER +
-                                                    1;
+                                                   1;
 
-    private static final int NO_GAMES_PLAYED      = 0;
-    private static final int POSITION_INCREMENT   = 1;
+    private static final int POSITION_INCREMENT = 1;
 
     private int          successfulPlacementsThisGame;
     private final Random random;
@@ -34,31 +32,20 @@ final class NumberGameLogic extends
     NumberGameLogic()
     {
         super(BOARD_SIZE);
-        playOneGame();
         this.random = new Random();
     }
 
     /**
-     * Initializes or resets the game state for a new round.
-     * Called by startNewGame and constructor.
+     * Starts a new game. Records game played, resets state, generates the first
+     * number.
      */
-    @Override
-    void playOneGame()
+    void startNewGame()
     {
-        super.playOneGame();
-        this.successfulPlacementsThisGame = INITIAL_VALUE;
-        this.currentNumber                = INITIAL_VALUE;
-    }
+        super.incrementGamesPlayed();
 
-    /**
-     * Returns a copy of the current game board.
-     *
-     * @return A copy of the board array.
-     */
-    @Override
-    int[] getBoard()
-    {
-        return super.getBoard();
+        playOneGame();
+
+        super.setCurrentNumber(generateNumber());
     }
 
     /**
@@ -72,84 +59,111 @@ final class NumberGameLogic extends
     }
 
     /**
-     * Gets the total number of games played during the session.
-     *
-     * @return the number of games played
-     */
-    int getGamesPlayed()
-    {
-        return this.gamesPlayed;
-    }
-
-    /**
-     * Gets the total number of games won by the player during the session.
-     *
-     * @return the number of games won
-     */
-    int getGamesWon()
-    {
-        return this.gamesWon;
-    }
-
-    /**
-     * Gets the total number of guesses (placements) made by the player across
-     * all games.
-     *
-     * @return the total number of placements
-     */
-    int getTotalPlacements()
-    {
-        return this.totalPlacements;
-    }
-
-    /**
-     * Attempts to place the current number at the specified position.
-     * Does nothing if the placement is invalid. Checks win/loss conditions.
+     * Attempts to place the current number at the specified position. Does
+     * nothing if the placement is invalid. Checks win/loss conditions.
      *
      * @param position The 0-based index where the number should be placed.
      * @return true if the number was successfully placed, false otherwise.
      */
     boolean placeNumberOnBoard(final int position)
     {
-        if(isGameOver() || isGameWon())
-        {            
+        if(isGameOver() || super.isGameWon())
+        {
             return false;
         }
 
         if(isValidPlacement(position))
         {
-            this.board[position] = this.currentNumber;
+            // Get the current number from the parent class
+            final int currentNum;
+            currentNum = super.getCurrentNumber();
+
+            // Place the number on the board at the specified position
+            super.setValueOfBoardPosition(position,
+                                          currentNum);
+
             this.successfulPlacementsThisGame++;
 
-            this.totalPlacements++;
+            // Update the total placements counter in the parent class
+            super.incrementTotalPlacements();
 
-            if(isBoardFull())
+            // Check if the board is now full after this placement
+            if(super.isBoardFull())
             {
-                setGameWon(true);
-
-                this.gamesWon++;
+                super.setGameWon(true);
+                super.incrementGamesWon();
             }
             else
             {
-                this.currentNumber = generateNumber();
+                super.setCurrentNumber(generateNumber());
             }
 
+            // Return true to indicate successful placement
             return true;
         }
         else
         {
+            // Return false if the placement was invalid
             return false;
         }
     }
 
+    /**
+     * Gets the current number generated for placement. Delegates to superclass.
+     * 
+     * @return the current number.
+     */
+    int getNextNumber()
+    {
+        return super.getCurrentNumber();
+    }
+
+    /**
+     * Checks if the game is over (win or loss condition met). A game is over if
+     * the board is full (win) or if the current number cannot be placed
+     * anywhere (loss).
+     *
+     * @return true if the game has concluded, false otherwise.
+     */
+    boolean isGameOver()
+    {
+        if(super.isGameWon())
+        {
+            return true;
+        }
+
+        if(super.isBoardFull())
+        {
+            super.setGameWon(true);
+            return true;
+        }
+
+        final boolean canPlace;
+        canPlace = canPlaceCurrentNumber();
+
+        return !canPlace;
+    }
+
+    /**
+     * Initializes or resets the game state for a new round. Called by
+     * startNewGame.
+     */
+    @Override
+    void playOneGame()
+    {
+        super.playOneGame();
+        this.successfulPlacementsThisGame = INITIAL_VALUE;
+    }
+
     /*
      * Checks if the current number can be placed in any valid empty slot.
-     * Helper method for determining loss condition.
-     * Returns true if there is at least one valid position, false otherwise.
+     * Helper method for determining loss condition. Returns true if there is at
+     * least one valid position, false otherwise.
      */
     private boolean canPlaceCurrentNumber()
     {
-        if(this.currentNumber == BoardGame.INITIAL_VALUE)
+
+        if(super.getCurrentNumber() == BoardGame.INITIAL_VALUE)
         {
             return true;
         }
@@ -166,127 +180,92 @@ final class NumberGameLogic extends
 
     /*
      * Finds the value of the nearest non-empty cell to the left of the given
-     * position.
-     * Returns NO_EMPTY_CELL_LEFT if no non-empty cell is found to the
-     * left.
-     *
+     * position. Returns {@value #NO_EMPTY_CELL_LEFT} if no non-empty cell is
+     * found to the left.
+     * 
      * @param position The 0-based index from where to search leftwards.
-     * @return The value of the left neighbor or NO_EMPTY_CELL_LEFT.
+     * @return The value of the left neighbor or {@value #NO_EMPTY_CELL_LEFT}.
      */
     private int findLeftNeighborValue(final int position)
     {
-        for(int i = position - POSITION_INCREMENT; i >= EMPTY_CELL; i--)
+        int cellValue;
+        for(int leftNeighbor = position - POSITION_INCREMENT; leftNeighbor >=
+                                                              EMPTY_CELL; leftNeighbor--)
         {
-            if(this.board[i] != EMPTY_CELL)
+            cellValue = super.getValueOfBoardPosition(leftNeighbor);
+
+            if(cellValue != EMPTY_CELL)
             {
-                return this.board[i]; // Found left neighbor
+                // Found left neighbor
+                return cellValue;
             }
         }
-        return NO_EMPTY_CELL_LEFT; // No left neighbor found
+        // No left neighbor found
+        return NO_EMPTY_CELL_LEFT;
     }
 
     /*
      * Finds the value of the nearest non-empty cell to the right of the given
-     * position.
-     * Returns NO_EMPTY_CELL_RIGHT if no non-empty cell is found to the right.
-     *
+     * position. Returns {@value #NO_EMPTY_CELL_RIGHT} if no non-empty cell is
+     * found to the right.
+     * 
      * @param position The 0-based index from where to search rightwards.
-     * @return The value of the right neighbor or NO_EMPTY_CELL_RIGHT.
+     * @return The value of the right neighbor or {@value #NO_EMPTY_CELL_RIGHT}.
      */
     private int findRightNeighborValue(final int position)
     {
-        for(int i = position + POSITION_INCREMENT; i < BOARD_SIZE; i++)
+        for(int rightNeighbor = position + POSITION_INCREMENT; rightNeighbor <
+                                                               BOARD_SIZE; rightNeighbor++)
         {
-            if(this.board[i] != EMPTY_CELL)
+            final int cellValue;
+            cellValue = super.getValueOfBoardPosition(rightNeighbor);
+
+            if(cellValue != EMPTY_CELL)
             {
-                return this.board[i];
+                // Found right neighbor
+                return cellValue;
             }
         }
+        // No right neighbor found
         return NO_EMPTY_CELL_RIGHT;
     }
 
-    /**
-     * Starts a new game.
-     * Records game played, resets state, generates the first number.
-     */
-    void startNewGame()
-    {
-        this.gamesPlayed++;
-
-        playOneGame();
-
-        this.currentNumber = generateNumber();
-    }
-
-    /**
-     * Checks if the game is over (win or loss condition met).
-     * A game is over if the board is full (win) or if the current
-     * number cannot be placed anywhere (loss).
-     *
-     * @return true if the game has concluded, false otherwise.
-     */
-    public boolean isGameOver()
-    {
-        if(isGameWon())
-        {
-            return true;
-        }
-
-        if(isBoardFull())
-        {
-            setGameWon(true);
-            return true;
-        }
-
-        final boolean canPlace;
-        canPlace = canPlaceCurrentNumber();
-
-        return !canPlace;
-    }
-
-    /**
-     * Gets the current number generated for placement.
-     *
-     * @return the current number.
-     */
-    int getNextNumber()
-    {
-        return this.currentNumber;
-    }
-
-    /**
-     * Checks if placing the {@code currentNumber} at the specified
-     * {@code position}
-     * is valid according to the ascending order rule.
-     *
+    /*
+     * Checks if placing the current number at the specified position is valid
+     * according to the ascending order rule.
+     * 
      * @param position The 0-based index to check.
      * @return true if the placement is valid, false otherwise.
      */
-    private boolean isValidPlacement(final int position)
+    private boolean isValidPlacement(final int positionOnBoard)
     {
         final int leftNeighborValue;
         final int rightNeighborValue;
+        final int currentNum;
+
+        currentNum = super.getCurrentNumber();
 
         // 1. Check basic position validity
-        if(position < EMPTY_CELL || position >= BOARD_SIZE)
+        if(positionOnBoard < EMPTY_CELL || positionOnBoard >= BOARD_SIZE)
         {
             return false;
         }
-        if(this.board[position] != EMPTY_CELL)
+
+        if(super.getValueOfBoardPosition(positionOnBoard) != EMPTY_CELL)
         {
             return false;
         }
 
         // 2. Check relative to left neighbor
-        leftNeighborValue = findLeftNeighborValue(position);
-        if(this.currentNumber <= leftNeighborValue)
+        leftNeighborValue = findLeftNeighborValue(positionOnBoard);
+        if(currentNum <= leftNeighborValue)
         {
             return false;
         }
 
         // 3. Check relative to right neighbor
-        rightNeighborValue = findRightNeighborValue(position);
-        if(this.currentNumber >= rightNeighborValue)
+        rightNeighborValue = findRightNeighborValue(positionOnBoard);
+        if(currentNum >= rightNeighborValue)
         {
             return false;
         }
@@ -294,12 +273,11 @@ final class NumberGameLogic extends
         return true;
     }
 
-    
-
-    /**
+    /*
      * Generates a random number within the defined range [MIN, MAX].
-     *
-     * @return a random integer between MIN_RANDOM_NUMBER and MAX_RANDOM_NUMBER
+     * 
+     * @return a random integer between {@value #MIN_RANDOM_NUMBER} and
+     *         {@value #MAX_RANDOM_NUMBER}.
      */
     private int generateNumber()
     {

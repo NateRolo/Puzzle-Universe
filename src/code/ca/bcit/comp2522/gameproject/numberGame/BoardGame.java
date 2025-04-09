@@ -4,12 +4,11 @@ import java.util.Arrays;
 
 
 /**
- * Abstract base class for number-based games.
- * Provides common functionality for game initialization, state tracking,
- * and validation of game rules.
+ * Abstract base class for number-based games. Provides common functionality for
+ * game initialization, state tracking, and validation of game rules.
  * 
  * @author Nathan O
- * @version 1.1 2025
+ * @version 1.2 2025 
  */
 abstract class BoardGame
 {
@@ -18,18 +17,19 @@ abstract class BoardGame
     static final int MIN_RANDOM_NUMBER = 1;
     static final int EMPTY_CELL        = 0;
     static final int INITIAL_VALUE     = 0;
+    
+    private final int[]   board;
 
     private boolean gameWon;
-
-    int[] board;
-    int   currentNumber;
-    int   gamesWon;
-    int   totalPlacements;
-    int   gamesPlayed;
+    private int     currentNumber;
+    private int     gamesWon;
+    private int     totalPlacements;
+    private int     gamesPlayed;
 
     /**
-     * Constructs an BoardGame. Initializes game statistics and the random
-     * number generator.
+     * Constructs an BoardGame. Initializes game statistics.
+     * 
+     * @param boardSize Size of the game board.
      */
     BoardGame(final int boardSize)
     {
@@ -40,6 +40,123 @@ abstract class BoardGame
         this.gamesWon        = INITIAL_VALUE;
         this.totalPlacements = INITIAL_VALUE;
         this.gameWon         = false;
+        this.currentNumber   = INITIAL_VALUE;
+    }
+
+    /**
+     * Initializes the game state for a new round. Resets the game won status
+     * and clears the board.
+     */
+    void playOneGame()
+    {
+        this.gameWon = false;
+        Arrays.fill(this.board,
+                    EMPTY_CELL);
+        this.currentNumber = INITIAL_VALUE;
+    }
+
+    /**
+     * Gets the value at a specific board position.
+     * 
+     * @param index The index of the cell.
+     * @return The value at the specified index.
+     */
+    int getValueOfBoardPosition(final int boardPosition)
+    {
+        validateBoardPosition(boardPosition);
+
+        return this.board[boardPosition];
+    }
+
+    /**
+     * Sets the value at a specific board position.
+     * 
+     * @param index The index of the cell.
+     * @param value The value to set.
+     */
+    void setValueOfBoardPosition(final int positionOnBoard,
+                                 final int value)
+    {
+        validateBoardPosition(positionOnBoard);
+        validateNumber(value);
+
+        this.board[positionOnBoard] = value;
+    }
+
+    /**
+     * Sets the current number to be placed.
+     * 
+     * @param number The new current number.
+     */
+    void setCurrentNumber(final int number)
+    {
+        validateNumber(number);
+        
+        this.currentNumber = number;
+    }
+
+    /**
+     * Increments the games won counter.
+     */
+    void incrementGamesWon()
+    {
+        this.gamesWon++;
+    }
+
+    /**
+     * Increments the total placements counter.
+     */
+    void incrementTotalPlacements()
+    {
+        this.totalPlacements++;
+    }
+
+    /**
+     * Increments the games played counter.
+     */
+    void incrementGamesPlayed()
+    {
+        this.gamesPlayed++;
+    }
+
+    /**
+     * Gets the current number.
+     *
+     * @return the current number
+     */
+    final int getCurrentNumber()
+    {
+        return this.currentNumber;
+    }
+
+    /**
+     * Gets the number of games played.
+     *
+     * @return the number of games played
+     */
+    final int getGamesPlayed()
+    {
+        return this.gamesPlayed;
+    }
+
+    /**
+     * Gets the number of games won.
+     *
+     * @return the number of games won
+     */
+    final int getGamesWon()
+    {
+        return this.gamesWon;
+    }
+
+    /**
+     * Gets the number of total placements.
+     *
+     * @return the number of total placements
+     */
+    final int getTotalPlacements()
+    {
+        return this.totalPlacements;
     }
 
     /**
@@ -47,7 +164,7 @@ abstract class BoardGame
      *
      * @return true if game was won, false otherwise
      */
-    boolean isGameWon()
+    final boolean isGameWon()
     {
         return this.gameWon;
     }
@@ -57,7 +174,7 @@ abstract class BoardGame
      *
      * @return true if no empty cells (EMPTY_CELL) remain, false otherwise
      */
-    boolean isBoardFull()
+    final boolean isBoardFull()
     {
         for(final int cellValue : this.board)
         {
@@ -70,18 +187,17 @@ abstract class BoardGame
     }
 
     /**
-     * Returns a copy of the current game board.
-     * Used by subclasses or controllers to get the state without
-     * modifying the original array directly.
+     * Returns a copy of the current game board. Used by subclasses or
+     * controllers to get the state without modifying the original array
+     * directly.
      *
      * @return A copy of the board array.
      */
-    int[] getBoard()
+    final int[] getBoard()
     {
         final int[] boardCopy;
         boardCopy = Arrays.copyOf(this.board,
                                   this.board.length);
-
         return boardCopy;
     }
 
@@ -90,25 +206,14 @@ abstract class BoardGame
      *
      * @param won the won status (true if won, false otherwise)
      */
-    void setGameWon(final boolean won)
+    final void setGameWon(final boolean won)
     {
         this.gameWon = won;
     }
 
-    /**
-     * Initializes the game state for a new round.
-     * Resets the game won status and clears the board.
-     */
-    void playOneGame()
-    {
-        this.gameWon = false;
-        Arrays.fill(this.board,
-                    EMPTY_CELL);
-    }
-
-    /**
+    /*
      * Validates the boardSize for the BoardGame constructor.
-     *
+     * 
      * @param boardSize the number of cells on the board
      */
     private static void validateBoardSize(final int boardSize)
@@ -117,6 +222,38 @@ abstract class BoardGame
         {
             throw new IllegalArgumentException("Board size cannot be less than: " +
                                                BOARD_SIZE_MIN);
+        }
+    }
+
+    /*
+     * Validates the boardIndex for the BoardGame constructor.
+     * 
+     * @param boardIndex the index of the cell.
+     */
+    private void validateBoardPosition(final int boardPosition)
+    {
+        if(boardPosition < BOARD_SIZE_MIN || boardPosition >= this.board.length)
+        {
+            throw new ArrayIndexOutOfBoundsException("Index " +
+                                                     boardPosition +
+                                                     " out of bounds for board size " +
+                                                     this.board.length);
+        }
+    }
+
+    /*
+     * Validates the boardValue for the BoardGame constructor.
+     * 
+     * @param boardValue the value to set.
+     */
+    private void validateNumber(final int number)
+    {
+        if(number < MIN_RANDOM_NUMBER || number > MAX_RANDOM_NUMBER)
+        {
+            throw new IllegalArgumentException("Board value must be between " +
+                                               MIN_RANDOM_NUMBER +
+                                               " and " +
+                                               MAX_RANDOM_NUMBER);
         }
     }
 }

@@ -35,8 +35,8 @@ public final class NumberGame implements
     private static final String INITIAL_MESSAGE   = "Click 'Try Again' to start a new game.";
     private static final int    BOARD_SIZE        = GRID_ROWS * GRID_COLS;
     private static final int    NO_GAMES_PLAYED   = 0;
-    private static final int    PLAY             = 0;
-    private static final int    QUIT             = 1;
+    private static final int    PLAY              = 0;
+    private static final int    QUIT              = 1;
 
 
     private final Object          lockObject = new Object();
@@ -47,8 +47,8 @@ public final class NumberGame implements
     private JLabel    statusLabel;
 
     /**
-     * Constructs a new NumberGameGUI instance.
-     * Initializes the game logic and creates the user interface.
+     * Constructs a new NumberGameGUI instance. Initializes the game logic and
+     * creates the user interface.
      */
     public NumberGame()
     {
@@ -56,24 +56,23 @@ public final class NumberGame implements
     }
 
     /**
-     * Implementation of the Playable interface.
-     * Ensures the game window is visible and ready for interaction.
-     * This method now blocks the calling thread until the game window is
-     * closed.
+     * Implementation of the Playable interface. Ensures the game window is
+     * visible and ready for interaction. This method now blocks the calling
+     * thread until the game window is closed.
      */
     @Override
     public void play()
     {
         try
-        {            
+        {
             SwingUtilities.invokeAndWait(this::createAndShowGUI);
 
             // Wait until the window is closed
             synchronized(lockObject)
-            {            
+            {
                 while(frame != null && frame.isDisplayable())
                 {
-                    lockObject.wait(); 
+                    lockObject.wait();
                 }
             }
         }
@@ -83,22 +82,57 @@ public final class NumberGame implements
             System.err.println("Error while waiting for NumberGame to finish: " +
                                e.getMessage());
             Thread.currentThread()
-                  .interrupt(); 
+                  .interrupt();
 
             concludeGame();
         }
         finally
-        {            
+        {
             synchronized(lockObject)
             {
-                frame = null; 
+                frame = null;
             }
         }
     }
 
+
     /**
-     * Helper method to encapsulate GUI creation and display logic.
-     * Intended to be called via SwingUtilities.invokeAndWait or invokeLater.
+     * Starts a new game by resetting the logic and updating the GUI.
+     */
+    @Override
+    public void playOneGame()
+    {
+        gameLogic.startNewGame();
+        updateGUIState();
+
+        if(gameLogic.isGameOver())
+        {
+            handleGameLost(gameLogic.getNextNumber());
+        }
+    }
+
+    /**
+     * Concludes the game session by disposing of the main game window.
+     * Implements the method required by the Replayable interface. 
+     * 
+     * Note: This might be called externally, but closing the window via 'X' is
+     * the primary way the game ends for the user.
+     */
+    @Override
+    public void concludeGame()
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            if(frame != null)
+            {
+                frame.dispose();
+            }
+        });
+    }
+
+    /*
+     * Helper method to encapsulate GUI creation and display logic. Intended to
+     * be called via SwingUtilities.invokeAndWait or invokeLater.
      */
     private void createAndShowGUI()
     {
@@ -126,45 +160,29 @@ public final class NumberGame implements
         }
     }
 
-    /**
-     * Starts a new game by resetting the logic and updating the GUI.
-     */
-    @Override
-    public void playOneGame()
-    {
-        gameLogic.startNewGame();
-        updateGUIState();
-
-        if(gameLogic.isGameOver())
-        {
-            handleGameLost(gameLogic.getNextNumber());
-        }
-    }
-
-    /**
-     * Concludes the game session by disposing of the main game window.
-     * Implements the method required by the Replayable interface.
-     * Note: This might be called externally, but closing the window via 'X'
-     * is the primary way the game ends for the user.
-     */
-    @Override
-    public void concludeGame()
-    {
-        SwingUtilities.invokeLater(() ->
-        {
-            if(frame != null)
-            {
-                frame.dispose(); 
-            }
-        });
-    }
-
-    /**
-     * Initializes and sets up the main graphical user interface components for
-     * the game.
-     * This includes creating the main frame, status label, grid panel with
-     * buttons,
-     * setting layouts, and adding necessary event listeners.
+    /*
+     * Initializes and sets up the main graphical user interface components for the game.
+     * 
+     * This method performs the following operations:
+     * 1. Creates the main JFrame with appropriate title and close operation
+     * 2. Adds a WindowListener to handle game closure events:
+     *    - Shows final score summary if at least one game was played
+     *    - Notifies waiting threads via the lockObject to prevent deadlocks
+     *    - Sets frame to null to indicate window closure
+     * 3. Configures the frame layout using BorderLayout with specified gaps
+     * 4. Creates and positions the status label at the top of the frame
+     * 5. Builds a grid panel with the game board buttons:
+     *    - Creates a button array matching the BOARD_SIZE constant
+     *    - Initializes each button with empty text
+     *    - Attaches action listeners to handle player clicks
+     *    - Initially disables all buttons until game starts
+     * 6. Finalizes frame appearance by:
+     *    - Packing components to optimal size
+     *    - Setting minimum window dimensions
+     *    - Centering the window on screen
+     * 
+     * The method is called by createAndShowGUI() when the game interface needs to be
+     * constructed for the first time.
      */
     private void createGUI()
     {
@@ -188,8 +206,8 @@ public final class NumberGame implements
                 synchronized(lockObject)
                 {
                     NumberGame.this.frame = null;
-                    lockObject.notifyAll(); 
-                                           
+                    lockObject.notifyAll();
+
                 }
             }
         });
@@ -225,10 +243,8 @@ public final class NumberGame implements
     }
 
     /*
-     * Handles the logic when a grid button is clicked.
-     * Delegates placement attempt to game logic and updates GUI based on
-     * outcome.
-     *
+     * Handles the logic when a grid button is clicked. Delegates placement
+     * attempt to game logic and updates GUI based on outcome.
      * @param position The 0-based index of the clicked button.
      */
     private void handleButtonClick(final int position)
@@ -265,15 +281,27 @@ public final class NumberGame implements
                 }
             }
         }
-        else
-        {
-        }
     }
 
 
     /*
      * Updates the GUI elements (buttons, status label) to reflect the current
      * game state obtained from NumberGameLogic.
+     * 
+     * This method synchronizes the visual representation with the underlying game state by:
+     * 1. Retrieving the current board state, game status, and next number from the game logic
+     * 2. Updating the status label with appropriate messages based on game state:
+     *    - Shows victory message when the game is won
+     *    - Shows game over message when no valid moves remain
+     *    - Shows the next number to place when the game is in progress
+     * 3. Refreshing each button on the grid to:
+     *    - Display numbers that have been placed on the board
+     *    - Disable buttons that already contain numbers
+     *    - Enable/disable empty buttons based on whether the game is over
+     *    - Show empty text for cells that don't contain numbers
+     * 
+     * This method is called after each successful number placement and when
+     * starting a new game to ensure the UI accurately represents the game state.
      */
     private void updateGUIState()
     {
@@ -320,8 +348,8 @@ public final class NumberGame implements
     }
 
     /*
-     * Shows an initial welcome message with instructions.
-     * Offers "Try Again" (start game) and "Quit" options.
+     * Shows an initial welcome message with instructions. Offers "Play"
+     * (start game) and "Quit" options.
      */
     private void showWelcomeMessage()
     {
@@ -354,7 +382,7 @@ public final class NumberGame implements
     private void handleGameWon()
     {
         final int choice;
-        
+
 
         choice = JOptionPane.showConfirmDialog(frame,
                                                buildScoreString(true),
@@ -373,7 +401,7 @@ public final class NumberGame implements
 
     /*
      * Handles the display and actions for the game loss condition.
-     *
+     * 
      * @param impossibleNumber The number that could not be placed.
      */
     private void handleGameLost(final int impossibleNumber)
@@ -424,13 +452,25 @@ public final class NumberGame implements
     }
 
     /*
-     * Builds a string summarizing the current score status using data from
-     * gameLogic.
-     *
-     * @param gameJustWon Hint whether the last game ended in a win (for
-     * phrasing).
+     * Builds a formatted string that summarizes the player's game statistics.
      * 
-     * @return A formatted string with score details.
+     * This method retrieves game statistics from the gameLogic object and formats them
+     * into a multi-line string for display to the user. The statistics include:
+     * 
+     * 1. A contextual first line that changes based on whether the player just won
+     * 2. Win/loss record showing games won, lost, and total games played
+     * 3. Placement statistics including average placements per game and total placements
+     * 
+     * The method calculates derived statistics such as:
+     * - Number of games lost (by subtracting wins from total games)
+     * - Average number of placements per game (if at least one game was played)
+     * 
+     * If no games have been played yet, a special message is shown instead of
+     * the placement statistics.
+     * 
+     * @param gameJustWon true if the most recent game ended in a win, which affects
+     *                    the phrasing of the first line of the summary; false otherwise
+     * @return A formatted multi-line string containing the complete game statistics
      */
     private String buildScoreString(final boolean gameJustWon)
     {
@@ -469,10 +509,10 @@ public final class NumberGame implements
         firstLine = gameJustWon ? "You Won! Game Stats:" : "Stats:";
 
         scoreResults = String.format("%s\n%s\n%s",
-                             firstLine,
-                             winLossRatio,
-                             placementInfo);
-        
+                                     firstLine,
+                                     winLossRatio,
+                                     placementInfo);
+
         return scoreResults;
     }
 }
