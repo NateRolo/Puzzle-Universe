@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Stores and displays the result of a guess in Mastermind.
+ * Stores and displays the result of a guess in {@code Mastermind}.
  * <p>
  * This class encapsulates the feedback given to a player after their guess,
  * including the number of correct digits in correct positions and the number
@@ -26,7 +26,7 @@ final class Feedback
     private final int misplacedCount;
 
     /**
-     * Constructs a new Feedback object.
+     * Constructs a new {@code Feedback} object.
      */
     <S extends Code, G extends Code> Feedback(final S secretCode,
                                               final G guessCode)
@@ -83,8 +83,8 @@ final class Feedback
     /*
      * Validates the provided codes for nullity and correct length.
      * <p>
-     * This method checks if the secret code and guess code are not null and
-     * have the correct length.
+     * This method checks if the {@code secretCode} and {@code guessCode} are
+     * not null and have the correct length.
      * </p>
      * 
      * @param secretCode the secret code to validate
@@ -117,7 +117,8 @@ final class Feedback
     /*
      * Evaluates a guess against a secret code and returns feedback.
      * <p>
-     * This method compares the guess code with the secret code and calculates:
+     * This method compares the {@code guessCode} with the {@code secretCode}
+     * and calculates:
      * 1. The number of digits in the correct position
      * 2. The number of correct digits in the wrong position (misplaced)
      * The result is returned as an array where the first element is the count of

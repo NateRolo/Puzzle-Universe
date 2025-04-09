@@ -14,7 +14,7 @@ import ca.bcit.comp2522.gameproject.mastermind.UIHandler.HistoryMenuOption;
 import ca.bcit.comp2522.gameproject.mastermind.UIHandler.MainMenuOption;
 
 /**
- * Main controller for the Mastermind game.
+ * Main controller for the {@code Mastermind} game.
  * <p>
  * This class coordinates all game components and manages the main game loop,
  * including handling player input, tracking rounds, managing deception,
@@ -46,7 +46,8 @@ public final class MastermindGame implements
     private String      truthScanInfoForHistory;
 
     /**
-     * Constructs a new MastermindGame. Initializes the GameHistoryManager and UIHandler.
+     * Constructs a new {@code MastermindGame}. Initializes the
+     * {@code GameHistoryManager} and {@code UIHandler}.
      */
     public MastermindGame()
     {
@@ -212,8 +213,19 @@ public final class MastermindGame implements
     }
 
     /*
-     * Handles the end-of-game sequence.
-     * Displays win/loss message, secret code, and saves the game history.
+     * Handles the end-of-game sequence when a game concludes.
+     * 
+     * This method performs several important end-game operations:
+     * 1. Displays the game over header through the UI handler
+     * 2. Records the exact end time of the game
+     * 3. Determines the game outcome (win/loss) based on player performance
+     * 4. Displays appropriate feedback messages to the player:
+     *    - If no guesses were made, shows a special message
+     *    - If player won, displays a congratulatory message with round count
+     *    - If player lost, reveals the secret code they were trying to guess
+     * 5. Adds a visual separator to the UI for clarity
+     * 6. Saves the completed game to the history record if at least one round was played
+     * 
      */
     @Override
     public void concludeGame()
@@ -340,12 +352,33 @@ public final class MastermindGame implements
     }
 
     /*
-     * Handles player input within a round.
-     * Loops until a valid action (guess, scan, summary) is received.
-     * Processes scan and summary requests directly.
+     * Handles player input within a round of the Mastermind game.
+     * <p>
+     * This method implements a continuous loop that prompts the player for input
+     * and processes various action types. The method will continue to prompt
+     * until a valid PlayerGuessCode is received, which is then returned.
+     * </p>
+     * <p>
+     * The method handles three main types of player actions:
+     * 1. PlayerGuessCode - A valid guess that will be returned to the caller
+     * 2. TruthScanRequest - Processed by calling handleTruthScanAction()
+     * 3. GuessSummaryRequest - Processed by calling handleGuessSummaryAction()
+     * </p>
+     * <p>
+     * Error handling is implemented for several scenarios:
+     * - When an InvalidGuessException is caught, the error message is displayed
+     *   and the player is prompted with the correct format
+     * - If a null input is received (defensive programming), an error message
+     *   is shown
+     * - For unexpected input types, a generic error message is displayed
+     * </p>
+     * <p>
+     * After handling TruthScanRequest or GuessSummaryRequest actions, the method
+     * continues the loop to get another input. Only when a valid PlayerGuessCode
+     * is received does the method exit the loop and return the guess.
+     * </p>
      *
-     * @return The PlayerAction representing the player's choice (only
-     * PlayerGuessCode exits loop).
+     * @return The PlayerGuessCode representing the player's valid guess
      */
     private PlayerAction handlePlayerInput()
     {

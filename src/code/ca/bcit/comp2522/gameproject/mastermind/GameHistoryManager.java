@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Manages saving and loading Mastermind game history to a file.
- * Handles file I/O operations for game session records, including reading from and writing to
- * the history file. Provides functionality to save individual game sessions, load the complete
- * history, and filter records based on game outcomes. The class uses a standardized format
- * for storing game data with markers to separate different game sessions and sections within
- * each record.
+ * Manages saving and loading Mastermind game history to a file. Handles file
+ * I/O operations for game session records, including reading from and writing
+ * to the history file. Provides functionality to save individual game sessions,
+ * load the complete history, and filter records based on game outcomes. The
+ * class uses a standardized format for storing game data with markers to
+ * separate different game sessions and sections within each record.
  *
  * @author Nathan O
  * @version 1.0 2025
@@ -101,10 +101,9 @@ final class GameHistoryManager
         /**
          * Returns a formatted string representation of the game session record.
          * The string includes the timestamp in ISO date-time format, all round
-         * details
-         * with proper indentation, truth scan information (if available), and
-         * the game outcome.
-         * Each section is separated by newlines for better readability.
+         * details with proper indentation, truth scan information (if
+         * available), and the game outcome. Each section is separated by
+         * newlines for better readability.
          *
          * @return a formatted multi-line string representation of the complete
          *         game session record
@@ -182,7 +181,6 @@ final class GameHistoryManager
         /*
          * Checks if the current state contains enough valid information to
          * build a GameSessionRecord.
-         * 
          * @return true if timestamp, roundDetails, and outcome are present,
          * false otherwise.
          */
@@ -199,9 +197,9 @@ final class GameHistoryManager
     }
 
     /**
-     * Saves a single game session record to the history file.
-     * Appends the record to the end of the file.
-     * Creates the file and directories if they don't exist.
+     * Saves a single game session record to the history file. Appends the
+     * record to the end of the file. Creates the file and directories if they
+     * don't exist.
      *
      * @param record The GameSessionRecord to save.
      */
@@ -276,8 +274,8 @@ final class GameHistoryManager
      * Loads all game session records from the history file.
      * <p>
      * Parses the history file line by line, identifying game session boundaries
-     * and extracting relevant data using helper methods.
-     * Handles file not found errors and parsing issues gracefully.
+     * and extracting relevant data using helper methods. Handles file not found
+     * errors and parsing issues gracefully.
      * </p>
      *
      * @return A List of GameSessionRecord objects, or an empty list if the file
@@ -353,26 +351,22 @@ final class GameHistoryManager
      * Filters a list of game session records based on the desired outcome.
      * <p>
      * This method examines each game session record in the provided history
-     * list
-     * and selects only those that match the specified outcome filter. The
-     * comparison
-     * is case-insensitive, so "won", "Won", and "WON" are all treated as
-     * equivalent.
-     * Common filter values are "Won" or "Lost", but any string can be used as a
-     * filter.
+     * list and selects only those that match the specified outcome filter. The
+     * comparison is case-insensitive, so "won", "Won", and "WON" are all
+     * treated as equivalent. Common filter values are "Won" or "Lost", but any
+     * string can be used as a filter.
      * </p>
      * <p>
      * If no records match the filter, an empty list is returned. The original
-     * list
-     * remains unchanged, and a new list containing only the matching records is
-     * created.
+     * list remains unchanged, and a new list containing only the matching
+     * records is created.
      * </p>
      *
      * @param history       The list of GameSessionRecord objects to filter.
      *                      Cannot be null.
      * @param outcomeFilter The outcome to filter by (typically "Won" or
-     *                      "Lost").
-     *                      Case-insensitive comparison is used. Cannot be null.
+     *                      "Lost"). Case-insensitive comparison is used. Cannot
+     *                      be null.
      * @return A new list containing only the records matching the specified
      *         outcome filter.
      */
@@ -396,10 +390,8 @@ final class GameHistoryManager
 
     /*
      * Processes a single line belonging to the current game record being
-     * parsed.
-     * Identifies the line type (timestamp, round, truth scan, outcome) and
-     * updates the parsing state.
-     *
+     * parsed. Identifies the line type (timestamp, round, truth scan, outcome)
+     * and updates the parsing state.
      * @param line The trimmed line from the history file.
      * @param state The current parsing state object to update.
      */
@@ -452,11 +444,9 @@ final class GameHistoryManager
 
     /*
      * Attempts to build a GameSessionRecord from the current parsing state and
-     * add it to the history list.
-     * Validates the state before creating the record.
-     *
+     * add it to the history list. Validates the state before creating the
+     * record.
      * @param state The current parsing state containing data for one record.
-     * 
      * @param gameHistory The list to add the created record to.
      */
     private void buildAndAddRecord(final ParsingState state,
@@ -482,10 +472,9 @@ final class GameHistoryManager
 
 
     /*
-     * Validates that a game session record contains all required fields.
-     * Checks that the record, timestamp, round details, truth scan info,
-     * and outcome are all present and valid.
-     * 
+     * Validates that a game session record contains all required fields. Checks
+     * that the record, timestamp, round details, truth scan info, and outcome
+     * are all present and valid.
      * @param record The game session record to validate.
      */
     private static void validateRecord(final GameSessionRecord record)

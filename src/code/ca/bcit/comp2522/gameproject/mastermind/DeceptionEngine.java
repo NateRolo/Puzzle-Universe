@@ -21,13 +21,12 @@ import java.util.Random;
  */
 final class DeceptionEngine
 {
-
     private static final Random RANDOM               = new Random();
     private static final double DECEPTION_CHANCE     = 0.3;
     private static final int    DECEPTION_MIN_DIGITS = 0;
     private static final String FALSE_GUESS_DIGITS   = "1111";
 
-    /**
+    /*
      * Private constructor to prevent instantiation.
      */
     private DeceptionEngine()
