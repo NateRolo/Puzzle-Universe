@@ -179,7 +179,9 @@ public final class WordGame implements
 
         do
         {
-            System.out.println("\nWould you like to play again? (yes/no)");
+            System.out.printf("\nWould you like to play again? (%s or %s)",
+                              OPTION_YES,
+                              OPTION_NO);
             userChoice = scan.nextLine()
                              .toLowerCase();
             if(!userChoice.equalsIgnoreCase(OPTION_YES) &&
