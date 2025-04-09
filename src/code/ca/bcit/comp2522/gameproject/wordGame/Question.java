@@ -18,7 +18,7 @@ abstract class Question
     final Country country;
 
     /**
-     * Constructs a new Question with the specified country.
+     * Constructs a new {@code Question} with the specified country.
      * <p>
      * Validates the country parameter and initializes the prompt
      * by calling the createPrompt method.

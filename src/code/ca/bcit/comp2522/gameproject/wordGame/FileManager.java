@@ -31,11 +31,13 @@ final class FileManager
      * <p>
      * First attempts to read from the file system. If the file doesn't exist
      * in the file system, attempts to read it from the classpath resources.
+     * This dual approach ensures flexibility in accessing files both during
+     * development and after deployment.
      * </p>
      *
-     * @param pathString path to the resource file
-     * @return List of strings, each representing a line from the file
-     * @throws IOException if file cannot be read
+     * @param pathString path to the resource file (can be filesystem path or classpath resource)
+     * @return List of strings, each representing a line from the file with whitespace trimmed
+     * @throws IOException if file cannot be read or if the path is invalid
      */
     static List<String> readLinesFromResource(final String pathString) throws IOException
     {
@@ -47,19 +49,21 @@ final class FileManager
         final BufferedReader    bufferedReader;
         final Path              path;
 
+        // Convert the string path to a Path object for file operations
         path = Paths.get(pathString);
 
+        // First attempt: Try to read from the file system
         if(Files.exists(path))
         {
             final List<String> allLines;
             allLines = Files.readAllLines(path);
-
+            // Exit from method if file exists in file system
             return allLines;
         }
 
+        // Second attempt: File doesn't exist in file system, try classpath resources
         lines       = new ArrayList<>();
         inputStream = FileManager.class.getResourceAsStream(pathString);
-
         validateInputStream(inputStream);
 
         inputStreamReader = new InputStreamReader(inputStream,
@@ -78,7 +82,9 @@ final class FileManager
         catch(final IOException error)
         {
             error.printStackTrace();
+            throw error;
         }
+
         return lines;
     }
 

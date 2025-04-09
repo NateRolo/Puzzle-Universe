@@ -3,7 +3,7 @@ package ca.bcit.comp2522.gameproject.wordgame;
 import java.util.Scanner;
 
 /**
- * Checks user answers in the word game.
+ * Checks user answers in the {@code WordGame}.
  * <p>
  * This class handles the validation of user answers against expected answers,
  * providing two attempts for each question and tracking the score

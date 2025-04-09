@@ -20,25 +20,25 @@ final class Country
     /**
      * Constructs a Country object.
      *
-     * @param name            the name of the country
+     * @param countryName            the name of the country
      * @param capitalCityName the name of the capital city
      * @param fact1           first fact about the country
      * @param fact2           second fact about the country
      * @param fact3           third fact about the country
      */
-    Country(final String name,
+    Country(final String countryName,
                   final String capitalCityName,
                   final String fact1,
                   final String fact2,
                   final String fact3)
     {
-        validateName(name);
+        validateName(countryName);
         validateCapitalCityName(capitalCityName);
         validateFact(fact1);
         validateFact(fact2);
         validateFact(fact3);
 
-        this.name = name;
+        this.name = countryName;
         this.capitalCityName = capitalCityName;
         this.facts = new String[]{fact1, fact2, fact3};
     }

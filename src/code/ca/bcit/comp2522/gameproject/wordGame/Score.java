@@ -306,18 +306,15 @@ final class Score
         filePath = Paths.get(DIR_SRC,
                              DIR_RES,
                              fileString);
-
         if(Files.notExists(filePath))
         {
             Files.createFile(filePath);
         }
 
         fullFilePathString = filePath.toString();
-
         scoresLines = FileManager.readLinesFromResource(fullFilePathString);
 
         validateList(scoresLines);
-
         if(scoresLines.isEmpty())
         {
             scores = new ArrayList<>();
