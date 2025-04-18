@@ -1,78 +1,75 @@
+# Puzzle Universe (COMP 2522 Term Project)
 
-# Puzzle Universe (aka Nate's COMP 2522 Term Project)
+A collection of console-based puzzle games developed for a BCIT COMP 2522 Object-Oriented Programming II course term project.
 
-As advertised (sort of)! Because sometimes you just need to guess colors, numbers, or words instead of doing actual work.
+## Project Overview
 
-## 🤔 What's This Pile of Code?
+This repository contains the source code for three classic console games: Mastermind, Number Guessing, and Word Guessing. The project demonstrates core Java programming concepts, including object-oriented design, interfaces, basic input handling, and modular structure.
 
-Ever stare at a blinking cursor, knowing you *should* be productive, but your brain screams for a simple distraction? Did you perhaps see a dazzling advertisement for "**Puzzle Universe**" and wonder where such gaming marvels originated?
+## Features
 
-Well, you've found the source code! This repo contains a thrilling(?) collection of console-based games originally built for a BCIT COMP 2522 term project, now masquerading under a cooler name. It's got logic, it's got loops, it might even have a feature or two (bugs, probably). Mastermind, Number Guessing, Word Guessing – it's a veritable universe... of simple puzzles.
+*   **Three Classic Games:** Includes implementations of Mastermind, Number Guessing, and Word Guessing.
+*   **Console Interface:** Utilizes a text-based interface for gameplay interaction.
+*   **Input Validation:** Basic handling for user input is implemented.
+*   **Modular Design:** Organized using packages and interfaces to promote code organization.
 
-## ✨ "Features" That Barely Justify a Repo
+## Getting Started
 
-*   **Triple Threat Gaming:** Mastermind, Number Guessing, *and* Word Guessing! Why build one game when you can build three slightly different ones? 🎲🔢🅰️
-*   **Pure Console Action:** Forget fancy GUIs. We're kicking it old school with text-based interaction. Your terminal has never felt so alive!
-*   **User Input Handling:** We *try* to gracefully handle whatever nonsense you type in. Try.
-*   **Modular-ish Design:** There are interfaces and packages! It looks organized, which is half the battle.
-*   **It Runs (Probably):** The ultimate feature of any student project.
+### Prerequisites
 
-## 🚀 Getting Distracted (Getting Started)
+*   Java Development Kit (JDK) installed (specify required version if known, e.g., JDK 11 or later).
+*   Git (for cloning the repository).
 
-1.  **Clone this repo:** `git clone <your-repo-url>` (You know the drill)
-2.  **Navigate to the source:** Find your way to the `src` directory. It's an adventure!
-3.  **Compile the Java files:** You'll need a JDK. Fire up your terminal and run something like:
+### Installation & Running
+
+1.  **Clone the repository:**
     ```bash
-    # On Linux/macOS/WSL
-    javac code/ca/bcit/comp2522/gameproject/*.java code/ca/bcit/comp2522/gameproject/mastermind/*.java code/ca/bcit/comp2522/gameproject/numbergame/*.java code/ca/bcit/comp2522/gameproject/wordgame/*.java code/ca/bcit/comp2522/gameproject/interfaces/*.java
-
-    # On Windows Command Prompt (adjust paths if needed)
-    # javac code\ca\bcit\comp2522\gameproject\*.java code\ca\bcit\comp2522\gameproject\mastermind\*.java code\ca\bcit\comp2522\gameproject\numbergame\*.java code\ca\bcit\comp2522\gameproject\wordgame\*.java code\ca\bcit\comp2522\gameproject\interfaces\*.java
+    git clone <your-repo-url> 
     ```
-    (Or just open it in your IDE, let's be real.)
-4.  **Run the Main Launcher:**
+    (Replace `<your-repo-url>` with the actual URL of this repository)
+2.  **Navigate to the source directory:** Change your working directory to the root of the cloned project.
+3.  **Compile the Java files:** Open a terminal or command prompt in the project root directory and compile the source code.
+    *   *Using an IDE:* Import the project into your preferred Java IDE (like IntelliJ IDEA, Eclipse, VS Code with Java extensions). The IDE should handle compilation.
+    *   *Manual Compilation (Example):*
+        ```bash
+        # Navigate into the src directory first
+        cd src 
+        # Compile all java files within the code directory and its subdirectories
+        javac $(find code -name '*.java') # Linux/macOS/WSL
+        # or using specific paths (adjust if necessary):
+        # javac code/ca/bcit/comp2522/gameproject/*.java code/ca/bcit/comp2522/gameproject/mastermind/*.java code/ca/bcit/comp2522/gameproject/numbergame/*.java code/ca/bcit/comp2522/gameproject/wordgame/*.java code/ca/bcit/comp2522/gameproject/interfaces/*.java
+
+        # On Windows Command Prompt (adjust paths/command if needed)
+        # cd src
+        # javac code\ca\bcit\comp2522\gameproject\*.java code\ca\bcit\comp2522\gameproject\mastermind\*.java code\ca\bcit\comp2522\gameproject\numbergame\*.java code\ca\bcit\comp2522\gameproject\wordgame\*.java code\ca\bcit\comp2522\gameproject\interfaces\*.java 
+        ```
+        *(Note: Using a build tool like Maven or Gradle would simplify this process significantly).*
+
+4.  **Run the Main Application:** From the `src` directory (after compiling):
     ```bash
-    # On Linux/macOS/WSL
-    java code.ca.bcit.comp2522.gameproject.Main
-
-    # On Windows Command Prompt
-    # java code.ca.bcit.comp2522.gameproject.Main
+    java code.ca.bcit.comp2522.gameproject.Main 
     ```
-5.  Follow the on-screen prompts and enter the Puzzle Universe!
+5.  Follow the on-screen prompts to select and play a game.
 
-## 💭 Why Does This Exist?
+## Project Purpose
 
-*   It was a COMP 2522 term project requirement.
-*   To demonstrate basic Java programming concepts.
-*   Because writing games is objectively more fun than writing accounting software (probably).
-*   Survival.
-*   Needed something cool-sounding for an advertisement video ("Puzzle Universe"!).
+This project was developed as a requirement for the COMP 2522 course at BCIT to apply and demonstrate understanding of object-oriented programming principles in Java.
 
-## 🛠️ Built With
+## Built With
 
-*   **Java:** The language that powers billions of devices and countless student projects.
-*   **IntelliJ IDEA:** Because typing `javac` gets old, eventually.
-*   **Coffee:** Copious amounts. ☕
-*   **The Ghost of Deadlines Past:** Hauntingly effective motivation.
-*   **Package Structure:** To give the illusion of grandeur.
+*   **Java:** Core programming language.
+*   **IntelliJ IDEA:** Development environment used (optional, other IDEs/editors can be used).
 
-## 📝 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. Feel free to use it, learn from it, or point and laugh.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Contributing
 
-## 🤝 Contributing
+Contributions, issues, and feature requests are welcome. Feel free to check [issues page](<link-to-issues-page-if-applicable>) if you want to contribute.
 
-Found a bug in the Puzzle Universe? Think you can make the number guessing *even more* exciting? Want to refactor the whole thing because my code offended your sensibilities?
+## Acknowledgments
 
-Go for it! Open an issue or submit a pull request. Or don't. It's cool.
-
-## 🙏 Acknowledgments
-
-*   **BCIT & COMP 2522:** For the "opportunity" to build this.
-*   **Stack Overflow:** The silent architect behind most student code.
-*   **My Sanity:** RIP.
-*   **Anyone who actually cloned this:** You're the real MVP.
-*   **The Marketing Department (Me):** For coming up with "Puzzle Universe".
+*   British Columbia Institute of Technology (BCIT) - COMP 2522 Course Instructors and Curriculum.
 
 
